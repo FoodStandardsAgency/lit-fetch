@@ -3,23 +3,32 @@ library(httr)
 library(jsonlite)
 library(dplyr)
 library(purrr)
+library(stringr)
+library(tidyr)
 
 apikey <- Sys.getenv("SPRINGER_API")
 
-getsearchurl <- function(titleword, 
+# generate search url with query string and date range (date online not date published as this is only range option)
+
+getsearchurl <- function(searchterm,
+                         datefrom = as.character(Sys.Date() - 365),
+                         dateto = as.character(Sys.Date()),
                          apikey) {
   
   baseurl <- "http://api.springernature.com/meta/v2/json?"
   
-  term <- paste0("(title:%22",titleword,"%22)")
+  term <- searchterm %>%
+    str_replace_all(., "\"", "%22") %>% 
+    str_replace_all(., " ", "+")
 
   searchurl <- paste0(baseurl,
-                      "q=",term,
+                      "q=",term,"+onlinedatefrom:",datefrom,"+onlinedateto:",dateto,
                       "&api_key=",apikey)
   return(searchurl)
 }
 
-searchexample <- getsearchurl("aflatoxin", apikey)
+
+searchexample <- getsearchurl("aflatoxin AND (\"aspergillus parasiticus\" OR maize)", apikey = apikey)
 
 # how many results
 
@@ -46,10 +55,12 @@ getresults <- function(page, searchurl) {
     select(doi, title, abstract)
   }
 
-map_df(pages[1:3], getresults, searchurl = searchexample)
+result <- map_df(pages, getresults, searchurl = searchexample)
 
-#todo:
-# date range
-# convert multi-word/boolean searches to query strings (https://dev.springernature.com/adding-constraints)
+# filter to articles with desired terms in title and abstract
+
+result %>% 
+  filter_at(vars(title, abstract), any_vars(grepl("aflatoxin", ., ignore.case = T))) %>% 
+  filter_at(vars(title, abstract), any_vars(grepl("aspergillus parasiticus|maize", ., ignore.case = T)))
 
 

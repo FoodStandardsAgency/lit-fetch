@@ -28,13 +28,13 @@ GET("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi?db=pubmed") %>%
 # generate search URL from a query string (boolean, with brackets if required), start date and end date (default today and minus 1 year)
 
 
-getsearchurl <- function(tiab, 
+getsearchurl <- function(searchterm, 
                          startdate=as.character(Sys.Date()-365, "%Y/%m/%d"), 
                          enddate=as.character(Sys.Date(), "%Y/%m/%d")) {
   
   baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
   
-  term <- str_replace_all(tiab, "(\\))", " \\1") %>%
+  term <- str_replace_all(searchterm, "(\\))", " \\1") %>%
     paste0(., " ") %>% 
     str_replace_all(., " ", "[tiab] ") %>% 
     str_replace_all(., fixed("AND[tiab]"), "AND") %>% 
@@ -51,7 +51,7 @@ getsearchurl <- function(tiab,
   return(searchurl)
 }
 
-searchexample <- getsearchurl("aflatoxin AND (aspergillus OR peanut)")
+searchexample <- getsearchurl("aflatoxin AND (aspergillus parasiticus OR peanut)")
 
 # get number of hits and where the results are stored
 
