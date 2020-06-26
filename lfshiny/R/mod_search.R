@@ -7,6 +7,8 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @importFrom shinycssloaders withSpinner
+#' 
 mod_search_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -46,8 +48,8 @@ mod_search_ui <- function(id){
                        inline = T),
     actionButton(ns("searchnow"),
                  "Search"),
-    p("Your search has returned X articles. Refine your search or continue to 
-      additional filters below.")
+    withSpinner(textOutput(ns("nrow")), type = 4, color = "#006F51", size = 0.3)
+    
   )
 }
     
@@ -56,6 +58,19 @@ mod_search_ui <- function(id){
 #' @noRd 
 mod_search_server <- function(input, output, session){
   ns <- session$ns
+  
+  returned <- eventReactive(input$searchnow,{
+    get_results_pm(get_url_pm(input$searchterm)) 
+  })
+  
+  output$nrow <- renderText({
+    validate(
+      need(nrow(returned()) != 0, "There are no articles matching that search term."))
+    paste("Your search has returned", nrow(returned()), "articles. Refine your search 
+    or continue to additional filters below.")
+  })
+  
+  return(returned)
  
 }
     

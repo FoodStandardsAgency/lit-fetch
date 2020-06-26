@@ -6,15 +6,14 @@
 #'
 #' @noRd 
 #'
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS tagList
+#' @importFrom dplyr tibble 
+#' @import openxlsx
+#' 
 mod_download_ui <- function(id){
   ns <- NS(id)
   tagList(
-    checkboxGroupInput(ns("dlopts"),
-                       "Fields to include in download",
-                       choices = c("DOI", "Title", "Abstract", "URL", "Journal", "Author"),
-                       selected = c("DOI", "Title", "Abstract", "URL"),
-                       inline = T),
+    
     downloadButton(ns("filedownload"), label = "Download articles")
  
   )
@@ -23,8 +22,35 @@ mod_download_ui <- function(id){
 #' download Server Function
 #'
 #' @noRd 
-mod_download_server <- function(input, output, session){
+mod_download_server <- function(input, output, session, data){
   ns <- session$ns
+  
+  articles <- reactive({data()})
+  
+  searchdetail <- tibble(searchstring = "peanut allergy",
+                         timeint = paste(Sys.Date()-365, "to", Sys.Date()),
+                         include = "egg AND infant", 
+                         exclude = "Australia", 
+                         searchdate = Sys.Date())
+  
+  #articles <- tibble(doi = "10.101011", title = "this is a title", abstract = "blah blah blah")
+  
+  output$filedownload <- downloadHandler(
+    filename = "searchresults.xlsx",
+    
+    content = function(file) {
+      
+      wb <- createWorkbook()
+      addWorksheet(wb, "Search details")
+      addWorksheet(wb, "Articles")
+
+      writeData(wb, "Search details", searchdetail)
+      writeData(wb, "Articles", articles())
+      
+      saveWorkbook(wb, file)
+      
+    }
+  )
  
 }
     

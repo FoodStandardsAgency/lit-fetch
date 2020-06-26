@@ -58,7 +58,12 @@ app_ui <- function(request) {
 
                                 mod_filter_ui("filter_ui_1")
                               ),
-                              h3("Step 3: Download"),
+                              h3("Step 3: Preview"),
+                              wellPanel(
+                                
+                                mod_preview_ui("preview_ui_1")
+                              ),
+                              h3("Step 4: Download"),
                               wellPanel(
                                 
                                 mod_download_ui("download_ui_1")

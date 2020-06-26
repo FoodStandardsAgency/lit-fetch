@@ -16,11 +16,21 @@
 ## Dependencies ----
 ## Add one line by package you want to add as dependency
 usethis::use_package( "shinydashboard" )
+usethis::use_package( "dplyr" )
+usethis::use_package( "stringr" )
+usethis::use_package( "purrr" )
+usethis::use_package( "httr" )
+usethis::use_package( "rvest" )
+usethis::use_package( "xml2" )
+usethis::use_package( "tidyr" )
+usethis::use_package( "shinycssloaders" ) 
+usethis::use_package( "openxlsx" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module( name = "search" ) # Name of the module
 golem::add_module( name = "filter" )
+golem::add_module( name = "preview")
 golem::add_module( name = "download" )
 
 ## Add helper functions ----
