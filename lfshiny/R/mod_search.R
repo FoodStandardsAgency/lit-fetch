@@ -59,8 +59,10 @@ mod_search_ui <- function(id){
 mod_search_server <- function(input, output, session){
   ns <- session$ns
   
+  searchterm <- reactive({ input$searchterm })
+  
   returned <- eventReactive(input$searchnow,{
-    get_results_pm(get_url_pm(input$searchterm)) 
+    get_results_pm(get_url_pm(searchterm())) 
   })
   
   output$nrow <- renderText({
@@ -70,7 +72,7 @@ mod_search_server <- function(input, output, session){
     or continue to additional filters below.")
   })
   
-  return(returned)
+  return(list(searchterm, returned))
  
 }
     

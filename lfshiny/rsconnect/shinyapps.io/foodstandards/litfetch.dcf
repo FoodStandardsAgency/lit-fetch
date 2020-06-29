@@ -5,9 +5,9 @@ account: foodstandards
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2498063
-bundleId: 3320134
+bundleId: 3330325
 url: https://foodstandards.shinyapps.io/litfetch/
-when: 1593187786.4078
+when: 1593449709.53579
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .Rprofile|README.md|searchresults.xlsx|test.csv|dev/01_start.R|dev/02_dev.R|dev/03_deploy.R|dev/run_dev.R|man/get_results_pm.Rd|man/get_url_pm.Rd|man/run_app.Rd|tests/testthat.R|tests/testthat/test-golem-recommended.R
+ignoredFiles: .Rprofile|README.md|dev/01_start.R|dev/02_dev.R|dev/03_deploy.R|dev/run_dev.R|man/get_results_pm.Rd|man/get_url_pm.Rd|man/run_app.Rd|tests/testthat.R|tests/testthat/test-golem-recommended.R

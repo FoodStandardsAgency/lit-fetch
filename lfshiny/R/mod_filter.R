@@ -42,6 +42,18 @@ mod_filter_ui <- function(id){
 mod_filter_server <- function(input, output, session, data){
   ns <- session$ns
   
+  include <- reactive({
+    str_remove_all(str_remove_all(paste0(input$mustinclude, " AND ", 
+           input$mustinclude2, " AND ", input$mustinclude3), " AND $"), " AND $")
+  })
+  exclude <- reactive({
+    str_remove_all(str_remove_all(paste0(input$mustexclude, " AND ",
+            input$mustexclude2, " AND ", input$mustexclude3), " AND $"), " AND $")
+  })
+  
+  filters <- reactive({ list(include(), exclude()) })
+
+  
   filterdata <- eventReactive(input$filternow,{
     
     iterm1 <- str_replace_all(input$mustinclude, " OR ", "|")
@@ -72,7 +84,7 @@ mod_filter_server <- function(input, output, session, data){
     paste("There are", nrow(filterdata()), "articles in your filtered data.")
   })
   
-  return(filterdata)
+  return(list(filters, filterdata))
   
  
 }

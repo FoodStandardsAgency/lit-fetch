@@ -9,10 +9,10 @@ app_server <- function( input, output, session ) {
   
   returndata <- callModule(mod_search_server, "search_ui_1")
   
-  filterdata <- callModule(mod_filter_server, "filter_ui_1", data = returndata)
+  filterdata <- callModule(mod_filter_server, "filter_ui_1", data = returndata[[2]])
   
-  callModule(mod_preview_server, "preview_ui_1", data = filterdata)
+  callModule(mod_preview_server, "preview_ui_1", data = filterdata[[2]])
   
-  callModule(mod_download_server, "download_ui_1", data = filterdata)
+  callModule(mod_download_server, "download_ui_1", data = filterdata[[2]], searchstring = returndata[[1]], filters = filterdata[[1]])
 
 }
