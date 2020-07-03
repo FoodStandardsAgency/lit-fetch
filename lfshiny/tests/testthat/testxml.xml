@@ -1,0 +1,198 @@
+<PubmedArticle>
+  <MedlineCitation Status="Publisher" Owner="NLM">
+    <PMID Version="1">32496031</PMID>
+    <DateRevised>
+      <Year>2020</Year>
+      <Month>06</Month>
+      <Day>24</Day>
+    </DateRevised>
+    <Article PubModel="Print-Electronic">
+      <Journal>
+        <ISSN IssnType="Print">1764-1489</ISSN>
+        <JournalIssue CitedMedium="Internet">
+          <PubDate>
+            <Year>2020</Year>
+            <Month>06</Month>
+            <Day>04</Day>
+          </PubDate>
+        </JournalIssue>
+        <Title>European annals of allergy and clinical immunology</Title>
+        <ISOAbbreviation>Eur Ann Allergy Clin Immunol</ISOAbbreviation>
+      </Journal>
+      <ArticleTitle>Assessment of IgE- and cell-mediated immunity in pediatric patients with eosinophilic esophagitis.</ArticleTitle>
+      <ELocationID EIdType="doi" ValidYN="Y">10.23822/EurAnnACI.1764-1489.154</ELocationID>
+      <Abstract>
+        <AbstractText>Eosinophilic esophagitis (EoE) is a chronic allergen/immune-mediated disease leading to esophageal dysfunction. Food allergens play critical roles in the pathogenesis and treatment of EoE via different mechanisms. This study aimed to present the characteristics and evaluate the ability of skin prick test (SPT), skin prick to prick test (SPP) (IgE-mediated), and atopic patch test (APT) (cell-mediated) individually or simultaneously to diagnose food allergy in patients suffering from EoE. This prospective study was conducted on 58 patients with EoE. Seven patients (12.1%) were positive to only one, 3 (5.2%) were simultaneously positive to two, and 32 (55.2%) were simultaneously positive to three tests. Single and double sensitizations were totally 10.4% in IgE-mediated reactions, while 36.5% in cell-mediated reactions. In contrast, poly sensitization (&gt;2 allergens) was 51.7% in IgE-mediated tests and 20.7% in the cell-mediated test. Multiple sensitization findings showed egg white, milk, yolk, and soy were the most frequent allergens. Our findings indicate that EoE is early onset and associated with multiple food sensitizations, particularly via IgE-mediated mechanisms. These immune-mediated responses encompass both IgE-mediated (SPT and SPP) and cell-mediated (APT) reactions simultaneously not individually. Therefore, employing multiple assays may strengthen the diagnosis of food sensitization.</AbstractText>
+      </Abstract>
+      <AuthorList CompleteYN="Y">
+        <Author ValidYN="Y">
+          <LastName>Yousefi</LastName>
+          <ForeName>A</ForeName>
+          <Initials>A</Initials>
+          <AffiliationInfo>
+            <Affiliation>Pediatric growth and development research center, Institute of Endocrinology and Metabolism, University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Nasehi</LastName>
+          <ForeName>S</ForeName>
+          <Initials>S</Initials>
+          <AffiliationInfo>
+            <Affiliation>Firoozabadi Clinical Research Development Unit (FACRDU), Iran University of Medical Sciences (IUMS), Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Arshi</LastName>
+          <ForeName>S</ForeName>
+          <Initials>S</Initials>
+          <AffiliationInfo>
+            <Affiliation>Allergy department, Rasool e Akram Hospital, University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Nabavi</LastName>
+          <ForeName>M</ForeName>
+          <Initials>M</Initials>
+          <AffiliationInfo>
+            <Affiliation>Allergy department, Rasool e Akram Hospital, University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Bemanian</LastName>
+          <ForeName>M H</ForeName>
+          <Initials>MH</Initials>
+          <AffiliationInfo>
+            <Affiliation>Allergy department, Rasool e Akram Hospital, University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Shokri</LastName>
+          <ForeName>S</ForeName>
+          <Initials>S</Initials>
+          <AffiliationInfo>
+            <Affiliation>Allergy department, Rasool e Akram Hospital, University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Seif</LastName>
+          <ForeName>F</ForeName>
+          <Initials>F</Initials>
+          <AffiliationInfo>
+            <Affiliation>Academic center for education, culture and research, Tehran University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Khoshmirsafa</LastName>
+          <ForeName>M</ForeName>
+          <Initials>M</Initials>
+          <AffiliationInfo>
+            <Affiliation>Department of Immunology, Iran University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Saeedi</LastName>
+          <ForeName>Y</ForeName>
+          <Initials>Y</Initials>
+          <AffiliationInfo>
+            <Affiliation>M.SC Herbal Medicine, Iran University of Medical Sciences (IUMS), Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Rajabian</LastName>
+          <ForeName>B</ForeName>
+          <Initials>B</Initials>
+          <AffiliationInfo>
+            <Affiliation>Tehran University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Mahjoub</LastName>
+          <ForeName>F</ForeName>
+          <Initials>F</Initials>
+          <AffiliationInfo>
+            <Affiliation>Department of Pathology, Children's Medical Center of Tehran, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Sadeghian</LastName>
+          <ForeName>M</ForeName>
+          <Initials>M</Initials>
+          <AffiliationInfo>
+            <Affiliation>Department of Pediatric Gastroenterology, Ali Asghar Children Hospital, Iran University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Talachian</LastName>
+          <ForeName>E</ForeName>
+          <Initials>E</Initials>
+          <AffiliationInfo>
+            <Affiliation>Department of Pediatric Gastroenterology, Ali Asghar Children Hospital, Iran University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+        <Author ValidYN="Y">
+          <LastName>Fallahpour</LastName>
+          <ForeName>M</ForeName>
+          <Initials>M</Initials>
+          <AffiliationInfo>
+            <Affiliation>Firoozabadi Clinical Research Development Unit (FACRDU), Iran University of Medical Sciences (IUMS), Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+          <AffiliationInfo>
+            <Affiliation>Allergy department, Rasool e Akram Hospital, University of Medical Sciences, Tehran, Iran.</Affiliation>
+          </AffiliationInfo>
+        </Author>
+      </AuthorList>
+      <Language>eng</Language>
+      <PublicationTypeList>
+        <PublicationType UI="D002363">Case Reports</PublicationType>
+      </PublicationTypeList>
+      <ArticleDate DateType="Electronic">
+        <Year>2020</Year>
+        <Month>06</Month>
+        <Day>04</Day>
+      </ArticleDate>
+    </Article>
+    <MedlineJournalInfo>
+      <Country>Italy</Country>
+      <MedlineTA>Eur Ann Allergy Clin Immunol</MedlineTA>
+      <NlmUniqueID>101466614</NlmUniqueID>
+      <ISSNLinking>1764-1489</ISSNLinking>
+    </MedlineJournalInfo>
+    <CitationSubset>IM</CitationSubset>
+    <KeywordList Owner="NOTNLM">
+      <Keyword MajorTopicYN="Y">Eosinophilic esophagitis</Keyword>
+      <Keyword MajorTopicYN="Y">IgE; non-IgE-mediated food allergy</Keyword>
+      <Keyword MajorTopicYN="Y">prick to prick test</Keyword>
+      <Keyword MajorTopicYN="Y">skin prick test</Keyword>
+    </KeywordList>
+  </MedlineCitation>
+  <PubmedData>
+    <History>
+      <PubMedPubDate PubStatus="entrez">
+        <Year>2020</Year>
+        <Month>6</Month>
+        <Day>5</Day>
+        <Hour>6</Hour>
+        <Minute>0</Minute>
+      </PubMedPubDate>
+      <PubMedPubDate PubStatus="pubmed">
+        <Year>2020</Year>
+        <Month>6</Month>
+        <Day>5</Day>
+        <Hour>6</Hour>
+        <Minute>0</Minute>
+      </PubMedPubDate>
+      <PubMedPubDate PubStatus="medline">
+        <Year>2020</Year>
+        <Month>6</Month>
+        <Day>5</Day>
+        <Hour>6</Hour>
+        <Minute>0</Minute>
+      </PubMedPubDate>
+    </History>
+    <PublicationStatus>aheadofprint</PublicationStatus>
+    <ArticleIdList>
+      <ArticleId IdType="pubmed">32496031</ArticleId>
+      <ArticleId IdType="doi">10.23822/EurAnnACI.1764-1489.154</ArticleId>
+    </ArticleIdList>
+  </PubmedData>
+</PubmedArticle>

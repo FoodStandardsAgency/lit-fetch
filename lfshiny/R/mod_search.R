@@ -48,7 +48,8 @@ mod_search_ui <- function(id){
                        inline = T),
     actionButton(ns("searchnow"),
                  "Search"),
-    withSpinner(textOutput(ns("nrow")), type = 4, color = "#006F51", size = 0.3)
+    withSpinner(textOutput(ns("nrow")), type = 4, color = "#006F51", size = 0.3),
+    textOutput(ns("springerkey"))
     
   )
 }
@@ -59,10 +60,12 @@ mod_search_ui <- function(id){
 mod_search_server <- function(input, output, session){
   ns <- session$ns
   
+  spapi <- Sys.getenv("SPRINGER_API")
+  
   searchterm <- reactive({ input$searchterm })
   
   returned <- eventReactive(input$searchnow,{
-    get_results_pm(get_url_pm(searchterm())) 
+    get_pm(searchterm()) 
   })
   
   output$nrow <- renderText({
@@ -71,6 +74,11 @@ mod_search_server <- function(input, output, session){
     paste("Your search has returned", nrow(returned()), "articles. Refine your search 
     or continue to additional filters below.")
   })
+  
+  
+  
+  #output$springerkey <- renderText(paste0("the springer URL is ",gen_url_springer("aflatoxin AND (maize OR \"aspergillus parasiticus\")",
+  #                                                                                apikey = spapi)))
   
   return(list(searchterm, returned))
  

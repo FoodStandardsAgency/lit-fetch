@@ -25,6 +25,8 @@ usethis::use_package( "xml2" )
 usethis::use_package( "tidyr" )
 usethis::use_package( "shinycssloaders" ) 
 usethis::use_package( "openxlsx" )
+usethis::use_package( "jsonlite" )
+usethis::use_package( "rlang" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/
