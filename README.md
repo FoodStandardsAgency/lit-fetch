@@ -10,10 +10,4 @@ basic cleaning and filtering, to automate time consuming tasks.
 Folder `lfshiny` contains the shiny app (under development) 
 deployed at https://foodstandards.shinyapps.io/litfetch
 
-Folder `working` contains work in progress on API call functions
-
-Current stage of the work: understanding the APIs and how to call them. 
-
-To call the Springer and ScienceDirect APIs you will need to create an .Renviron
-file with your API keys.
-
+Folder `working` contains rough work in progress code 

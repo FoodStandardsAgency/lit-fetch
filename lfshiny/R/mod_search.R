@@ -40,7 +40,7 @@ mod_search_ui <- function(id){
     ),
     checkboxGroupInput(ns("whichdb"),
                        "Select databases to search",
-                       choices = c("Pubmed", "Springer", "Crossref", "PLOS ONE"),
+                       choices = c("Pubmed", "Springer"),
                        inline = T),
     checkboxGroupInput(ns("otherchoices"),
                        "Additional search restrictions",

@@ -6,6 +6,11 @@
 \usage{
 fetch_pm(pagenumber, historyinfo)
 }
+\arguments{
+\item{pagenumber}{number of page to retrieve}
+
+\item{historyinfo}{web environment info returned from search_pm()}
+}
 \value{
 tibble with info fields on up to 500 articles
 }

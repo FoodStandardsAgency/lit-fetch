@@ -16,9 +16,10 @@ mod_preview_ui <- function(id){
     ),
     checkboxGroupInput(ns("dlopts"),
                        "Fields to include",
-                       choices = c("DOI", "Title", "Abstract", "URL", "Journal", "Author"),
-                       selected = c("DOI", "Title", "Abstract", "URL"),
+                       choices = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "publication status", "url"),
+                       selected = c("doi", "title", "abstract", "url"),
                        inline = T),
+    textOutput(ns("options")),
     DT::dataTableOutput(ns("articletable"))
  
   )
@@ -30,10 +31,16 @@ mod_preview_ui <- function(id){
 mod_preview_server <- function(input, output, session, data){
   ns <- session$ns
   
+  fields <- reactive({ input$dlopts })
+  
+  output$options <- renderText({ paste0(input$dlopts) })
+  
   output$articletable <- DT::renderDataTable({
-    
-    data()
-    
+
+    data() %>%
+      mutate(url = paste0("https://dx.doi.org/",doi)) %>%
+      select( fields() )
+
   })
  
 }
