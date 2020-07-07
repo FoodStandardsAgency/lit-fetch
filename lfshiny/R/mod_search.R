@@ -19,7 +19,8 @@ mod_search_ui <- function(id){
     column(6,
            wellPanel(
            p("Boolean searches accepted, using brackets if required, and surrounding exact terms 
-        with quote marks, e.g. aflatoxin AND (maize OR \"aspergillus parasiticus\")")
+        with quote marks, e.g. aflatoxin AND (maize OR \"aspergillus parasiticus\"). All 
+             search terms are wildcards unless surrounded by quotes.")
            )
     )
     ),
@@ -33,18 +34,24 @@ mod_search_ui <- function(id){
     ),
     column(6,
            wellPanel(
-           p("This is the date articles were added to the database (may precede 
-             publication date)")
+           p("For Springer articles, this is the date articles were added to the 
+           database (may precede publication date)")
            )
            )
     ),
     checkboxGroupInput(ns("whichdb"),
                        "Select databases to search",
                        choices = c("Pubmed", "Springer"),
+                       selected = c("Pubmed", "Springer"),
+                       inline = T),
+    checkboxGroupInput(ns("pubchoice"),
+                       "Publication type",
+                       choices = c("Review", "Journal article", "All other types"),
+                       selected = c("Review", "Journal article", "All other types"),
                        inline = T),
     checkboxGroupInput(ns("otherchoices"),
                        "Additional search restrictions",
-                       choices = c("Journal articles only", "Published only"),
+                       choices = c("English language only"),
                        inline = T),
     actionButton(ns("searchnow"),
                  "Search"),
