@@ -18,7 +18,7 @@ get_pm(
 \item{enddate}{to date appeared online (default = today), format YYYY/MM/DD}
 }
 \value{
-a tibble of results
+a tibble of results (8 cols if articles present, 0 if not)
 }
 \description{
 Pubmed all steps
