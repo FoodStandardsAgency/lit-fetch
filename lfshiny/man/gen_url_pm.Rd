@@ -17,6 +17,9 @@ gen_url_pm(
 
 \item{enddate}{to date appeared online (default = today), format YYYY/MM/DD}
 }
+\value{
+string, a URL to search pubmed for a particular term between two given dates
+}
 \description{
 Generates URL for pubmed API
 }

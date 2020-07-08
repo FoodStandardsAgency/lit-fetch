@@ -72,7 +72,7 @@ xml2tib <- function(xmlnode, nodenames) {
 #' @param enddate to date appeared online (default = today), format YYYY/MM/DD
 #' @import dplyr
 #' @import stringr
-#' @retun A URL to search pubmed for a particular term between two given dates
+#' @return string, a URL to search pubmed for a particular term between two given dates
 #' 
 gen_url_pm <- function(searchterm, 
                          startdate=as.character(Sys.Date()-365, "%Y/%m/%d"), 
@@ -146,7 +146,8 @@ fetch_pm <- function(pagenumber, historyinfo) {
                               PubDate Year,
                               PubDate Month,
                               PubDate Day,
-                              Author LastName")  %>% spread(field, value))
+                              Author LastName, 
+                              Language")  %>% spread(field, value))
   
   return(articleinfo)
 }
@@ -166,37 +167,49 @@ get_pm <- function(searchterm,
 
   search <- search_pm(url)
   
-  searchcount <- ifelse(search$count == 0, 1, search$count)
+  if(as.numeric(search$count) > 0 ) {
 
-  pages <- seq(1, searchcount, 500)
-
-  results <- map_df(pages, fetch_pm, search) %>% 
-    filter(!is.na(Year)) %>% 
-    mutate_at(vars(Day, Month), ~if_else(is.na(.), "01", .)) %>% 
-    mutate(Month = case_when(
-      Month == "Jan" ~ "01",
-      Month == "Feb" ~ "01",
-      Month == "Mar" ~ "01",
-      Month == "Apr" ~ "04",
-      Month == "May" ~ "01",
-      Month == "Jun" ~ "01",
-      Month == "Jul" ~ "01",
-      Month == "Aug" ~ "01",
-      Month == "Sep" ~ "01",
-      Month == "Oct" ~ "01",
-      Month == "Nov" ~ "01",
-      Month == "Dec" ~ "01",
-      TRUE ~ Month
-  )) %>% 
-    mutate(pdate = paste0(Year,"-",Month,"-",Day)) %>% 
-    select(doi = ArticleId,
-           title = ArticleTitle,
-           abstract = Abstract,
-           author = LastName,
-           `publication date` = pdate,
-           `publication type` = PublicationType,
-           `publication status` = PublicationStatus,
-           journal = Title)
+    pages <- seq(1, searchcount, 500)
+  
+    results <- map_df(pages, fetch_pm, search) %>%
+      filter(!is.na(Year)) %>%
+      mutate_at(vars(Day, Month), ~if_else(is.na(.), "01", .)) %>%
+      mutate(Month = case_when(
+        Month == "Jan" ~ "01",
+        Month == "Feb" ~ "01",
+        Month == "Mar" ~ "01",
+        Month == "Apr" ~ "04",
+        Month == "May" ~ "01",
+        Month == "Jun" ~ "01",
+        Month == "Jul" ~ "01",
+        Month == "Aug" ~ "01",
+        Month == "Sep" ~ "01",
+        Month == "Oct" ~ "01",
+        Month == "Nov" ~ "01",
+        Month == "Dec" ~ "01",
+        TRUE ~ Month
+    )) %>%
+      mutate(pdate = paste0(Year,"-",Month,"-",Day)) %>%
+      mutate(type = "") %>%
+      mutate(type = if_else(grepl("^Journal Article ;|; Journal Article ;|; Journal Article$|^Journal Article$", PublicationType), "journal article", type)) %>%
+      mutate(type = if_else(grepl("^Review ;|; Review ;| ; Review$|^Review$", PublicationType), "review", type)) %>%
+      mutate(type = if_else(type == "", "other", type)) %>%
+      mutate(url = paste0("https://dx.doi.org/",ArticleId)) %>% 
+      select(doi = ArticleId,
+             title = ArticleTitle,
+             abstract = Abstract,
+             author = LastName,
+             `publication date` = pdate,
+             `publication type` = type,
+             journal = Title,
+             lang = Language, 
+             url)
+    
+  } else {
+    
+    results <- tibble()
+    
+  }
   
   return(results)
   
@@ -213,7 +226,7 @@ get_pm <- function(searchterm,
 gen_url_springer <- function(searchterm,
                              datefrom = as.character(Sys.Date() - 365),
                              dateto = as.character(Sys.Date()),
-                             apikey) {
+                             apikey = Sys.getenv("SPRINGER_API")) {
   
   baseurl <- "http://api.springernature.com/meta/v2/json?"
 
@@ -225,7 +238,7 @@ gen_url_springer <- function(searchterm,
   return(searchurl)
 }
 
-#' Fetch results from Springer API
+#' Springer fetch 1 page (up to 100 per page)
 #' 
 #' @param searchurl URL with the search query
 #' @param searchterm original search term (for final filtering)
@@ -234,8 +247,38 @@ gen_url_springer <- function(searchterm,
 #' @import purrr
 #' @import httr
 #' 
-get_results_springer <- function(searchurl, searchterm) {
+get_results_springer <- function(page, searchurl) {
+
+    pagurl <- paste0(searchurl,"&p=100&s=",page)
+    
+    fullspring <- GET(pagurl) %>% 
+      content(., "text") %>% 
+      fromJSON() %>% 
+      .$records %>% 
+      as_tibble() %>% 
+      select(url, title, creators, publicationName, doi, publicationDate, publicationType,
+             genre, abstract) %>% 
+      mutate_at(vars(url, creators, genre), ~as.list(.))
+    
+    return(fullspring)
+  }
   
+  
+#' Springer all steps
+#'  
+#' @param searchterm text of query
+#' @param datefrom earliest date added
+#' @param dateto latest date added
+#' @param apikey Springer API key
+#' @retun a tibble with 11 columns    
+
+get_springer <- function(searchterm,
+                         datefrom = as.character(Sys.Date() - 365),
+                         dateto = as.character(Sys.Date()),
+                         apikey = Sys.getenv("SPRINGER_API"))  {
+  
+  searchurl <- gen_url_springer(searchterm)
+
   total <- GET(searchurl) %>% 
     content(., "text") %>% 
     fromJSON() %>% 
@@ -245,24 +288,62 @@ get_results_springer <- function(searchurl, searchterm) {
   
   pages <- seq(1, total, 100)
   
-  # define function to fetch info from a page
-  
-  getresults <- function(page, searchurl) {
-    
-    url <- paste0(searchurl,"&p=100&s=",page)
-    
-    GET(url) %>% 
-      content(., "text") %>% 
-      fromJSON() %>% 
-      .$records %>% 
-      as_tibble() %>% 
-      select(doi, title, abstract)
-  }
-  
   # map across pages
   
-  result <- map_df(pages, getresults, searchurl = searchurl)
-  
+  result <- map_df(pages, get_results_springer, searchurl = searchurl)
+
+  # clean
+    
+    urls <- result %>% 
+      group_by(doi) %>% 
+      unnest(cols = "url") %>% 
+      filter(format == "html") %>% 
+      ungroup() %>% 
+      select(doi, url = value) 
+
+    authors <- result %>% 
+      group_by(doi) %>%
+      unnest(cols = "creators") %>%
+      mutate(createlist = paste0(creator, collapse = " ; ")) %>%
+      select(-creator) %>%
+      ungroup() %>%
+      unique() %>%
+      select(doi, author = createlist)
+
+    types <- result %>% 
+      group_by(doi) %>%
+      select(doi, publicationType, genre) %>%
+      unnest(cols = "genre") %>%
+      mutate(genre = paste0(genre, collapse = " ; ")) %>%
+      unique() %>%
+      mutate(type = "") %>%
+      mutate(type = if_else(publicationType == "Journal" &
+                              grepl("original( )?paper|^article$|original( )?article|research( )?article|^research$|research( )?paper|original( )?contribution",
+                                    genre, ignore.case = T),
+                            "journal article", type)) %>%
+      mutate(type = if_else(publicationType == "Journal" &
+                              grepl("review( )?paper|review( )?article|invited( )review|^review$",
+                                    genre, ignore.case = T),
+                            "review", type)) %>%
+      mutate(type = if_else(type == "", "other", type)) %>%
+      select(-genre) %>%
+      unique() %>%
+      ungroup()
+    
+    result <- result %>%
+      left_join(urls, by = "doi") %>%
+       left_join(authors, by = "doi") %>%
+       left_join(types, by = "doi") %>%
+       select(doi,
+              title,
+              abstract,
+              author,
+              `publication date` = publicationDate,
+              `publication type` = type,
+              journal = publicationName,
+              url = url.y) %>% 
+      mutate(source = "Springer")
+    
   # filter to articles with desired terms in title and abstract
   
   filterbysearch <- function(searchterm, data) {

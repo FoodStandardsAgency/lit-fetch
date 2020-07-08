@@ -2,9 +2,9 @@
 % Please edit documentation in R/searches.R
 \name{get_results_springer}
 \alias{get_results_springer}
-\title{Fetch results from Springer API}
+\title{Springer fetch 1 page (up to 100 per page)}
 \usage{
-get_results_springer(searchurl, searchterm)
+get_results_springer(page, searchurl)
 }
 \arguments{
 \item{searchurl}{URL with the search query}
@@ -12,5 +12,5 @@ get_results_springer(searchurl, searchterm)
 \item{searchterm}{original search term (for final filtering)}
 }
 \description{
-Fetch results from Springer API
+Springer fetch 1 page (up to 100 per page)
 }

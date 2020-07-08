@@ -8,6 +8,7 @@
 #'
 #' @importFrom shiny NS tagList 
 #' @importFrom shinycssloaders withSpinner
+#' @import dplyr
 #' 
 mod_search_ui <- function(id){
   ns <- NS(id)
@@ -72,7 +73,10 @@ mod_search_server <- function(input, output, session){
   searchterm <- reactive({ input$searchterm })
   
   returned <- eventReactive(input$searchnow,{
-    get_pm(searchterm()) 
+    pm <- get_pm(searchterm())
+    pmdoi <- pm %>% pull(doi)
+    spring <- get_springer(searchterm()) %>% filter(!doi %in% pmdoi)
+    bind_rows(pm, spring)
   })
   
   output$nrow <- renderText({
