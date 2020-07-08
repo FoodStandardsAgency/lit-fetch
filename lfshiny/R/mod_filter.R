@@ -62,19 +62,27 @@ mod_filter_server <- function(input, output, session, data){
     
     excl <- paste0(input$mustexclude,"|",input$mustexclude2,"|",input$mustexclude3) %>% 
       str_replace(., "[|]+$", "")
+    
+    if(nrow(data()) > 0) {  
+    
+      f1 <- data() %>% 
+        filter_at(vars(title, abstract), any_vars(grepl(iterm1, ., ignore.case = T))) %>% 
+        filter_at(vars(title, abstract), any_vars(grepl(iterm2, ., ignore.case = T))) %>% 
+        filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) 
       
+      if(excl == "") {
+        f1
+      } else {
+        f1 %>% 
+          filter_at(vars(title, abstract), all_vars(!grepl(excl, ., ignore.case = T))) 
+      }
     
-    f1 <- data() %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm1, ., ignore.case = T))) %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm2, ., ignore.case = T))) %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) 
-    
-    if(excl == "") {
-      f1
     } else {
-      f1 %>% 
-        filter_at(vars(title, abstract), all_vars(!grepl(excl, ., ignore.case = T))) 
+      
+      data()
+      
     }
+
     
   })
   

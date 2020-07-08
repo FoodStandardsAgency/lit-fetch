@@ -72,7 +72,7 @@ xml2tib <- function(xmlnode, nodenames) {
 #' @param enddate to date appeared online (default = today), format YYYY/MM/DD
 #' @import dplyr
 #' @import stringr
-#' @retun A URL to search pubmed for a particular term between two given dates
+#' @return A URL to search pubmed for a particular term between two given dates
 #' 
 gen_url_pm <- function(searchterm, 
                          startdate=as.character(Sys.Date()-365, "%Y/%m/%d"), 
@@ -156,7 +156,7 @@ fetch_pm <- function(pagenumber, historyinfo) {
 #' @param searchterm text of the query
 #' @param startdate from date appeared online (default = 1 year ago today), format YYYY/MM/DD
 #' @param enddate to date appeared online (default = today), format YYYY/MM/DD
-#' @return a tibble of results
+#' @return a tibble of results (8 cols if articles present, 0 if not)
 #' 
 get_pm <- function(searchterm, 
                    startdate=as.character(Sys.Date()-365, "%Y/%m/%d"), 
@@ -166,37 +166,43 @@ get_pm <- function(searchterm,
 
   search <- search_pm(url)
   
-  searchcount <- ifelse(search$count == 0, 1, search$count)
+  if(as.numeric(search$count) > 0) {
 
-  pages <- seq(1, searchcount, 500)
-
-  results <- map_df(pages, fetch_pm, search) %>% 
-    filter(!is.na(Year)) %>% 
-    mutate_at(vars(Day, Month), ~if_else(is.na(.), "01", .)) %>% 
-    mutate(Month = case_when(
-      Month == "Jan" ~ "01",
-      Month == "Feb" ~ "01",
-      Month == "Mar" ~ "01",
-      Month == "Apr" ~ "04",
-      Month == "May" ~ "01",
-      Month == "Jun" ~ "01",
-      Month == "Jul" ~ "01",
-      Month == "Aug" ~ "01",
-      Month == "Sep" ~ "01",
-      Month == "Oct" ~ "01",
-      Month == "Nov" ~ "01",
-      Month == "Dec" ~ "01",
-      TRUE ~ Month
-  )) %>% 
-    mutate(pdate = paste0(Year,"-",Month,"-",Day)) %>% 
-    select(doi = ArticleId,
-           title = ArticleTitle,
-           abstract = Abstract,
-           author = LastName,
-           `publication date` = pdate,
-           `publication type` = PublicationType,
-           `publication status` = PublicationStatus,
-           journal = Title)
+    pages <- seq(0, as.numeric(search$count), 500)
+  
+    results <- map_df(pages, fetch_pm, search) %>% 
+      filter(!is.na(Year)) %>% 
+      mutate_at(vars(Day, Month), ~if_else(is.na(.), "01", .)) %>% 
+      mutate(Month = case_when(
+        Month == "Jan" ~ "01",
+        Month == "Feb" ~ "01",
+        Month == "Mar" ~ "01",
+        Month == "Apr" ~ "04",
+        Month == "May" ~ "01",
+        Month == "Jun" ~ "01",
+        Month == "Jul" ~ "01",
+        Month == "Aug" ~ "01",
+        Month == "Sep" ~ "01",
+        Month == "Oct" ~ "01",
+        Month == "Nov" ~ "01",
+        Month == "Dec" ~ "01",
+        TRUE ~ Month
+    )) %>% 
+      mutate(pdate = paste0(Year,"-",Month,"-",Day)) %>% 
+      select(doi = ArticleId,
+             title = ArticleTitle,
+             abstract = Abstract,
+             author = LastName,
+             `publication date` = pdate,
+             `publication type` = PublicationType,
+             `publication status` = PublicationStatus,
+             journal = Title)
+  
+  } else {
+    
+    results <- tibble()
+    
+  }
   
   return(results)
   

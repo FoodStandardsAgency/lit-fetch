@@ -1,5 +1,7 @@
 context("searches")
 
+# testing a search that should return results
+
 searchtest <- "allergy AND (soy OR \"peanut butter\")"
 
 test_that("search to filter", {
@@ -43,5 +45,19 @@ test_that("pubmed fetch", {
   
   expect_lte(nrow(pmfetch), as.numeric(pmsearch$count))
   expect_is(pmfetch, "data.frame")
+  
+})
+
+# testing a search that should (safely) return zero results
+
+zerosearch <- "ahgodifgbhsjhebvhujfhdg"
+
+zeropm <- get_pm(zerosearch)
+
+test_that("pubmed safely returns zero searches", {
+  
+  expect_is(zeropm, "tbl")
+  expect_equal(nrow(zeropm), 0)
+  expect_equal(ncol(zeropm), 0)
   
 })
