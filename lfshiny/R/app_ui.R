@@ -53,7 +53,7 @@ app_ui <- function(request) {
 
                                 mod_search_ui("search_ui_1"),
                               ),
-                              h3("Step 2: Filter (term in title or abstract)"),
+                              h3("Step 2: Filter"),
                               wellPanel(
 
                                 mod_filter_ui("filter_ui_1")

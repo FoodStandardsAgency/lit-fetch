@@ -11,11 +11,21 @@
 mod_filter_ui <- function(id){
   ns <- NS(id)
   tagList(
-    p(strong("INCLUDE")),
+    checkboxGroupInput(ns("pubchoice"),
+                       "Publication type",
+                       choiceNames = c("Review", "Journal article", "All other types"),
+                       choiceValues = c("review", "journal article", "other"),
+                       selected = c("review", "journal article", "other"),
+                       inline = T),
+    checkboxGroupInput(ns("otherchoices"),
+                       "Additional search restrictions",
+                       choiceNames = c("English language only"),
+                       choiceValues = c("english"),
+                       inline = T),
+    p(strong("Words to INCLUDE in title or abstract")),
     wellPanel(
       p("Use OR within text fields if required - each field acts as parentheses")
       ),
-    br(),
     fluidRow(column(3,textInput(ns("mustinclude"), "Must include")),
              column(1, strong("AND")),
              column(3, textInput(ns("mustinclude2"), "Must include")),
@@ -23,7 +33,7 @@ mod_filter_ui <- function(id){
              column(3, textInput(ns("mustinclude3"), "Must include"))
     ),
     br(),
-    p(strong("EXCLUDE")),
+    p(strong("Words to EXCLUDE from title and abstract")),
     fluidRow(column(3,textInput(ns("mustexclude"), "Must exclude")),
              column(1, strong("AND")),
              column(3,textInput(ns("mustexclude2"), "Must exclude")),
@@ -62,13 +72,26 @@ mod_filter_server <- function(input, output, session, data){
     
     excl <- paste0(input$mustexclude,"|",input$mustexclude2,"|",input$mustexclude3) %>% 
       str_replace(., "[|]+$", "")
+    
+    types <- paste0(input$pubchoice, collapse = "|")
       
     if(nrow(data()) > 0) {
       
     f1 <- data() %>% 
       filter_at(vars(title, abstract), any_vars(grepl(iterm1, ., ignore.case = T))) %>% 
       filter_at(vars(title, abstract), any_vars(grepl(iterm2, ., ignore.case = T))) %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) 
+      filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) %>% 
+      filter(grepl(types, `publication type`))
+    
+    if("english" %in% input$otherchoices) {
+      
+      f1 <- f1 %>% filter(lang == "eng" | is.na(lang))
+      
+    } else {
+      
+      f1 <- f1
+      
+    }
     
     if(excl == "") {
       f1
