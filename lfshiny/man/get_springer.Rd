@@ -20,6 +20,9 @@ get_springer(
 
 \item{apikey}{Springer API key}
 }
+\value{
+a tibble with 11 columns
+}
 \description{
 Springer all steps
 }

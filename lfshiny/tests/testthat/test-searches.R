@@ -61,3 +61,13 @@ test_that("pubmed safely returns zero searches", {
   expect_equal(ncol(zeropm), 0)
   
 })
+
+zerospringer <- get_springer(zerosearch)
+
+test_that("springer safely returns zero searches", {
+  
+  expect_is(zerospringer, "tbl")
+  expect_equal(nrow(zerospringer), 0)
+  expect_equal(ncol(zerospringer), 0)
+  
+})

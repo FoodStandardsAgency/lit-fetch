@@ -74,8 +74,17 @@ mod_search_server <- function(input, output, session){
   
   returned <- eventReactive(input$searchnow,{
     pm <- get_pm(searchterm())
-    pmdoi <- pm %>% pull(doi)
-    spring <- get_springer(searchterm()) %>% filter(!doi %in% pmdoi)
+    if(nrow(pm) > 0) {
+      pmdoi <- pm %>% pull(doi)
+    } else {
+      pmdoi <- character(0)
+    }
+    spring <- get_springer(searchterm())
+    if(nrow(spring) > 0) {
+      spring <- spring %>% filter(!doi %in% pmdoi)
+    } else {
+      spring <- spring
+    }
     bind_rows(pm, spring)
   })
   

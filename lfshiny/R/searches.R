@@ -169,7 +169,7 @@ get_pm <- function(searchterm,
   
   if(as.numeric(search$count) > 0 ) {
 
-    pages <- seq(1, searchcount, 500)
+    pages <- seq(0, search$count, 500)
   
     results <- map_df(pages, fetch_pm, search) %>%
       filter(!is.na(Year)) %>%
@@ -270,7 +270,7 @@ get_results_springer <- function(page, searchurl) {
 #' @param datefrom earliest date added
 #' @param dateto latest date added
 #' @param apikey Springer API key
-#' @retun a tibble with 11 columns    
+#' @return a tibble with 11 columns    
 
 get_springer <- function(searchterm,
                          datefrom = as.character(Sys.Date() - 365),
@@ -284,80 +284,88 @@ get_springer <- function(searchterm,
     fromJSON() %>% 
     .$result %>% .$total 
   
-  # paginate
+  if(as.numeric(total) > 0) {
   
-  pages <- seq(1, total, 100)
+    # paginate
+    
+    pages <- seq(1, total, 100)
+    
+    # map across pages
+    
+    result <- map_df(pages, get_results_springer, searchurl = searchurl)
   
-  # map across pages
+    # clean
+      
+      urls <- result %>% 
+        group_by(doi) %>% 
+        unnest(cols = "url") %>% 
+        filter(format == "html") %>% 
+        ungroup() %>% 
+        select(doi, url = value) 
   
-  result <- map_df(pages, get_results_springer, searchurl = searchurl)
-
-  # clean
-    
-    urls <- result %>% 
-      group_by(doi) %>% 
-      unnest(cols = "url") %>% 
-      filter(format == "html") %>% 
-      ungroup() %>% 
-      select(doi, url = value) 
-
-    authors <- result %>% 
-      group_by(doi) %>%
-      unnest(cols = "creators") %>%
-      mutate(createlist = paste0(creator, collapse = " ; ")) %>%
-      select(-creator) %>%
-      ungroup() %>%
-      unique() %>%
-      select(doi, author = createlist)
-
-    types <- result %>% 
-      group_by(doi) %>%
-      select(doi, publicationType, genre) %>%
-      unnest(cols = "genre") %>%
-      mutate(genre = paste0(genre, collapse = " ; ")) %>%
-      unique() %>%
-      mutate(type = "") %>%
-      mutate(type = if_else(publicationType == "Journal" &
-                              grepl("original( )?paper|^article$|original( )?article|research( )?article|^research$|research( )?paper|original( )?contribution",
-                                    genre, ignore.case = T),
-                            "journal article", type)) %>%
-      mutate(type = if_else(publicationType == "Journal" &
-                              grepl("review( )?paper|review( )?article|invited( )review|^review$",
-                                    genre, ignore.case = T),
-                            "review", type)) %>%
-      mutate(type = if_else(type == "", "other", type)) %>%
-      select(-genre) %>%
-      unique() %>%
-      ungroup()
-    
-    result <- result %>%
-      left_join(urls, by = "doi") %>%
-       left_join(authors, by = "doi") %>%
-       left_join(types, by = "doi") %>%
-       select(doi,
-              title,
-              abstract,
-              author,
-              `publication date` = publicationDate,
-              `publication type` = type,
-              journal = publicationName,
-              url = url.y) %>% 
-      mutate(source = "Springer")
-    
-  # filter to articles with desired terms in title and abstract
+      authors <- result %>% 
+        group_by(doi) %>%
+        unnest(cols = "creators") %>%
+        mutate(createlist = paste0(creator, collapse = " ; ")) %>%
+        select(-creator) %>%
+        ungroup() %>%
+        unique() %>%
+        select(doi, author = createlist)
   
-  filterbysearch <- function(searchterm, data) {
+      types <- result %>% 
+        group_by(doi) %>%
+        select(doi, publicationType, genre) %>%
+        unnest(cols = "genre") %>%
+        mutate(genre = paste0(genre, collapse = " ; ")) %>%
+        unique() %>%
+        mutate(type = "") %>%
+        mutate(type = if_else(publicationType == "Journal" &
+                                grepl("original( )?paper|^article$|original( )?article|research( )?article|^research$|research( )?paper|original( )?contribution",
+                                      genre, ignore.case = T),
+                              "journal article", type)) %>%
+        mutate(type = if_else(publicationType == "Journal" &
+                                grepl("review( )?paper|review( )?article|invited( )review|^review$",
+                                      genre, ignore.case = T),
+                              "review", type)) %>%
+        mutate(type = if_else(type == "", "other", type)) %>%
+        select(-genre) %>%
+        unique() %>%
+        ungroup()
+      
+      result <- result %>%
+        left_join(urls, by = "doi") %>%
+         left_join(authors, by = "doi") %>%
+         left_join(types, by = "doi") %>%
+         select(doi,
+                title,
+                abstract,
+                author,
+                `publication date` = publicationDate,
+                `publication type` = type,
+                journal = publicationName,
+                url = url.y) %>% 
+        mutate(source = "Springer")
+      
+    # filter to articles with desired terms in title and abstract
     
-    filterterm <- search2filter(searchterm)
+    filterbysearch <- function(searchterm, data) {
+      
+      filterterm <- search2filter(searchterm)
+      
+      func_call <- rlang::parse_expr(filterterm)
+      
+      data %>% 
+        filter_at(vars(title, abstract), any_vars(!!func_call))
+      
+    }
+  
+    fresult <- filterbysearch(searchterm, result)
     
-    func_call <- rlang::parse_expr(filterterm)
+  } else {
     
-    data %>% 
-      filter_at(vars(title, abstract), any_vars(!!func_call))
+    fresult <- tibble()
     
   }
-
-  fresult <- filterbysearch(searchterm, result)
   
   return(fresult)
   
