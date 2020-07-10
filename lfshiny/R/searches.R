@@ -4,34 +4,6 @@
 
 # Generics
 
-#' Turn a search term into a dplyr filter condition
-#' 
-#' @param searchterm Search term (including AND, OR, NOT, quotes and brackets where required)
-#' @import stringr
-#' @import purrr
-#' @import dplyr
-#' @return A string to pass to a dplyr filter
-#' 
-search2filter <- function(searchterm) {
-  
-  terms <- searchterm %>% 
-    str_split(., " AND | OR ") %>% 
-    .[[1]] %>% 
-    str_remove_all(., "[\\(\\)\"]") %>% 
-    map_chr(., str_squish) %>% 
-    str_c(., collapse = "|") %>% 
-    paste0("(",.,")")
-  
-  filterterm <- searchterm %>% 
-    str_remove_all(., "\"") %>% 
-    str_replace_all(., (terms), "grepl(\"\\1\", ., ignore.case = T)") %>% 
-    str_replace_all(., " AND ", " & ") %>% 
-    str_replace_all(., " OR ", " | ") 
-  
-  return(filterterm)
-  
-}
-
 #' Pick out nodes from xml and turn it into a tibble
 #' 
 #' @param xmlnode an xml node containing nodes
@@ -230,7 +202,19 @@ gen_url_springer <- function(searchterm,
   
   baseurl <- "http://api.springernature.com/meta/v2/json?"
 
-  term <- stringr::str_replace_all(stringr::str_replace_all(searchterm, "\"", "%22"), " ", "+")
+  terms <- searchterm %>% 
+    str_split(., " AND | OR | NOT ") %>% 
+    .[[1]] %>% 
+    str_remove_all(., "[\\(\\)]") %>% 
+    str_replace_all(., "\"", "%22") %>%
+    map_chr(., str_squish) %>% 
+    str_c(., collapse = "|") %>% 
+    paste0("(",.,")")
+  
+  term <- searchterm %>%
+    str_replace_all(., "\"", "%22") %>%
+    str_replace_all(., terms, "title:\\1") %>% 
+    str_replace_all(., " ", "+") 
   
   searchurl <- paste0(baseurl,
                       "q=",term,"+onlinedatefrom:",datefrom,"+onlinedateto:",dateto,
@@ -345,29 +329,15 @@ get_springer <- function(searchterm,
                 journal = publicationName,
                 url = url.y) %>% 
         mutate(source = "Springer")
-      
-    # filter to articles with desired terms in title and abstract
-    
-    filterbysearch <- function(searchterm, data) {
-      
-      filterterm <- search2filter(searchterm)
-      
-      func_call <- rlang::parse_expr(filterterm)
-      
-      data %>% 
-        filter_at(vars(title, abstract), any_vars(!!func_call))
-      
-    }
+
   
-    fresult <- filterbysearch(searchterm, result)
-    
-  } else {
-    
-    fresult <- tibble()
-    
-  }
+   } else {
   
-  return(fresult)
+     result <- tibble()
+  
+   }
+  
+   return(result)
   
 }
 
