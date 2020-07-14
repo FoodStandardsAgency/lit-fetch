@@ -10,41 +10,38 @@
 mod_preview_ui <- function(id){
   ns <- NS(id)
   tagList(
-    wellPanel(
-      p("To preview unfiltered search results, leave filter fields blank 
-        and hit 'Filter'")
-    ),
     checkboxGroupInput(ns("dlopts"),
                        "Fields to include",
                        choices = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url"),
                        selected = c("doi", "title", "abstract", "url"),
                        inline = T),
     #textOutput(ns("options")),
-    DT::dataTableOutput(ns("articletable"))
- 
+    DT::dataTableOutput(ns("previewarticles"))
   )
 }
     
 #' preview Server Function
 #'
 #' @noRd 
-mod_preview_server <- function(input, output, session, data){
+mod_preview_server <- function(input, output, session, data, incorex){
   ns <- session$ns
   
   fields <- reactive({ input$dlopts })
   
   #output$options <- renderText({ paste0(input$dlopts) })
   
-  output$articletable <- DT::renderDataTable({
+  output$previewarticles <- DT::renderDataTable({
     
-    if(nrow(data()) > 0) {
+    tabledata <- data()[[incorex]]
+    
+    if(nrow(tabledata) > 0) {
 
-      data() %>%
+      tabledata %>%
         select( fields() )
       
     } else {
       
-      data()
+      data()[[incorex]]
       
     }
 

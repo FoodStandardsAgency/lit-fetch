@@ -77,40 +77,50 @@ mod_filter_server <- function(input, output, session, data){
       
     if(nrow(data()) > 0) {
       
-    f1 <- data() %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm1, ., ignore.case = T))) %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm2, ., ignore.case = T))) %>% 
-      filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) %>% 
-      filter(grepl(types, `publication type`))
-    
-    if("english" %in% input$otherchoices) {
+      include <- data() %>% 
+        filter_at(vars(title, abstract), any_vars(grepl(iterm1, ., ignore.case = T))) %>% 
+        filter_at(vars(title, abstract), any_vars(grepl(iterm2, ., ignore.case = T))) %>% 
+        filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) %>% 
+        filter(grepl(types, `publication type`))
       
-      f1 <- f1 %>% filter(lang == "eng" | is.na(lang))
+      if("english" %in% input$otherchoices) {
+        
+        include <- include %>% filter(lang == "eng" | is.na(lang))
+        
+      } else {
+        
+        include <- include
+        
+      }
       
-    } else {
-      
-      f1 <- f1
-      
+      if(excl == "") {
+        
+        include <- include
+        
+      } else {
+        
+        include <- include %>% 
+          filter_at(vars(title, abstract), all_vars(!grepl(excl, ., ignore.case = T))) 
     }
     
-    if(excl == "") {
-      f1
-    } else {
-      f1 %>% 
-        filter_at(vars(title, abstract), all_vars(!grepl(excl, ., ignore.case = T))) 
-    }
     } else {
       
-      data()
+      include <- data()
       
     }
+    
+    exclude <- data() %>% anti_join(include) %>% mutate(exclude = 1)
+    
+    fdata <- list(include, exclude) 
+    
+    return(fdata)
     
   })
   
   output$nrow2 <- renderText({
     validate(
-      need(nrow(filterdata()) != 0, "Your filters have excluded all of the articles"))
-    paste("There are", nrow(filterdata()), "articles in your filtered data.")
+      need(nrow(filterdata()[[1]]) != 0, "Your filters have excluded all of the articles"))
+    paste("There are", nrow(filterdata()[[1]]), "articles in your filtered data.")
   })
   
   return(list(filters, filterdata))

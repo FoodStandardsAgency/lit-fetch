@@ -8,6 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 #' @import openxlsx
+#' @import dplyr
 #' 
 mod_download_ui <- function(id){
   ns <- NS(id)
@@ -38,10 +39,12 @@ mod_download_server <- function(input, output, session, data, searchstring, filt
       
       wb <- createWorkbook()
       addWorksheet(wb, "Search details")
-      addWorksheet(wb, "Articles")
+      addWorksheet(wb, "Included articles")
+      addWorksheet(wb, "Excluded articles")
 
       writeData(wb, "Search details", searchdetail())
-      writeData(wb, "Articles", articles())
+      writeData(wb, "Included articles", articles()[[1]])
+      writeData(wb, "Excluded articles", articles()[[2]])
       
       saveWorkbook(wb, file)
       

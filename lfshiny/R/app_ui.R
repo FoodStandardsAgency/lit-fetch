@@ -60,8 +60,12 @@ app_ui <- function(request) {
                               ),
                               h3("Step 3: Preview"),
                               wellPanel(
-                                
-                                mod_preview_ui("preview_ui_1")
+                                p("To preview unfiltered search results, leave filter fields blank 
+                                  and hit 'Filter'"),
+                                tabsetPanel(
+                                  tabPanel("Included articles", mod_preview_ui("preview_ui_1")),
+                                  tabPanel("Excluded articles", mod_preview_ui("preview_ui_2"))
+                                )
                               ),
                               h3("Step 4: Download"),
                               wellPanel(
