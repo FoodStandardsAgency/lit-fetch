@@ -4,12 +4,6 @@ context("searches")
 
 searchtest <- "allergy AND (soy OR \"peanut butter\")"
 
-test_that("search to filter", {
-  filterterm <- search2filter(searchtest)
-  expect_equal(filterterm,
-               "grepl(\"allergy\", ., ignore.case = T) & (grepl(\"soy\", ., ignore.case = T) | grepl(\"peanut butter\", ., ignore.case = T))")
-})
-
 test_that("xml to tibble", {
   xtib <- xml2tib(xml2::read_xml("testxml.xml"), "ArticleTitle, Author LastName")
   expect_is(xtib, "tbl")

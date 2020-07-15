@@ -225,7 +225,7 @@ gen_url_springer <- function(searchterm,
 #' Springer fetch 1 page (up to 100 per page)
 #' 
 #' @param searchurl URL with the search query
-#' @param searchterm original search term (for final filtering)
+#' @param page page to fetch
 #' @import dplyr
 #' @importFrom jsonlite fromJSON
 #' @import purrr

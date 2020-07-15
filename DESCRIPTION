@@ -3,7 +3,7 @@ Title: Lit fetch app
 Version: 0.0.0.9000
 Authors@R: person('Helen', 'Graham', email = 'datascience@food.gov.uk', role = c('cre', 'aut'))
 Description: App to search, filter and download literature.
-License: What license is it under?
+License: MIT
 Imports: 
     config,
     golem,
