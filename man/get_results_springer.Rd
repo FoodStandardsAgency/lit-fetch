@@ -7,9 +7,9 @@
 get_results_springer(page, searchurl)
 }
 \arguments{
-\item{searchurl}{URL with the search query}
+\item{page}{page to fetch}
 
-\item{searchterm}{original search term (for final filtering)}
+\item{searchurl}{URL with the search query}
 }
 \description{
 Springer fetch 1 page (up to 100 per page)

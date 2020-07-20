@@ -42,8 +42,8 @@ mod_search_ui <- function(id){
     ),
     checkboxGroupInput(ns("whichdb"),
                        "Select databases to search",
-                       choices = c("Pubmed", "Springer"),
-                       selected = c("Pubmed", "Springer"),
+                       choices = c("Pubmed", "Scopus", "Springer"),
+                       selected = c("Pubmed", "Scopus", "Springer"),
                        inline = T),
     actionButton(ns("searchnow"),
                  "Search"),
@@ -59,24 +59,30 @@ mod_search_ui <- function(id){
 mod_search_server <- function(input, output, session){
   ns <- session$ns
   
-  spapi <- Sys.getenv("SPRINGER_API")
-  
   searchterm <- reactive({ input$searchterm })
   
   returned <- eventReactive(input$searchnow,{
+    
+    # get pubmed articles for the given search term
+    
     pm <- get_pm(searchterm())
-    if(nrow(pm) > 0) {
-      pmdoi <- pm %>% pull(doi)
-    } else {
-      pmdoi <- character(0)
-    }
+    
+    # get scopus articles for the given search term
+    
+    scopus <- get_scopus(searchterm())
+    
+    # get springer articles for the given search term
+    
     spring <- get_springer(searchterm())
-    if(nrow(spring) > 0) {
-      spring <- spring %>% filter(!doi %in% pmdoi)
-    } else {
-      spring <- spring
-    }
-    bind_rows(pm, spring)
+    
+    # anti-join by DOI to remove duplicates
+    
+    spring %>% 
+      anti_join(scopus, by = "doi") %>% 
+      bind_rows(scopus) %>% 
+      anti_join(pm, by = "doi") %>% 
+      bind_rows(pm)
+    
   })
   
   output$nrow <- renderText({
@@ -85,11 +91,6 @@ mod_search_server <- function(input, output, session){
     paste("Your search has returned", nrow(returned()), "articles. Refine your search 
     or continue to additional filters below.")
   })
-  
-  
-  
-  #output$springerkey <- renderText(paste0("the springer URL is ",gen_url_springer("aflatoxin AND (maize OR \"aspergillus parasiticus\")",
-  #                                                                                apikey = spapi)))
   
   return(list(searchterm, returned))
  

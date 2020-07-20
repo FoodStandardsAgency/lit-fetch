@@ -179,7 +179,7 @@ get_pm <- function(searchterm,
     
   } else {
     
-    results <- tibble()
+    results <- tibble(doi = character(0))
     
   }
   
@@ -333,13 +333,150 @@ get_springer <- function(searchterm,
   
    } else {
   
-     result <- tibble()
+     result <- tibble(doi = character(0))
   
    }
   
    return(result)
   
 }
+
+# SCOPUS
+
+#' Scopus generate URL
+#' 
+#' @param searchterm string with search term
+#' @param dateto search articles published until (default today)
+#' @param datefrom search articles published from (default one year ago)
+#' @param cursor code for cursor (defaults to asterisk for first page)
+#' @import dplyr
+#' @import stringr
+#' @return a string with the URL to hit
+#' 
+gen_url_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
+  
+  query <- searchterm %>% 
+    str_replace_all(., "\"", "%22") %>% 
+    str_replace_all(., " ", "+")
+  
+  # dates need to be replaced with years as this is as granular as it goes!
+  
+  dates <- paste0("date=",substr(as.character(datefrom), 1, 4),"-",substr(as.character(dateto), 1, 4))
+  
+  url <- paste0("https://api.elsevier.com/content/search/scopus?query=title-abs-key(",query,")&",dates,"&view=COMPLETE&count=25&cursor=",cursor)
+  
+  return(url)
+  
+}
+
+#' Scopus get page of results
+#' 
+#' @param url URL to hit
+#' @import httr
+#' @import dplyr
+#' @importFrom magrittr extract
+#' @import purrr
+#' @return a list with a tibble of results, a URL for the next page, and the total number of pages
+#' 
+get_scopus_result <- function(url) {
+  
+  hit <- GET(url,
+             add_headers(.headers = c(`X-ELS-APIKey` = Sys.getenv("ELSEVIER_API_KEY"),
+                                      `X-ELS-Insttoken` = Sys.getenv("ELSEVIER_INST_TOKEN")))) %>% 
+    content() %>% 
+    .$`search-results`
+  
+  rcount <- hit %>% .$`opensearch:totalResults` %>% as.numeric()
+  
+  if(rcount == 0) {
+    
+    result <- tibble(doi = character(0))
+    nextpage <- NA
+    
+  } else if(rcount > 0) {
+    
+    nextpage <- hit %>% .$link %>% map(., data.frame) %>% bind_rows() %>% filter(X.ref == "next") %>% pull(X.href) %>% as.character()
+    
+    if(rcount <= 25) {
+      nextpage <- NA
+    } else {
+      nextpage <- nextpage
+    }
+    
+    meta <- hit %>% .$entry %>% map_df(., function(x) extract(x, c("dc:title", 
+                                                                   "prism:publicationName",
+                                                                   "prism:coverDate",
+                                                                   "prism:doi",
+                                                                   "dc:description",
+                                                                   "subtypeDescription",
+                                                                   "prism:aggregationType",
+                                                                   "prism:url")) %>% 
+                                         flatten_df())
+    
+    authors <- hit %>% 
+      .$entry %>% 
+      map(., function(x) map(x$author, "authname") %>% paste(., collapse = " ; ")) %>% 
+      map(., function(x) ifelse(is.null(x), NA, x)) %>% 
+      flatten_chr()
+    
+    result <- meta %>% 
+      mutate(author = authors) %>% 
+      mutate(pubtype = paste(`prism:aggregationType`, `subtypeDescription`)) %>% 
+      mutate(pubtype = case_when(pubtype == "Journal Article" ~ "journal article",
+                                 pubtype == "Journal Review" ~ "review", 
+                                 TRUE ~ "other")) %>% 
+      select(doi = `prism:doi`, 
+             title = `dc:title`,
+             abstract = `dc:description`,
+             author,
+             `publication date` = `prism:coverDate`,
+             `publication type` = pubtype,
+             journal = `prism:publicationName`,
+             url = `prism:url`) %>% 
+      mutate(source = "Scopus")
+    
+  }
+  
+  return(list(result, nextpage, rcount))
+  
+}
+
+#' Scopus all steps
+#' 
+#' @param searchterm string with search term
+#' @param dateto search articles published until (default today)
+#' @param datefrom search articles published from (default one year ago)
+#' @param cursor code for cursor (defaults to asterisk for first page)
+#' @import dplyr
+#' @import purrr
+#' @return a tibble with all results
+#' 
+get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
+  
+  df <- get_scopus_result(gen_url_scopus(searchterm))
+  
+  if(df[[3]] == 0) {
+    
+    result <- tibble(doi = character(0))
+    
+  } else if(df[[3]] > 0 & df[[3]] <= 25) {
+    
+    result <- df[[1]]
+    
+  } else {
+    
+    pages <- c(1:(ceiling(df[[3]] / 25) - 1))
+    
+    restof <- map(pages, function(x) df <- get_scopus_result(df[[2]]))
+    
+    result <- bind_rows(df[[1]], map(restof, 1))
+    
+  }
+  
+  return(result)
+  
+}
+
 
 
 

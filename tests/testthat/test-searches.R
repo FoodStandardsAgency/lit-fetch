@@ -42,6 +42,28 @@ test_that("pubmed fetch", {
   
 })
 
+# scopus
+
+scopusurl <- gen_url_scopus(searchtest, dateto = "2020/06/30", datefrom = "2019/07/01")
+
+test_that("scopus URL", {
+  
+  expect_equal(scopusurl, 
+               "https://api.elsevier.com/content/search/scopus?query=title-abs-key(allergy+AND+(soy+OR+%22peanut+butter%22))&date=2019-2020&view=COMPLETE&count=25&cursor=*")
+  
+})
+
+scopussearch <- get_scopus(searchtest)
+
+test_that("scopus search",{
+  
+  expect_is(scopussearch, "data.frame")
+  expect_gte(nrow(scopussearch), 50)
+  expect_equal(ncol(scopussearch), 9)
+  
+})
+
+
 # testing a search that should (safely) return zero results
 
 zerosearch <- "ahgodifgbhsjhebvhujfhdg"
@@ -52,7 +74,7 @@ test_that("pubmed safely returns zero searches", {
   
   expect_is(zeropm, "tbl")
   expect_equal(nrow(zeropm), 0)
-  expect_equal(ncol(zeropm), 0)
+  expect_equal(ncol(zeropm), 1)
   
 })
 
@@ -62,6 +84,16 @@ test_that("springer safely returns zero searches", {
   
   expect_is(zerospringer, "tbl")
   expect_equal(nrow(zerospringer), 0)
-  expect_equal(ncol(zerospringer), 0)
+  expect_equal(ncol(zerospringer), 1)
+  
+})
+
+zeroscopus <- get_scopus(zerosearch)
+
+test_that("scopus safely returns zero searches", {
+  
+  expect_is(zeroscopus, "tbl")
+  expect_equal(nrow(zeroscopus), 0)
+  expect_equal(ncol(zeroscopus), 1)
   
 })
