@@ -15,8 +15,5 @@ the main UI and server functions) are defined in the `R` directory.
 
 Dependencies necessary to run the app are captured using {renv}.
 
-The `working` directory contains rough or draft work that is not 
-involved in the app (the folder is ignored when the app is built).
-
 
 
