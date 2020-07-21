@@ -61,19 +61,21 @@ mod_search_server <- function(input, output, session){
   
   searchterm <- reactive({ input$searchterm })
   
+  searchdate <- reactive({ input$searchdate })
+  
   returned <- eventReactive(input$searchnow,{
     
     # get pubmed articles for the given search term
     
-    pm <- get_pm(searchterm())
+    pm <- get_pm(searchterm = searchterm(), startdate = searchdate())
     
     # get scopus articles for the given search term
     
-    scopus <- get_scopus(searchterm())
+    scopus <- get_scopus(searchterm(), datefrom = searchdate())
     
     # get springer articles for the given search term
     
-    spring <- get_springer(searchterm())
+    spring <- get_springer(searchterm(), datefrom = searchdate())
     
     # anti-join by DOI to remove duplicates
     
