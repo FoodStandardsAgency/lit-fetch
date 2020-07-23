@@ -58,43 +58,66 @@ mod_search_ui <- function(id){
 #' @noRd 
 mod_search_server <- function(input, output, session){
   ns <- session$ns
-  
-  searchterm <- reactive({ input$searchterm })
-  
-  searchdate <- reactive({ input$searchdate })
-  
+
   returned <- eventReactive(input$searchnow,{
     
     # get pubmed articles for the given search term
     
-    pm <- get_pm(searchterm = searchterm(), startdate = searchdate())
+    if("Pubmed" %in% input$whichdb) {
+    
+      pm <- get_pm(searchterm = input$searchterm, datefrom = input$searchdate)
+      
+    } else {
+      
+      pm <- tibble(doi = character(0))
+      
+    }
     
     # get scopus articles for the given search term
     
-    scopus <- get_scopus(searchterm(), datefrom = searchdate())
+    if("Scopus" %in% input$whichdb) {
+    
+      scopus <- get_scopus(input$searchterm, datefrom = input$searchdate)
+      
+    } else {
+      
+      scopus <- tibble(doi = character(0))
+      
+    }
     
     # get springer articles for the given search term
     
-    spring <- get_springer(searchterm(), datefrom = searchdate())
+    if("Springer" %in% input$whichdb) {
+    
+      spring <- get_springer(input$searchterm, datefrom = input$searchdate)
+      
+    } else {
+      
+      spring <- tibble(doi = character(0))
+      
+    }
+      
     
     # anti-join by DOI to remove duplicates
     
-    spring %>% 
+    result <- spring %>% 
       anti_join(scopus, by = "doi") %>% 
       bind_rows(scopus) %>% 
       anti_join(pm, by = "doi") %>% 
       bind_rows(pm)
     
+    list(input$searchterm, result)
+    
   })
   
   output$nrow <- renderText({
     validate(
-      need(nrow(returned()) != 0, "There are no articles matching that search term."))
-    paste("Your search has returned", nrow(returned()), "articles. Refine your search 
+      need(nrow(returned()[[2]]) != 0, "There are no articles matching that search term."))
+    paste("Your search has returned", nrow(returned()[[2]]), "articles. Refine your search 
     or continue to additional filters below.")
   })
   
-  return(list(searchterm, returned))
+  return(returned)
  
 }
     

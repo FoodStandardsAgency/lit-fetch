@@ -40,15 +40,15 @@ xml2tib <- function(xmlnode, nodenames) {
 #' Generates URL for pubmed API
 #'
 #' @param searchterm text of the query
-#' @param startdate from date appeared online (default = 1 year ago today), format YYYY/MM/DD
-#' @param enddate to date appeared online (default = today), format YYYY/MM/DD
+#' @param datefrom from date appeared online (default = 1 year ago today), format YYYY/MM/DD
+#' @param dateto to date appeared online (default = today), format YYYY/MM/DD
 #' @import dplyr
 #' @import stringr
 #' @return string, a URL to search pubmed for a particular term between two given dates
 #' 
 gen_url_pm <- function(searchterm, 
-                         startdate=as.character(Sys.Date()-365, "%Y/%m/%d"), 
-                         enddate=as.character(Sys.Date(), "%Y/%m/%d")) {
+                         datefrom=Sys.Date()-365, 
+                         dateto=Sys.Date()) {
   
   baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
   
@@ -64,9 +64,12 @@ gen_url_pm <- function(searchterm,
     str_squish() %>% 
     str_replace_all(., " ", "+")
   
+  datefrom <- as.character(datefrom, "%Y/%m/%d")
+  dateto <- as.character(dateto, "%Y/%m/%d")
+  
   searchurl <- paste0(baseurl,
                       "db=pubmed&term=",term,
-                      "&datetype=pdat&mindate=",startdate,"&maxdate=",enddate,
+                      "&datetype=pdat&mindate=",datefrom,"&maxdate=",dateto,
                       "&usehistory=y")
   return(searchurl)
 }
@@ -127,15 +130,15 @@ fetch_pm <- function(pagenumber, historyinfo) {
 #' Pubmed all steps
 #' 
 #' @param searchterm text of the query
-#' @param startdate from date appeared online (default = 1 year ago today), format YYYY/MM/DD
-#' @param enddate to date appeared online (default = today), format YYYY/MM/DD
+#' @param datefrom from date appeared online (default = 1 year ago today), format YYYY/MM/DD
+#' @param dateto to date appeared online (default = today), format YYYY/MM/DD
 #' @return a tibble of results
 #' 
-get_pm <- function(searchterm, 
-                   startdate=as.character(Sys.Date()-365, "%Y/%m/%d"), 
-                   enddate=as.character(Sys.Date(), "%Y/%m/%d")) {
+get_pm <- function(searchterm,
+                   datefrom=Sys.Date()-365, 
+                   dateto=Sys.Date()) {
   
-  url <- gen_url_pm(searchterm, startdate, enddate)
+  url <- gen_url_pm(searchterm, datefrom, dateto)
 
   search <- search_pm(url)
   
@@ -175,7 +178,14 @@ get_pm <- function(searchterm,
              `publication type` = type,
              journal = Title,
              lang = Language, 
-             url)
+             url) %>% 
+      mutate(source = "Pubmed") %>% 
+      filter(!is.na(doi)) %>% 
+      group_by(doi) %>% 
+      mutate(id = row_number()) %>% 
+      ungroup() %>% 
+      filter(id == 1) %>% 
+      select(-id)
     
   } else {
     
@@ -328,7 +338,13 @@ get_springer <- function(searchterm,
                 `publication type` = type,
                 journal = publicationName,
                 url = url.y) %>% 
-        mutate(source = "Springer")
+        mutate(source = "Springer") %>% 
+        filter(!is.na(doi)) %>% 
+        group_by(doi) %>% 
+        mutate(id = row_number()) %>% 
+        ungroup() %>% 
+        filter(id == 1) %>% 
+        select(-id)
 
   
    } else {
@@ -433,7 +449,13 @@ get_scopus_result <- function(url) {
              `publication type` = pubtype,
              journal = `prism:publicationName`,
              url = `prism:url`) %>% 
-      mutate(source = "Scopus")
+      mutate(source = "Scopus") %>% 
+      filter(!is.na(doi)) %>% 
+      group_by(doi) %>% 
+      mutate(id = row_number()) %>% 
+      ungroup() %>% 
+      filter(id == 1) %>% 
+      select(-id)
     
   }
   
@@ -454,6 +476,7 @@ get_scopus_result <- function(url) {
 get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
   
   df <- get_scopus_result(gen_url_scopus(searchterm))
+  first <- df
   
   if(df[[3]] == 0) {
     
@@ -465,11 +488,16 @@ get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-36
     
   } else {
     
-    pages <- c(1:(ceiling(df[[3]] / 25) - 1))
+    pages <- ceiling(df[[3]] / 25) - 1
     
-    restof <- map(pages, function(x) df <- get_scopus_result(df[[2]]))
+    restof <- vector("list", pages)
     
-    result <- bind_rows(df[[1]], map(restof, 1))
+    for(i in 1:pages) {
+      df <- get_scopus_result(df[[2]])
+      restof[[i]] <- df[[1]]
+    }
+    
+    result <- bind_rows(first[[1]], restof)
     
   }
   

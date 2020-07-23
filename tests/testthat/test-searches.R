@@ -17,7 +17,7 @@ test_that("xml to tibble", {
 
 # pubmed
 
-pmurl <- gen_url_pm(searchtest, startdate = "2019/07/01", enddate = "2020/06/30")
+pmurl <- gen_url_pm(searchtest, datefrom = as.Date("2019-07-01"), dateto = as.Date("2020-06-30"))
 pmsearch <- search_pm(pmurl)
 pmfetch <- fetch_pm(1, pmsearch)
 
@@ -44,7 +44,7 @@ test_that("pubmed fetch", {
 
 # scopus
 
-scopusurl <- gen_url_scopus(searchtest, dateto = "2020/06/30", datefrom = "2019/07/01")
+scopusurl <- gen_url_scopus(searchtest, datefrom = as.Date("2019-07-01"), dateto = as.Date("2020-06-30"))
 
 test_that("scopus URL", {
   

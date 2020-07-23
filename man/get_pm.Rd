@@ -4,18 +4,14 @@
 \alias{get_pm}
 \title{Pubmed all steps}
 \usage{
-get_pm(
-  searchterm,
-  startdate = as.character(Sys.Date() - 365, "\%Y/\%m/\%d"),
-  enddate = as.character(Sys.Date(), "\%Y/\%m/\%d")
-)
+get_pm(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date())
 }
 \arguments{
 \item{searchterm}{text of the query}
 
-\item{startdate}{from date appeared online (default = 1 year ago today), format YYYY/MM/DD}
+\item{datefrom}{from date appeared online (default = 1 year ago today), format YYYY/MM/DD}
 
-\item{enddate}{to date appeared online (default = today), format YYYY/MM/DD}
+\item{dateto}{to date appeared online (default = today), format YYYY/MM/DD}
 }
 \value{
 a tibble of results

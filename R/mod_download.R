@@ -26,7 +26,7 @@ mod_download_server <- function(input, output, session, data, searchstring, filt
   
   articles <- reactive({data()})
 
-  searchdetail <- reactive({ data.frame(searchstring = searchstring(),
+  searchdetail <- reactive({ data.frame(searchstring = searchstring()[[1]],
                         timeint = paste(Sys.Date()-365, "to", Sys.Date()),
                         include = as.character(filters()[1]),
                         exclude = as.character(filters()[2]),

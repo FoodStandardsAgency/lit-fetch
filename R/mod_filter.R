@@ -74,10 +74,12 @@ mod_filter_server <- function(input, output, session, data){
       str_replace(., "[|]+$", "")
     
     types <- paste0(input$pubchoice, collapse = "|")
+    
+    searchreturn <- data()[[2]]
       
-    if(nrow(data()) > 0) {
+    if(nrow(searchreturn) > 0) {
       
-      include <- data() %>% 
+      include <- searchreturn %>% 
         filter_at(vars(title, abstract), any_vars(grepl(iterm1, ., ignore.case = T))) %>% 
         filter_at(vars(title, abstract), any_vars(grepl(iterm2, ., ignore.case = T))) %>% 
         filter_at(vars(title, abstract), any_vars(grepl(iterm3, ., ignore.case = T))) %>% 
@@ -105,11 +107,11 @@ mod_filter_server <- function(input, output, session, data){
     
     } else {
       
-      include <- data()
+      include <- searchreturn
       
     }
     
-    exclude <- data() %>% anti_join(include) %>% mutate(exclude = 1)
+    exclude <- searchreturn %>% anti_join(include) %>% mutate(exclude = 1)
     
     fdata <- list(include, exclude) 
     
