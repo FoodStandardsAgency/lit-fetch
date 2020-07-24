@@ -45,8 +45,8 @@ mod_download_server <- function(input, output, session, data, searchstring, filt
       addWorksheet(wb, "Excluded articles")
 
       writeData(wb, "Search details", searchdetail())
-      writeData(wb, "Included articles", articles()[[1]])
-      writeData(wb, "Excluded articles", articles()[[2]])
+      writeData(wb, "Included articles", articles()[[1]] %>% select(-altab))
+      writeData(wb, "Excluded articles", articles()[[2]] %>% select(-altab, -exclude))
       
       saveWorkbook(wb, file)
       

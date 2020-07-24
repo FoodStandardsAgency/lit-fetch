@@ -507,6 +507,26 @@ get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-36
   
 }
 
-
-
+#' Scopus missing abstracts
+#' 
+#' Fetches forbidden scopus abstracts from sciencedirect
+#' 
+#' @param doi string of DOI of article abstract to retrieve
+#' @import dplyr
+#' @import stringr
+#' @return a tibble with all results
+#'
+getab <- function(doi) {
+  
+  abstract <- GET(paste0("https://api.elsevier.com/content/article/doi/",doi),
+      add_headers(.headers = c(`X-ELS-APIKey` = Sys.getenv("ELSEVIER_API_KEY"),
+                               `X-ELS-Insttoken` = Sys.getenv("ELSEVIER_INST_TOKEN")))) %>% 
+    content() %>% 
+    .$`full-text-retrieval-response` %>% 
+    .$coredata %>% 
+    .$`dc:description` %>% 
+    str_squish()
+  
+  tibble(doi = doi, altab = abstract)
+}
 

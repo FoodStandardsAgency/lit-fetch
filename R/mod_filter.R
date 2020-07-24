@@ -34,11 +34,7 @@ mod_filter_ui <- function(id){
     ),
     br(),
     p(strong("Words to EXCLUDE from title and abstract")),
-    fluidRow(column(3,textInput(ns("mustexclude"), "Must exclude")),
-             column(1, strong("AND")),
-             column(3,textInput(ns("mustexclude2"), "Must exclude")),
-             column(1, strong("AND")),
-             column(3,textInput(ns("mustexclude3"), "Must exclude"))
+    fluidRow(column(3,textInput(ns("mustexclude"), "Must exclude"))
     ),
     actionButton(ns("filternow"),
                  "Filter"),
@@ -53,15 +49,23 @@ mod_filter_server <- function(input, output, session, data){
   ns <- session$ns
   
   filters <- reactive({ 
+
+    incterm <- paste0("(", input$mustinclude, ") AND (", 
+           input$mustinclude2, ") AND (", input$mustinclude3 ,")") %>% 
+      str_remove_all(., " AND \\(\\)$") %>% 
+      str_remove_all(., " AND \\(\\)$") %>% 
+      str_remove_all(., "^\\(\\)$")
     
-    incterm <- str_remove_all(str_remove_all(paste0(input$mustinclude, " AND ", 
-                                         input$mustinclude2, " AND ", input$mustinclude3), " AND $"), " AND $")
-    exterm <- str_remove_all(str_remove_all(paste0(input$mustexclude, " AND ",
-                                                   input$mustexclude2, " AND ", input$mustexclude3), " AND $"), " AND $")
+    
+    exterm <- input$mustexclude
     
     types <- input$pubchoice %>% paste0(., collapse = " , ")
     
-    other <- input$otherchoices
+    if(is.null(input$otherchoices)) {
+      other <- ""
+    } else {
+      other <- input$otherchoices
+    }
     
     list(incterm, exterm, types, other) 
     
@@ -70,12 +74,11 @@ mod_filter_server <- function(input, output, session, data){
   
   filterdata <- eventReactive(input$filternow,{
     
-    iterm1 <- str_replace_all(input$mustinclude, " OR ", "|")
-    iterm2 <- str_replace_all(input$mustinclude2, " OR ", "|")
-    iterm3 <- str_replace_all(input$mustinclude3, " OR ", "|")
-    
-    excl <- paste0(input$mustexclude,"|",input$mustexclude2,"|",input$mustexclude3) %>% 
-      str_replace(., "[|]+$", "")
+    iterm1 <- str_replace_all(input$mustinclude, " OR ", "|") %>% str_replace_all(., "\"", "\\\\b")
+    iterm2 <- str_replace_all(input$mustinclude2, " OR ", "|") %>% str_replace_all(., "\"", "\\\\b")
+    iterm3 <- str_replace_all(input$mustinclude3, " OR ", "|") %>% str_replace_all(., "\"", "\\\\b")
+
+    excl <- str_replace_all(input$mustexclude, " OR ", "|") %>% str_replace_all(., "\"", "\\\\b")
     
     types <- paste0(input$pubchoice, collapse = "|")
     

@@ -15,7 +15,6 @@ mod_preview_ui <- function(id){
                        choices = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url", "source"),
                        selected = c("doi", "title", "abstract", "url"),
                        inline = T),
-    #textOutput(ns("options")),
     DT::dataTableOutput(ns("previewarticles"))
   )
 }
@@ -28,8 +27,6 @@ mod_preview_server <- function(input, output, session, data, incorex){
   
   fields <- reactive({ input$dlopts })
   
-  #output$options <- renderText({ paste0(input$dlopts) })
-  
   output$previewarticles <- DT::renderDataTable({
     
     tabledata <- data()[[incorex]]
@@ -37,7 +34,8 @@ mod_preview_server <- function(input, output, session, data, incorex){
     if(nrow(tabledata) > 0) {
 
       tabledata %>%
-        select( fields() )
+        mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
+        select( fields() ) 
       
     } else {
       

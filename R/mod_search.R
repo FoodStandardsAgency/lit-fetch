@@ -106,6 +106,23 @@ mod_search_server <- function(input, output, session){
       anti_join(pm, by = "doi") %>% 
       bind_rows(pm)
     
+    # get abstracts that will be hidden
+    
+    if(nrow(scopus) > 0) {
+    
+      dois <- result %>% filter(source == "Scopus") %>% pull(doi)
+      
+      extraab <- map_df(dois, slowly(getab, rate = rate_delay(pause = .15)))
+      
+    } else {
+      
+      extraab <- tibble(doi = character(0), altab = character(0))
+      
+    }
+    
+    result <- result %>% 
+      left_join(extraab, by = "doi") 
+    
     list(input$searchterm, result)
     
   })
