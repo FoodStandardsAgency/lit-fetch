@@ -338,7 +338,8 @@ get_springer <- function(searchterm,
                 `publication type` = type,
                 journal = publicationName,
                 url = url.y) %>% 
-        mutate(source = "Springer") %>% 
+        mutate(source = "Springer",
+               lang = NA) %>% 
         filter(!is.na(doi)) %>% 
         group_by(doi) %>% 
         mutate(id = row_number()) %>% 
@@ -449,7 +450,8 @@ get_scopus_result <- function(url) {
              `publication type` = pubtype,
              journal = `prism:publicationName`,
              url = `prism:url`) %>% 
-      mutate(source = "Scopus") %>% 
+      mutate(source = "Scopus",
+             lang = NA) %>% 
       filter(!is.na(doi)) %>% 
       group_by(doi) %>% 
       mutate(id = row_number()) %>% 

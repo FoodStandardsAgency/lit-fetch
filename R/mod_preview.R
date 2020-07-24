@@ -12,7 +12,7 @@ mod_preview_ui <- function(id){
   tagList(
     checkboxGroupInput(ns("dlopts"),
                        "Fields to include",
-                       choices = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url"),
+                       choices = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url", "source"),
                        selected = c("doi", "title", "abstract", "url"),
                        inline = T),
     #textOutput(ns("options")),
@@ -46,7 +46,7 @@ mod_preview_server <- function(input, output, session, data, incorex){
     }
 
   })
- 
+
 }
     
 ## To be copied in the UI

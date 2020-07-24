@@ -30,6 +30,8 @@ mod_download_server <- function(input, output, session, data, searchstring, filt
                         timeint = paste(Sys.Date()-365, "to", Sys.Date()),
                         include = as.character(filters()[1]),
                         exclude = as.character(filters()[2]),
+                        types = as.character(filters()[3]),
+                        other = as.character(filters()[4]),
                         searchdate = Sys.Date()) })
   
   output$filedownload <- downloadHandler(
