@@ -59,7 +59,7 @@ test_that("scopus search",{
   
   expect_is(scopussearch, "data.frame")
   expect_gte(nrow(scopussearch), 50)
-  expect_equal(ncol(scopussearch), 9)
+  expect_equal(ncol(scopussearch), 10)
   
 })
 

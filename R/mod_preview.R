@@ -34,7 +34,8 @@ mod_preview_server <- function(input, output, session, data, incorex){
     if(nrow(tabledata) > 0) {
 
       tabledata %>%
-        mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
+        mutate(abstract = if_else(source == "Scopus", "", abstract)) %>% 
+        #mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
         select( fields() ) 
       
     } else {

@@ -138,7 +138,7 @@ get_pm <- function(searchterm,
                    datefrom=Sys.Date()-365, 
                    dateto=Sys.Date()) {
   
-  url <- gen_url_pm(searchterm, datefrom, dateto)
+  url <- gen_url_pm(searchterm, datefrom = datefrom, dateto = dateto)
 
   search <- search_pm(url)
   
@@ -271,7 +271,7 @@ get_springer <- function(searchterm,
                          dateto = as.character(Sys.Date()),
                          apikey = Sys.getenv("SPRINGER_API"))  {
   
-  searchurl <- gen_url_springer(searchterm)
+  searchurl <- gen_url_springer(searchterm, datefrom = datefrom, dateto = dateto)
 
   total <- GET(searchurl) %>% 
     content(., "text") %>% 
@@ -378,8 +378,14 @@ gen_url_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date(
   
   # dates need to be replaced with years as this is as granular as it goes!
   
-  dates <- paste0("date=",substr(as.character(datefrom), 1, 4),"-",substr(as.character(dateto), 1, 4))
-  
+  yearfrom = substr(as.character(datefrom), 1, 4)
+  yearto = substr(as.character(dateto), 1, 4)
+  if(yearfrom == yearto) {
+    dates <- paste0("date=",yearfrom)
+  } else {
+    dates <- paste0("date=",yearfrom,"-",yearto)
+  }
+
   url <- paste0("https://api.elsevier.com/content/search/scopus?query=title-abs-key(",query,")&",dates,"&view=COMPLETE&count=25&cursor=",cursor)
   
   return(url)
@@ -477,7 +483,7 @@ get_scopus_result <- function(url) {
 #' 
 get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
   
-  df <- get_scopus_result(gen_url_scopus(searchterm))
+  df <- get_scopus_result(gen_url_scopus(searchterm, datefrom = datefrom, dateto = dateto))
   first <- df
   
   if(df[[3]] == 0) {
@@ -530,3 +536,39 @@ getab <- function(doi) {
   tibble(doi = doi, altab = abstract)
 }
 
+
+#' Search counter
+#' 
+#' gets a total search count across all sources
+#' 
+#' @param searchterm string of search term
+#' @param dateto search articles published until (default today)
+#' @param datefrom search articles published from (default one year ago)
+#' @import httr
+#' @import dplyr
+gettotal <- function(searchterm,
+                     dateto = Sys.Date(), 
+                     datefrom = Sys.Date()-365,
+                     across) {
+  if("Pubmed" %in% across) {
+    pm <- search_pm(gen_url_pm(searchterm, dateto = dateto, datefrom = datefrom)) %>% .$count %>% as.numeric()
+  } else {
+    pm <- 0
+  }
+  if("Scopus" %in% across) {
+    scop <- get_scopus_result(gen_url_scopus(searchterm, dateto = dateto, datefrom = datefrom)) %>% .[[3]]
+  } else {
+    scop <- 0
+  }
+  if("Springer" %in% across) {
+    spring <- GET(gen_url_springer(searchterm, datefrom = datefrom, dateto = dateto)) %>% 
+      content(., "text") %>% 
+      fromJSON() %>% 
+      .$result %>% .$total %>% as.numeric()
+  } else {
+    spring <- 0
+  }
+  
+  totalhits <- pm + scop + spring
+  return(totalhits)
+}
