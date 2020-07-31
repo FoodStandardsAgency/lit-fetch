@@ -55,13 +55,13 @@ then does some final tidying on the combined data.
 ## App functions
 
 * `mod_search.R` takes user inputs (search term, date, which databases), conducts 
-any requested searches and deduplicates the results
-if the total number of results across the APIs is over a certain threshold 
-(currently 1000), it does not proceed with the article retrieval
+any requested searches and deduplicates the results. If the total number of results 
+across the APIs is over a certain threshold 
+(currently 1000), it does not proceed with the article retrieval.
 
 * `mod_filter.R` takes the search results and applies and inclusion or exclusion 
-filters the user has requested
-it does not remove any articles from the results - it flags them as excluded
+filters the user has requested. It does not remove any articles from the results - 
+it flags them as excluded.
 
 * `mod_preview.R` shows the user the results of their (filtered) search in the 
 "included" tab, plus any articles excluded by the filter in the "excluded" tab

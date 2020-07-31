@@ -14,15 +14,8 @@ mod_search_ui <- function(id){
   ns <- NS(id)
   tagList(
     fluidRow(
-    column(4,
+    column(8,
     textInput(ns("searchterm"), label = "Enter search term")
-    ),
-    column(6,
-           wellPanel(
-           p("Boolean searches accepted, using brackets if required, and surrounding exact terms 
-        with quote marks, e.g. aflatoxin AND (maize OR \"aspergillus parasiticus\"). All 
-             search terms are wildcards unless surrounded by quotes.")
-           )
     )
     ),
     fluidRow(
@@ -32,13 +25,7 @@ mod_search_ui <- function(id){
               value = Sys.Date() - 365,
               min = as.Date("1900-01-01"),
               max = Sys.Date())
-    ),
-    column(6,
-           wellPanel(
-           p("For Springer articles, this is the date articles were added to the 
-           database (may precede publication date)")
-           )
-           )
+    )
     ),
     checkboxGroupInput(ns("whichdb"),
                        "Select databases to search",
