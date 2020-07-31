@@ -13,6 +13,7 @@
 gen_url_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
   
   query <- searchterm %>% 
+    str_replace_all(., "NOT", "AND NOT") %>% 
     str_replace_all(., "\"", "%22") %>% 
     str_replace_all(., " ", "+")
   

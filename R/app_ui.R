@@ -44,6 +44,7 @@ app_ui <- function(request) {
                                   a(href="https://link.springer.com/searchhelp", "[Springer]"),
                                   a(href = "https://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.Advanced_Search", "[Pubmed]"),
                                   a(href = "https://service.elsevier.com/app/answers/detail/a_id/11213/supporthub/scopus/#tips", "[Scopus]")),
+                                p("Note that any search term with NOT is automatically converted to AND NOT for Scopus searches"),
                                 p("Search tips:"),
                                 tags$ul("to search for multiple terms: botulism AND sheep will 
                                 return everything containing the word botulism if it 

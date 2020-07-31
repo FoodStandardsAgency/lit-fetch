@@ -49,16 +49,19 @@ gen_url_pm <- function(searchterm,
   baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
   
   term <- searchterm %>% 
-    str_replace_all(., "(\")([^\" ]+)( )([^\" ]+)(\")", "%22\\2+\\4%22") %>% 
-    str_replace_all(., "(\\))", " \\1") %>%
+    str_replace_all(., "\"", "%22") %>% 
+    str_replace_all(., " ", "+") %>% 
+    str_replace_all(., fixed("+AND+"), " AND ") %>% 
+    str_replace_all(., fixed("+OR+"), " OR ") %>%
+    str_replace_all(., fixed("+NOT+"), " NOT ") %>%
     paste0(., " ") %>% 
     str_replace_all(., " ", "[tiab] ") %>% 
     str_replace_all(., fixed("AND[tiab]"), "AND") %>% 
-    str_replace_all(., fixed("OR[tiab]"), "OR") %>% 
-    str_replace_all(., fixed("NOT[tiab]"), "NOT") %>% 
-    str_replace_all(., fixed(")[tiab]"), ")") %>% 
+    str_replace_all(., fixed("OR[tiab]"), "OR") %>%
+    str_replace_all(., fixed("NOT[tiab]"), "NOT") %>%
+    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
     str_squish() %>% 
-    str_replace_all(., " ", "+")
+    str_replace_all(., " ", "+") 
   
   datefrom <- as.character(datefrom, "%Y/%m/%d")
   dateto <- as.character(dateto, "%Y/%m/%d")
@@ -143,6 +146,21 @@ get_pm <- function(searchterm,
     pages <- seq(0, search$count, 500)
     
     results <- map_df(pages, fetch_pm, search) %>%
+      
+      #block to create any missing variables, there is probably a more elegant way
+      
+      mutate(ArticleTitle = {if("ArticleTitle" %in% names(.)) paste0(ArticleTitle) else ""}) %>%
+      mutate(Abstract = {if("Abstract" %in% names(.)) paste0(Abstract) else ""}) %>%
+      mutate(ArticleId = {if("ArticleId" %in% names(.)) paste0(ArticleId) else ""}) %>%
+      mutate(Title = {if("Title" %in% names(.)) paste0(Title) else ""}) %>%
+      mutate(PublicationStatus = {if("PublicationStatus" %in% names(.)) paste0(PublicationStatus) else ""}) %>%
+      mutate(PublicationType = {if("PublicationType" %in% names(.)) paste0(PublicationType) else ""}) %>%
+      mutate(Year = {if("Year" %in% names(.)) paste0(Year) else ""}) %>%
+      mutate(Month = {if("Month" %in% names(.)) paste0(Month) else ""}) %>%
+      mutate(Day = {if("Day" %in% names(.)) paste0(Day) else ""}) %>%
+      mutate(LastName = {if("LastName" %in% names(.)) paste0(LastName) else ""}) %>%
+      mutate(Language = {if("Language" %in% names(.)) paste0(Language) else ""}) %>%
+    
       filter(!is.na(Year)) %>%
       mutate_at(vars(Day, Month), ~if_else(is.na(.), "01", .)) %>%
       mutate(Month = case_when(
@@ -176,7 +194,7 @@ get_pm <- function(searchterm,
              lang = Language, 
              url) %>% 
       mutate(source = "Pubmed") %>% 
-      filter(!is.na(doi)) %>% 
+      filter(!is.na(doi) | doi == "") %>% 
       group_by(doi) %>% 
       mutate(id = row_number()) %>% 
       ungroup() %>% 
