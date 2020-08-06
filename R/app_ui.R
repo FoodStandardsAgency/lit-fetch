@@ -148,7 +148,8 @@ app_ui <- function(request) {
                                   (not applicable to books or chapters)"),
                                 p("Lang: Language of the item (only available for items from Pubmed)"),
                                 p("URL: Link that will take you to the article page on the publisher's website"),
-                                p("Source: Which database the item has come from ")
+                                p("Source: Which database the item has come from "),
+                                p("Scopus link: Where item is from Scopus, link to Scopus record")
                               
                               )
                       )

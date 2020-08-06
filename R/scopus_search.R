@@ -73,8 +73,7 @@ get_scopus_result <- function(url) {
                                                                    "prism:doi",
                                                                    "dc:description",
                                                                    "subtypeDescription",
-                                                                   "prism:aggregationType",
-                                                                   "prism:url")) %>% 
+                                                                   "prism:aggregationType")) %>% 
                                          flatten_df())
     
     authors <- hit %>% 
@@ -83,8 +82,19 @@ get_scopus_result <- function(url) {
       map(., function(x) ifelse(is.null(x), NA, x)) %>% 
       flatten_chr()
     
+    link <- hit %>% 
+      .$entry %>% 
+      map("link") %>% 
+      map(., function(x) unlist(x) %>% 
+            as_tibble() %>% 
+            mutate(lead = lead(value)) %>% 
+            filter(value == "scopus") %>% 
+            pull(lead)) %>% 
+      flatten_chr()
+    
     result <- meta %>% 
-      mutate(author = authors) %>% 
+      mutate(author = authors, 
+             scopuslink = link) %>% 
       mutate(pubtype = paste(`prism:aggregationType`, `subtypeDescription`)) %>% 
       mutate(pubtype = case_when(pubtype == "Journal Article" ~ "journal article",
                                  pubtype == "Journal Review" ~ "review", 
@@ -96,9 +106,10 @@ get_scopus_result <- function(url) {
              `publication date` = `prism:coverDate`,
              `publication type` = pubtype,
              journal = `prism:publicationName`,
-             url = `prism:url`) %>% 
+             scopuslink) %>% 
       mutate(source = "Scopus",
-             lang = NA) %>% 
+             lang = NA,
+             url = paste0("https://dx.doi.org/",doi)) %>% 
       filter(!is.na(doi)) %>% 
       group_by(doi) %>% 
       mutate(id = row_number()) %>% 

@@ -24,7 +24,7 @@ pmfetch <- fetch_pm(1, pmsearch)
 test_that("pubmed URL generator", {
 
   expect_equal(pmurl, 
-               "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=allergy[tiab]+AND+(soy[tiab]+OR+%22peanut+butter%22[tiab]+)&datetype=pdat&mindate=2019/07/01&maxdate=2020/06/30&usehistory=y")
+               "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=allergy[tiab]+AND+(soy[tiab]+OR+%22peanut+butter%22[tiab])&datetype=pdat&mindate=2019/07/01&maxdate=2020/06/30&usehistory=y")
   
 })
 
@@ -59,7 +59,7 @@ test_that("scopus search",{
   
   expect_is(scopussearch, "data.frame")
   expect_gte(nrow(scopussearch), 50)
-  expect_equal(ncol(scopussearch), 10)
+  expect_equal(ncol(scopussearch), 11)
   
 })
 
