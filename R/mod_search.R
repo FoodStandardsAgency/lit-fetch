@@ -32,6 +32,17 @@ mod_search_ui <- function(id){
                        choices = c("Pubmed", "Scopus", "Springer"),
                        selected = c("Pubmed", "Scopus", "Springer"),
                        inline = T),
+    fluidRow(
+    column(4,
+    sliderInput(ns("maxhits"), 
+                "Only return results if there are less than (default = 1000)", 
+                min = 100, 
+                max = 5000,
+                value = 1000,
+                step = 50, 
+                round = TRUE)
+    )
+    ),
     actionButton(ns("searchnow"),
                  "Search"),
     withSpinner(textOutput(ns("nrow")), type = 4, color = "#006F51", size = 0.3),
@@ -54,7 +65,7 @@ mod_search_server <- function(input, output, session){
              datefrom = input$searchdate,
              across = input$whichdb)
     
-    if(totalhits > 1000) {
+    if(totalhits > input$maxhits) {
       
       result <- tibble(doi = character(0))
       
@@ -136,7 +147,7 @@ mod_search_server <- function(input, output, session){
   
   output$nrow <- renderText({
     
-    if(returned()[[3]] > 1000) {
+    if(returned()[[3]] > input$maxhits) {
       
       paste("Woah your search returned", returned()[[3]], "articles. Try a more specific 
             search term or a smaller time window. The filtering and download 
