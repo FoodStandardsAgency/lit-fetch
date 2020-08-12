@@ -18,7 +18,7 @@ mod_filter_ui <- function(id){
                        selected = c("review", "journal article", "other"),
                        inline = T),
     checkboxGroupInput(ns("otherchoices"),
-                       "Additional search restrictions",
+                       "Additional Pubmed search restrictions",
                        choiceNames = c("English language only"),
                        choiceValues = c("english"),
                        inline = T),
@@ -34,6 +34,8 @@ mod_filter_ui <- function(id){
     ),
     br(),
     p(strong("Words to EXCLUDE from title and abstract")),
+    p("Use OR within text field if required. You cannot use AND in this filter. If a document has an exclude term
+      and an include term it will be excluded."),
     fluidRow(column(3,textInput(ns("mustexclude"), "Must exclude"))
     ),
     actionButton(ns("filternow"),
@@ -67,7 +69,7 @@ mod_filter_server <- function(input, output, session, data){
       other <- input$otherchoices
     }
     
-    list(incterm, exterm, types, other) 
+    list(incterm, exterm, types, other, data()[[4]]) 
     
     })
 

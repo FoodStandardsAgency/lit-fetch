@@ -60,6 +60,8 @@ gen_url_pm <- function(searchterm,
     str_replace_all(., fixed("OR[tiab]"), "OR") %>%
     str_replace_all(., fixed("NOT[tiab]"), "NOT") %>%
     str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
+    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
+    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
     str_squish() %>% 
     str_replace_all(., " ", "+") 
   
@@ -194,7 +196,7 @@ get_pm <- function(searchterm,
              lang = Language, 
              url) %>% 
       mutate(source = "Pubmed") %>% 
-      filter(!is.na(doi) | doi == "") %>% 
+      filter(!is.na(doi) & doi != "") %>% 
       group_by(doi) %>% 
       mutate(id = row_number()) %>% 
       ungroup() %>% 

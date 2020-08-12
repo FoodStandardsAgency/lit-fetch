@@ -29,7 +29,10 @@ mod_search_ui <- function(id){
     ),
     checkboxGroupInput(ns("whichdb"),
                        "Select databases to search",
-                       choices = c("Pubmed", "Scopus", "Springer"),
+                       choiceNames = c("Pubmed (citation's title, collection title, abstract, other abstract, keywords)", 
+                                       "Scopus (title, abstract, keywords)", 
+                                       "Springer (title)"),
+                       choiceValues = c("Pubmed","Scopus", "Springer"),
                        selected = c("Pubmed", "Scopus", "Springer"),
                        inline = T),
     fluidRow(
@@ -117,7 +120,8 @@ mod_search_server <- function(input, output, session){
         anti_join(scopus, by = "doi") %>% 
         bind_rows(scopus) %>% 
         anti_join(pm, by = "doi") %>% 
-        bind_rows(pm)
+        bind_rows(pm) %>% 
+        rename('publication date (yyyy-mm-dd)' = 'publication date')
       
       # get abstracts that will be hidden (not currently implemented)
       
@@ -138,7 +142,7 @@ mod_search_server <- function(input, output, session){
       
       totalhits <- nrow(result)
       
-      searchresult <- list(input$searchterm, result, totalhits)
+      searchresult <- list(input$searchterm, result, totalhits,input$searchdate)
       
     }
     return(searchresult)

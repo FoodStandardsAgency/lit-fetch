@@ -12,7 +12,8 @@ mod_preview_ui <- function(id){
   tagList(
     checkboxGroupInput(ns("dlopts"),
                        "Fields to include",
-                       choices = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url", "source"),
+                       choiceNames = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url", "source"),
+                       choiceValues = c("doi", "title", "abstract", "journal", "author", "publication date (yyyy-mm-dd)", "publication type", "url", "source"),
                        selected = c("doi", "title", "abstract", "url"),
                        inline = T),
     DT::dataTableOutput(ns("previewarticles"))
@@ -36,7 +37,9 @@ mod_preview_server <- function(input, output, session, data, incorex){
       tabledata %>%
         mutate(abstract = if_else(source == "Scopus", "[redacted]", abstract)) %>% 
         #mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
-        select( fields() ) 
+        #rename("publication date" = "publication date")
+        arrange(source) %>% 
+        select( fields() )
       
     } else {
       

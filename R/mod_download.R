@@ -27,12 +27,12 @@ mod_download_server <- function(input, output, session, data, searchstring, filt
   articles <- reactive({data()})
 
   searchdetail <- reactive({ data.frame(searchstring = searchstring()[[1]],
-                        timeint = paste(Sys.Date()-365, "to", Sys.Date()),
+                        `timeint (yyyy-mm-dd)` = paste(filters()[[5]], "to", Sys.Date()),
                         include = as.character(filters()[1]),
                         exclude = as.character(filters()[2]),
                         types = as.character(filters()[3]),
                         other = as.character(filters()[4]),
-                        searchdate = Sys.Date()) })
+                        `searchdate (yyyy-mm-dd)` = Sys.Date() %>% as.character()) })
   
   output$filedownload <- downloadHandler(
     filename = "searchresults.xlsx",
