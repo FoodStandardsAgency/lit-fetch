@@ -48,7 +48,8 @@ gen_url_pm <- function(searchterm,
   
   baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
   
-  term <- searchterm %>% 
+  term <- searchterm %>%
+    str_replace_all(., "( ){2,}", " ") %>% 
     str_replace_all(., "\"", "%22") %>% 
     str_replace_all(., " ", "+") %>% 
     str_replace_all(., fixed("+AND+"), " AND ") %>% 
