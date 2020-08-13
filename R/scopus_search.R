@@ -13,6 +13,8 @@
 gen_url_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
   
   query <- searchterm %>% 
+    str_replace_all(.,'“','"') %>%
+    str_replace_all(.,'”','"') %>%
     str_replace_all(., "NOT", "AND NOT") %>% 
     str_replace_all(., "\"", "%22") %>% 
     str_replace_all(., " ", "+")
@@ -103,7 +105,7 @@ get_scopus_result <- function(url) {
              title = `dc:title`,
              abstract = `dc:description`,
              author,
-             `publication date` = `prism:coverDate`,
+             `publication date (yyyy-mm-dd)` = `prism:coverDate`,
              `publication type` = pubtype,
              journal = `prism:publicationName`,
              scopuslink) %>% 
@@ -202,6 +204,9 @@ gettotal <- function(searchterm,
                      dateto = Sys.Date(), 
                      datefrom = Sys.Date()-365,
                      across) {
+  searchterm <- searchterm %>% 
+    str_replace_all(.,'“','"') %>%
+    str_replace_all(.,'”','"')
   if("Pubmed" %in% across) {
     pm <- search_pm(gen_url_pm(searchterm, dateto = dateto, datefrom = datefrom)) %>% .$count %>% as.numeric()
   } else {

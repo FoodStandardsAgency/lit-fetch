@@ -49,6 +49,8 @@ gen_url_pm <- function(searchterm,
   baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
   
   term <- searchterm %>% 
+    str_replace_all(.,'“','"') %>%
+    str_replace_all(.,'”','"') %>%
     str_replace_all(., "\"", "%22") %>% 
     str_replace_all(., " ", "+") %>% 
     str_replace_all(., fixed("+AND+"), " AND ") %>% 
@@ -190,7 +192,7 @@ get_pm <- function(searchterm,
              title = ArticleTitle,
              abstract = Abstract,
              author = LastName,
-             `publication date` = pdate,
+             `publication date (yyyy-mm-dd)` = pdate,
              `publication type` = type,
              journal = Title,
              lang = Language, 

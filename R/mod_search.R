@@ -120,8 +120,7 @@ mod_search_server <- function(input, output, session){
         anti_join(scopus, by = "doi") %>% 
         bind_rows(scopus) %>% 
         anti_join(pm, by = "doi") %>% 
-        bind_rows(pm) %>% 
-        rename('publication date (yyyy-mm-dd)' = 'publication date')
+        bind_rows(pm)
       
       # get abstracts that will be hidden (not currently implemented)
       
