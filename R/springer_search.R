@@ -16,6 +16,8 @@ gen_url_springer <- function(searchterm,
   baseurl <- "http://api.springernature.com/meta/v2/json?"
   
   terms <- searchterm %>% 
+    str_replace_all(.,'“','"') %>%
+    str_replace_all(.,'”','"') %>%
     str_split(., " AND | OR | NOT ") %>% 
     .[[1]] %>% 
     str_remove_all(., "[\\(\\)]") %>% 
@@ -25,6 +27,8 @@ gen_url_springer <- function(searchterm,
     paste0("(",.,")")
   
   term <- searchterm %>%
+    str_replace_all(.,'“','"') %>%
+    str_replace_all(.,'”','"') %>%
     str_replace_all(., "( ){2,}", " ") %>%
     str_replace_all(., "\"", "%22") %>%
     str_replace_all(., terms, "title:\\1") %>% 
@@ -138,7 +142,7 @@ get_springer <- function(searchterm,
              title,
              abstract,
              author,
-             `publication date` = publicationDate,
+             `publication date (yyyy-mm-dd)` = publicationDate,
              `publication type` = type,
              journal = publicationName,
              url = url.y) %>% 
