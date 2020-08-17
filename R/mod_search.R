@@ -49,7 +49,10 @@ mod_search_ui <- function(id){
     actionButton(ns("searchnow"),
                  "Search"),
     withSpinner(textOutput(ns("nrow")), type = 4, color = "#006F51", size = 0.3),
-    textOutput(ns("springerkey"))
+    textOutput(ns("springerkey")),
+    br(),
+    p("If the above search returned an error please check that you have closed all your brackets. 
+      Some special characters (i.e. &) may also cause errors.")
     
   )
 }
