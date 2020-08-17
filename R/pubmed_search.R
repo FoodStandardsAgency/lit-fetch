@@ -51,6 +51,7 @@ gen_url_pm <- function(searchterm,
   term <- searchterm %>% 
     str_replace_all(.,'“','"') %>%
     str_replace_all(.,'”','"') %>%
+    str_replace_all(., "( ){2,}", " ") %>% 
     str_replace_all(., "\"", "%22") %>% 
     str_replace_all(., " ", "+") %>% 
     str_replace_all(., fixed("+AND+"), " AND ") %>% 
@@ -164,22 +165,23 @@ get_pm <- function(searchterm,
       mutate(Day = {if("Day" %in% names(.)) paste0(Day) else ""}) %>%
       mutate(LastName = {if("LastName" %in% names(.)) paste0(LastName) else ""}) %>%
       mutate(Language = {if("Language" %in% names(.)) paste0(Language) else ""}) %>%
-    
-      filter(!is.na(Year)) %>%
-      mutate_at(vars(Day, Month), ~if_else(is.na(.), "01", .)) %>%
+      replace(., . == "NA", "") %>% 
+      
+      filter(Year != "") %>%
+      mutate_at(vars(Day, Month), ~if_else(. == "", "01", .)) %>%
       mutate(Month = case_when(
         Month == "Jan" ~ "01",
-        Month == "Feb" ~ "01",
-        Month == "Mar" ~ "01",
+        Month == "Feb" ~ "02",
+        Month == "Mar" ~ "03",
         Month == "Apr" ~ "04",
-        Month == "May" ~ "01",
-        Month == "Jun" ~ "01",
-        Month == "Jul" ~ "01",
-        Month == "Aug" ~ "01",
-        Month == "Sep" ~ "01",
-        Month == "Oct" ~ "01",
-        Month == "Nov" ~ "01",
-        Month == "Dec" ~ "01",
+        Month == "May" ~ "05",
+        Month == "Jun" ~ "06",
+        Month == "Jul" ~ "07",
+        Month == "Aug" ~ "08",
+        Month == "Sep" ~ "09",
+        Month == "Oct" ~ "10",
+        Month == "Nov" ~ "11",
+        Month == "Dec" ~ "12",
         TRUE ~ Month
       )) %>%
       mutate(pdate = paste0(Year,"-",Month,"-",Day)) %>%

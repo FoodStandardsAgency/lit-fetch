@@ -15,6 +15,7 @@ gen_url_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date(
   query <- searchterm %>% 
     str_replace_all(.,'“','"') %>%
     str_replace_all(.,'”','"') %>%
+    str_replace_all(., "( ){2,}", " ") %>%
     str_replace_all(., "NOT", "AND NOT") %>% 
     str_replace_all(., "\"", "%22") %>% 
     str_replace_all(., " ", "+")
@@ -96,28 +97,7 @@ get_scopus_result <- function(url) {
     
     result <- meta %>% 
       mutate(author = authors, 
-             scopuslink = link) %>% 
-      mutate(pubtype = paste(`prism:aggregationType`, `subtypeDescription`)) %>% 
-      mutate(pubtype = case_when(pubtype == "Journal Article" ~ "journal article",
-                                 pubtype == "Journal Review" ~ "review", 
-                                 TRUE ~ "other")) %>% 
-      select(doi = `prism:doi`, 
-             title = `dc:title`,
-             abstract = `dc:description`,
-             author,
-             `publication date (yyyy-mm-dd)` = `prism:coverDate`,
-             `publication type` = pubtype,
-             journal = `prism:publicationName`,
-             scopuslink) %>% 
-      mutate(source = "Scopus",
-             lang = NA,
-             url = paste0("https://dx.doi.org/",doi)) %>% 
-      filter(!is.na(doi)) %>% 
-      group_by(doi) %>% 
-      mutate(id = row_number()) %>% 
-      ungroup() %>% 
-      filter(id == 1) %>% 
-      select(-id)
+             scopuslink = link)
     
   }
   
@@ -144,9 +124,11 @@ get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-36
     
     result <- tibble(doi = character(0))
     
+    return(result)
+    
   } else if(df[[3]] > 0 & df[[3]] <= 25) {
     
-    result <- df[[1]]
+    result <- df[[1]] 
     
   } else {
     
@@ -163,7 +145,30 @@ get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-36
     
   }
   
-  return(result)
+  cleanresult <- result %>%  
+    mutate(pubtype = paste(`prism:aggregationType`, `subtypeDescription`)) %>% 
+    mutate(pubtype = case_when(pubtype == "Journal Article" ~ "journal article",
+                               pubtype == "Journal Review" ~ "review", 
+                               TRUE ~ "other")) %>% 
+    select(doi = `prism:doi`, 
+           title = `dc:title`,
+           abstract = `dc:description`,
+           author,
+           `publication date (yyyy-mm-dd)` = `prism:coverDate`,
+           `publication type` = pubtype,
+           journal = `prism:publicationName`,
+           scopuslink) %>% 
+    mutate(source = "Scopus",
+           lang = NA,
+           url = paste0("https://dx.doi.org/",doi)) %>% 
+    filter(!is.na(doi)) %>% 
+    group_by(doi) %>% 
+    mutate(id = row_number()) %>% 
+    ungroup() %>% 
+    filter(id == 1) %>% 
+    select(-id)
+  
+  return(cleanresult)
   
 }
 

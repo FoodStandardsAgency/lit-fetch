@@ -29,6 +29,7 @@ gen_url_springer <- function(searchterm,
   term <- searchterm %>%
     str_replace_all(.,'“','"') %>%
     str_replace_all(.,'”','"') %>%
+    str_replace_all(., "( ){2,}", " ") %>%
     str_replace_all(., "\"", "%22") %>%
     str_replace_all(., terms, "title:\\1") %>% 
     str_replace_all(., " ", "+") 
