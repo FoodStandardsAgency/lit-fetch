@@ -58,7 +58,10 @@ app_ui <- function(request) {
                                 botulism but only if it also contains the word sheep or the word cow"),
                                 tags$li("using quote marks: \"Clostridium botulinum\" will return 
                                 articles containing that exact term"),
-                                tags$li("using wildcards: botul* will return anything containing botulism, botulinium, etc.")),
+                                tags$li("using wildcards: botul* will return anything containing botulism, botulinium, etc. ", 
+                                        strong("TO NOTE:"), " For Pubmed, the wildcard character will expand to match any set of characters up to 
+                                        a limit of 600 unique expansions. This means that poorly determined terms, for example cat*, 
+                                        will give incomplete results.")),
                                 p("You can also select the date from which you want 
                                   to see articles. Note that Scopus searches automatically 
                                   convert dates to the year of publication (this is 
