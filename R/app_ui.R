@@ -68,12 +68,13 @@ app_ui <- function(request) {
                                 p("The volume of publications returned may differ to the volume returned by the equivalent 
                                   website search for one of the following reasons:"),
                                 tags$ul(
-                                  tags$li("we have removed any publications without a year of publication"),
                                   tags$li("we have removed any instances where the same publication was returned more than once"),
-                                  tags$li("we have removed any publications without a doi"),
                                   tags$li("some website searches may return publications with a future publication date"),
-                                  tags$li("For searches like 'h2o2' the website is able to return abstracts and titles containing the 
-                                          search term in a different format i.e.'h(2)o(2)'")),
+                                  tags$li("For Pubmed, the wildcard character will expand to match any set of characters up to a limit of 600 unique expansions.
+                                          This means that poorly determined terms, for example cat*, will give incomplete results."),
+                                  tags$li("For a small number of search terms the Pubmed website will return publications 
+                                          containing a slight variation of the search term 
+                                          (i.e. 'h2o2' captures titles and abstracts with 'h(2)o(2)'). This tool will not.")),
                                 br(),
                                 p(strong("Filter")),
                                 p("This section lets you filter for terms that you want 
@@ -103,8 +104,10 @@ app_ui <- function(request) {
                                   You can use refer to this spreadsheet in the future as a document of 
                                   what filters were used."),
                                 p("TO NOTE: where month and day of publication are not provided 01 is used as a default.
+                                  Where year of publication is not provided 1990 is used as a default.
                                   This means that all publications that only provide the year of publication are given 
-                                  the publication date 01/01/year in our output"),
+                                  the publication date 01/01/year in our output and those that have no details are
+                                  given the date 01/01/1990"),
                                 br(),
                                 p("If there are any issues with the tool or you have feedback please contact a member of the data science team")
                                 
@@ -173,7 +176,14 @@ app_ui <- function(request) {
                                 p("Lang: Language of the item (only available for items from Pubmed)"),
                                 p("URL: Link that will take you to the article page on the publisher's website"),
                                 p("Source: Which database the item has come from "),
-                                p("Scopus link: Where item is from Scopus, link to Scopus record")
+                                p("Scopus link: Where item is from Scopus, link to Scopus record"),
+                                p("Elsevier have specified in the Scopus API ",
+                                  a(href = "https://dev.elsevier.com/federated_search.html", "documentation"), 
+                                  " that when the API is used for federated search tools: 
+                                  'the application can only show the core bibliographic data for each search result; 
+                                  abstracts and references are off-limits'. We are therefore not displaying any Scopus abstracts 
+                                  within the tool. However Elsevier have confirmed that abstracts can be displayed in the tools
+                                  downloads")
                               
                               )
                       )

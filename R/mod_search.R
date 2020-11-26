@@ -18,15 +18,6 @@ mod_search_ui <- function(id){
     textInput(ns("searchterm"), label = "Enter search term")
     )
     ),
-    fluidRow(
-    column(4,
-    dateInput(ns("searchdate"), 
-              "Find articles online since",
-              value = Sys.Date() - 365,
-              min = as.Date("1900-01-01"),
-              max = Sys.Date())
-    )
-    ),
     checkboxGroupInput(ns("whichdb"),
                        "Select databases to search",
                        choiceNames = c("Pubmed (citation's title, collection title, abstract, other abstract, keywords)", 
@@ -35,6 +26,15 @@ mod_search_ui <- function(id){
                        choiceValues = c("Pubmed","Scopus", "Springer"),
                        selected = c("Pubmed", "Scopus", "Springer"),
                        inline = T),
+    fluidRow(
+    column(4,
+    dateInput(ns("searchdate"), 
+              "Find articles online since (To note: Scopus will only filter as far as year)",
+              value = Sys.Date() - 365,
+              min = as.Date("1900-01-01"),
+              max = Sys.Date())
+    )
+    ),
     fluidRow(
     column(4,
     sliderInput(ns("maxhits"), 
@@ -67,85 +67,98 @@ mod_search_server <- function(input, output, session){
     
     # do an initial 'number of hits' search
     
-    totalhits <- gettotal(searchterm = input$searchterm,
-             datefrom = input$searchdate,
-             across = input$whichdb)
+    bracket_match_check = str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
     
-    if(totalhits > input$maxhits) {
+    if(bracket_match_check == FALSE) {
+      
+      totalhits <- -1
       
       result <- tibble(doi = character(0))
       
       searchresult <- list(input$searchterm, result, totalhits)
-      
+    
     } else {
     
-    
-      # get pubmed articles for the given search term
+      totalhits <- gettotal(searchterm = input$searchterm,
+                            datefrom = input$searchdate,
+                            across = input$whichdb)
       
-      if("Pubmed" %in% input$whichdb) {
-      
-        pm <- get_pm(searchterm = input$searchterm, datefrom = input$searchdate)
+      if(totalhits > input$maxhits) {
+        
+        result <- tibble(doi = character(0))
+        
+        searchresult <- list(input$searchterm, result, totalhits)
         
       } else {
         
-        pm <- tibble(doi = character(0))
+        
+        # get pubmed articles for the given search term
+        
+        if("Pubmed" %in% input$whichdb) {
+          
+          pm <- get_pm(searchterm = input$searchterm, datefrom = input$searchdate)
+          
+        } else {
+          
+          pm <- tibble(doi = character(0))
+          
+        }
+        
+        # get scopus articles for the given search term
+        
+        if("Scopus" %in% input$whichdb) {
+          
+          scopus <- get_scopus(input$searchterm, datefrom = input$searchdate)
+          
+        } else {
+          
+          scopus <- tibble(doi = character(0))
+          
+        }
+        
+        # get springer articles for the given search term
+        
+        if("Springer" %in% input$whichdb) {
+          
+          spring <- get_springer(input$searchterm, datefrom = input$searchdate)
+          
+        } else {
+          
+          spring <- tibble(doi = character(0))
+          
+        }
+        
+        
+        # anti-join by DOI to remove duplicates
+        
+        result <- spring %>% 
+          anti_join(scopus, by = "doi") %>% 
+          bind_rows(scopus) %>% 
+          anti_join(pm, by = "doi") %>% 
+          bind_rows(pm)
+        
+        # get abstracts that will be hidden (not currently implemented)
+        
+        # if(nrow(scopus) > 0) {
+        # 
+        #   dois <- result %>% filter(source == "Scopus") %>% pull(doi)
+        # 
+        #   extraab <- map_df(dois, slowly(getab, rate = rate_delay(pause = .15)))
+        # 
+        # } else {
+        # 
+        #   extraab <- tibble(doi = character(0), altab = character(0))
+        # 
+        # }
+        # 
+        # result <- result %>%
+        #   left_join(extraab, by = "doi")
+        
+        totalhits <- nrow(result)
+        
+        searchresult <- list(input$searchterm, result, totalhits,input$searchdate)
         
       }
-      
-      # get scopus articles for the given search term
-      
-      if("Scopus" %in% input$whichdb) {
-      
-        scopus <- get_scopus(input$searchterm, datefrom = input$searchdate)
-        
-      } else {
-        
-        scopus <- tibble(doi = character(0))
-        
-      }
-      
-      # get springer articles for the given search term
-      
-      if("Springer" %in% input$whichdb) {
-      
-        spring <- get_springer(input$searchterm, datefrom = input$searchdate)
-        
-      } else {
-        
-        spring <- tibble(doi = character(0))
-        
-      }
-        
-      
-      # anti-join by DOI to remove duplicates
-      
-      result <- spring %>% 
-        anti_join(scopus, by = "doi") %>% 
-        bind_rows(scopus) %>% 
-        anti_join(pm, by = "doi") %>% 
-        bind_rows(pm)
-      
-      # get abstracts that will be hidden (not currently implemented)
-      
-      # if(nrow(scopus) > 0) {
-      # 
-      #   dois <- result %>% filter(source == "Scopus") %>% pull(doi)
-      # 
-      #   extraab <- map_df(dois, slowly(getab, rate = rate_delay(pause = .15)))
-      # 
-      # } else {
-      # 
-      #   extraab <- tibble(doi = character(0), altab = character(0))
-      # 
-      # }
-      # 
-      # result <- result %>%
-      #   left_join(extraab, by = "doi")
-      
-      totalhits <- nrow(result)
-      
-      searchresult <- list(input$searchterm, result, totalhits,input$searchdate)
-      
     }
     return(searchresult)
     
@@ -155,13 +168,17 @@ mod_search_server <- function(input, output, session){
     
     if(returned()[[3]] > input$maxhits) {
       
-      paste("Woah your search returned", returned()[[3]], "articles. Try a more specific 
-            search term or a smaller time window. The filtering and download 
-            functions below will not work.")
+      paste("Woah your search returned", returned()[[3]], "articles. You can adjust the above slider
+            to allow in more results or try a more specific 
+            search term or a smaller time window.")
       
     } else if(returned()[[3]] == 0) {
       
       paste("Your search did not return any results.")
+      
+    } else if(returned()[[3]] == -1) {
+      
+      paste("Check your brackets, it looks like you haven't an equal number of '(' and ')'.")
       
     } else {
       

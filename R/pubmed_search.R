@@ -44,7 +44,7 @@ xml2tib <- function(xmlnode, nodenames) {
 #' 
 gen_url_pm <- function(searchterm, 
                        datefrom=Sys.Date()-365, 
-                       dateto=Sys.Date()) {
+                       dateto=Sys.Date() - 1) {
   
   baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
   
@@ -140,7 +140,7 @@ fetch_pm <- function(pagenumber, historyinfo) {
 #' 
 get_pm <- function(searchterm,
                    datefrom=Sys.Date()-365, 
-                   dateto=Sys.Date()) {
+                   dateto=Sys.Date() - 1) {
   
   url <- gen_url_pm(searchterm, datefrom = datefrom, dateto = dateto)
   
@@ -167,7 +167,7 @@ get_pm <- function(searchterm,
       mutate(Language = {if("Language" %in% names(.)) paste0(Language) else ""}) %>%
       replace(., . == "NA", "") %>% 
       
-      filter(Year != "") %>%
+      mutate(Year = ifelse(Year == "","1990",Year)) %>% 
       mutate_at(vars(Day, Month), ~if_else(. == "", "01", .)) %>%
       mutate(Month = case_when(
         Month == "Jan" ~ "01",
@@ -200,11 +200,11 @@ get_pm <- function(searchterm,
              lang = Language, 
              url) %>% 
       mutate(source = "Pubmed") %>% 
-      filter(!is.na(doi) & doi != "") %>% 
+      #filter(!is.na(doi) & doi != "") %>% 
       group_by(doi) %>% 
       mutate(id = row_number()) %>% 
       ungroup() %>% 
-      filter(id == 1) %>% 
+      filter(id == 1 | is.na(doi) | doi == "") %>% 
       select(-id)
     
   } else {

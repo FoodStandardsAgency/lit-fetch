@@ -10,7 +10,7 @@
 #' 
 gen_url_springer <- function(searchterm,
                              datefrom = as.character(Sys.Date() - 365),
-                             dateto = as.character(Sys.Date()),
+                             dateto = as.character(Sys.Date() - 1),
                              apikey = Sys.getenv("SPRINGER_API")) {
   
   baseurl <- "http://api.springernature.com/meta/v2/json?"
@@ -76,7 +76,7 @@ get_results_springer <- function(page, searchurl) {
 
 get_springer <- function(searchterm,
                          datefrom = as.character(Sys.Date() - 365),
-                         dateto = as.character(Sys.Date()),
+                         dateto = as.character(Sys.Date() - 1),
                          apikey = Sys.getenv("SPRINGER_API"))  {
   
   searchurl <- gen_url_springer(searchterm, datefrom = datefrom, dateto = dateto)
@@ -148,11 +148,10 @@ get_springer <- function(searchterm,
              url = url.y) %>% 
       mutate(source = "Springer",
              lang = NA) %>% 
-      filter(!is.na(doi)) %>% 
       group_by(doi) %>% 
       mutate(id = row_number()) %>% 
       ungroup() %>% 
-      filter(id == 1) %>% 
+      filter(id == 1 | is.na(doi)) %>% 
       select(-id)
     
     
