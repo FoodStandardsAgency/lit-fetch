@@ -46,8 +46,17 @@ app_ui <- function(request) {
                                   for details see: ", 
                                   a(href="https://link.springer.com/searchhelp", "[Springer]"),
                                   a(href = "https://www.ncbi.nlm.nih.gov/books/NBK3827/#pubmedhelp.Advanced_Search", "[Pubmed]"),
-                                  a(href = "https://service.elsevier.com/app/answers/detail/a_id/11213/supporthub/scopus/#tips", "[Scopus]")),
-                                p("Note that any search term with NOT is automatically converted to AND NOT for Scopus searches"),
+                                  a(href = "https://service.elsevier.com/app/answers/detail/a_id/11213/supporthub/scopus/#tips", "[Scopus]"),
+                                  ". Publications will be filtered up to but not including the date that the search is being run. 
+                                  You can select the date from which you want 
+                                  to see articles. Dates are filtered in the following way:"),
+                                tags$ul(
+                                  tags$li("Scopus searches automatically 
+                                  convert dates to the year of publication (this is 
+                                  the most fine-grained search that is possible)"),
+                                  tags$li("Springer searches by when an item first appeared online"),
+                                  tags$li("Pubmed searches by publication date, however the date it displays in the in the tool
+                                          is the electronic publication date")),
                                 p("Search tips:"),
                                 tags$ul(
                                 tags$li("to search for multiple terms: botulism AND sheep will 
@@ -61,13 +70,8 @@ app_ui <- function(request) {
                                 tags$li("using wildcards: botul* will return anything containing botulism, botulinium, etc. ", 
                                         strong("TO NOTE:"), " For Pubmed, the wildcard character will expand to match any set of characters up to 
                                         a limit of 600 unique expansions. This means that poorly determined terms, for example cat*, 
-                                        will give incomplete results.")),
-                                p("You can also select the date from which you want 
-                                  to see articles. Note that Scopus searches automatically 
-                                  convert dates to the year of publication (this is 
-                                  the most fine-grained search that is possible), and
-                                  Springer searches by when an item first appeared online. 
-                                  Publications will be filtered up to but not including the date that the search is being run"),
+                                        will give incomplete results."),
+                                tags$li("Note that any search term with NOT is automatically converted to AND NOT for Scopus searches")),
                                 p("The volume of publications returned may differ to the volume returned by the equivalent 
                                   website search for one of the following reasons:"),
                                 tags$ul(
