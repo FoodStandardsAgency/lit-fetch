@@ -67,7 +67,7 @@ app_ui <- function(request) {
                                   convert dates to the year of publication (this is 
                                   the most fine-grained search that is possible), and
                                   Springer searches by when an item first appeared online. 
-                                  Publications will be filtered up to and including the date that the search is being run"),
+                                  Publications will be filtered up to but not including the date that the search is being run"),
                                 p("The volume of publications returned may differ to the volume returned by the equivalent 
                                   website search for one of the following reasons:"),
                                 tags$ul(
