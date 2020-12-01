@@ -10,7 +10,7 @@
 #' @import stringr
 #' @return a string with the URL to hit
 #' 
-gen_url_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
+gen_url_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date()-365, cursor = "*") {
   
   query <- searchterm %>% 
     str_replace_all(.,'“','"') %>%
@@ -115,7 +115,7 @@ get_scopus_result <- function(url) {
 #' @import purrr
 #' @return a tibble with all results
 #' 
-get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-365, cursor = "*") {
+get_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date()-365, cursor = "*") {
   
   df <- get_scopus_result(gen_url_scopus(searchterm, datefrom = datefrom, dateto = dateto))
   first <- df
@@ -161,11 +161,10 @@ get_scopus <- function(searchterm, dateto = Sys.Date(), datefrom = Sys.Date()-36
     mutate(source = "Scopus",
            lang = NA,
            url = paste0("https://dx.doi.org/",doi)) %>% 
-    filter(!is.na(doi)) %>% 
     group_by(doi) %>% 
     mutate(id = row_number()) %>% 
     ungroup() %>% 
-    filter(id == 1) %>% 
+    filter(id == 1 | is.na(doi)) %>% 
     select(-id)
   
   return(cleanresult)
@@ -206,7 +205,7 @@ getab <- function(doi) {
 #' @import httr
 #' @import dplyr
 gettotal <- function(searchterm,
-                     dateto = Sys.Date(), 
+                     dateto = Sys.Date() - 1, 
                      datefrom = Sys.Date()-365,
                      across) {
   searchterm <- searchterm %>% 
