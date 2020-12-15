@@ -3,3 +3,6 @@
 .Rproj.user
 .Renviron
 working/
+
+dev/credentials.R
+dev/setup_env.R
