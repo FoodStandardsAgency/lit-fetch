@@ -4,5 +4,8 @@
 .Renviron
 working/
 
-dev/credentials.R
-dev/setup_env.R
+dev/*
+!dev/01_start.R
+!dev/02_dev.R
+!dev/03_deploy.R
+!dev/run_dev.R

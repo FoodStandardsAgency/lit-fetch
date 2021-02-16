@@ -6,7 +6,7 @@
 \usage{
 get_scopus(
   searchterm,
-  dateto = Sys.Date(),
+  dateto = Sys.Date() - 1,
   datefrom = Sys.Date() - 365,
   cursor = "*"
 )

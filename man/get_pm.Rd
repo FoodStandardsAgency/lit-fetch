@@ -4,7 +4,7 @@
 \alias{get_pm}
 \title{Pubmed all steps}
 \usage{
-get_pm(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date())
+get_pm(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date() - 1)
 }
 \arguments{
 \item{searchterm}{text of the query}

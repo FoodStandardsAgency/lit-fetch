@@ -2,14 +2,14 @@
 % Please edit documentation in R/pubmed_search.R
 \name{gen_url_pm}
 \alias{gen_url_pm}
-\title{Generates URL for pubmed API}
+\title{Generates URL with query string for pubmed API}
 \usage{
-gen_url_pm(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date())
+gen_url_pm(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date() - 1)
 }
 \arguments{
 \item{searchterm}{text of the query}
 
-\item{datefrom}{from date appeared online (default = 1 year ago today), format YYYY/MM/DD}
+\item{datefrom}{from date appeared online (default = 1 year ago from today), format YYYY/MM/DD}
 
 \item{dateto}{to date appeared online (default = today), format YYYY/MM/DD}
 }
@@ -17,5 +17,5 @@ gen_url_pm(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date())
 string, a URL to search pubmed for a particular term between two given dates
 }
 \description{
-Generates URL for pubmed API
+Generates URL with query string for pubmed API
 }

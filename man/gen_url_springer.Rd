@@ -7,7 +7,7 @@
 gen_url_springer(
   searchterm,
   datefrom = as.character(Sys.Date() - 365),
-  dateto = as.character(Sys.Date()),
+  dateto = as.character(Sys.Date() - 1),
   apikey = Sys.getenv("SPRINGER_API")
 )
 }
