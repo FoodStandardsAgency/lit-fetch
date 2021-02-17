@@ -7,6 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @importFrom dplyr if_else
 mod_preview_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -22,7 +23,8 @@ mod_preview_ui <- function(id){
     
 #' preview Server Function
 #'
-#' @noRd 
+#' @noRd
+#' @importFrom dplyr if_else
 mod_preview_server <- function(input, output, session, data, incorex){
   ns <- session$ns
   

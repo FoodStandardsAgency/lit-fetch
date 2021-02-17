@@ -8,7 +8,6 @@
 #'
 #' @importFrom shiny NS tagList
 #' @importFrom shinycssloaders withSpinner
-#' @import dplyr
 mod_search_ui <- function(id) {
   ns <- NS(id)
   tagList(

@@ -6,7 +6,6 @@
 #' @param dateto search articles published until (default today)
 #' @param datefrom search articles published from (default one year ago)
 #' @param across list of APIs sources to be used
-#' @importFrom magrittr %>%
 #' @importFrom httr GET content
 #' @importFrom stringr str_replace_all
 #' @importFrom jsonlite fromJSON

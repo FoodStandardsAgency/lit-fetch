@@ -5,43 +5,45 @@
 #' @param searchterm text of the query
 #' @param datefrom from date appeared online (default = 1 year ago from today), format YYYY/MM/DD
 #' @param dateto to date appeared online (default = today), format YYYY/MM/DD
-#' @import dplyr
-#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_replace_all str_squish fixed
 #' @return string, a URL to search pubmed for a particular term between two given dates
-gen_url_pm <- function(searchterm, 
-                       datefrom=Sys.Date() - 365, 
-                       dateto=Sys.Date() - 1) {
-  
-  baseurl <- "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
-  
-  term <- searchterm %>% 
-    str_replace_all(.,'“','"') %>%
-    str_replace_all(.,'”','"') %>%
-    str_replace_all(., "( ){2,}", " ") %>% 
-    str_replace_all(., "\"", "%22") %>% 
-    str_replace_all(., " ", "+") %>% 
-    str_replace_all(., fixed("+AND+"), " AND ") %>% 
+gen_url_pm <- function(searchterm,
+                       datefrom = Sys.Date() - 365,
+                       dateto = Sys.Date() - 1) {
+  term <- searchterm %>%
+    str_replace_all(., "“", '"') %>%
+    str_replace_all(., "”", '"') %>%
+    str_replace_all(., "( ){2,}", " ") %>%
+    str_replace_all(., "\"", "%22") %>%
+    str_replace_all(., " ", "+") %>%
+    str_replace_all(., fixed("+AND+"), " AND ") %>%
     str_replace_all(., fixed("+OR+"), " OR ") %>%
     str_replace_all(., fixed("+NOT+"), " NOT ") %>%
-    paste0(., " ") %>% 
-    str_replace_all(., " ", "[tiab] ") %>% 
-    str_replace_all(., fixed("AND[tiab]"), "AND") %>% 
+    paste0(., " ") %>%
+    str_replace_all(., " ", "[tiab] ") %>%
+    str_replace_all(., fixed("AND[tiab]"), "AND") %>%
     str_replace_all(., fixed("OR[tiab]"), "OR") %>%
     str_replace_all(., fixed("NOT[tiab]"), "NOT") %>%
-    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
-    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
-    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>% 
-    str_squish() %>% 
-    str_replace_all(., " ", "+") 
-  
+    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>%
+    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>%
+    str_replace_all(., fixed(")[tiab]"), "[tiab])") %>%
+    str_squish() %>%
+    str_replace_all(., " ", "+")
+
   datefrom <- as.character(datefrom, "%Y/%m/%d")
   dateto <- as.character(dateto, "%Y/%m/%d")
+
+  base_url <-
+    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?"
+
+  searchurl <- paste0(
+    base_url,
+    "db=pubmed&term=", term,
+    "&datetype=pdat&mindate=", datefrom,
+    "&maxdate=", dateto,
+    "&usehistory=y"
+  )
   
-  searchurl <- paste0(baseurl,
-                      "db=pubmed&term=", term,
-                      "&datetype=pdat&mindate=", datefrom,
-                      "&maxdate=", dateto,
-                      "&usehistory=y")
   return(searchurl)
 }
 
@@ -71,12 +73,7 @@ search_pm <- function(searchurl) {
 #' 
 #' @param pagenumber number of page to retrieve
 #' @param historyinfo web environment info returned from search_pm()
-#' @importFrom magrittr %>%
-#' @importFrom tidyr spread
-#' @importFrom httr GET content
-#' @importFrom purrr map_df
-#' @importFrom rvest xml_nodes
-#' @importFrom xml2 xml_text xml_name
+#' @importFrom xml2 read_xml xml_find_all
 #' @return tibble with info fields on up to 500 articles
 fetch_pm <- function(pagenumber, historyinfo) {
   url <-
@@ -88,30 +85,22 @@ fetch_pm <- function(pagenumber, historyinfo) {
       "&retmode=xml"
     )
 
-  articlexml <-
-    GET(url) %>%
-    content() %>%
-    xml_nodes("PubmedArticle")
-
-  articleinfo <-
-    map_df(articlexml, function(x) {
-      xml2tib(
-        x,
-        "ArticleTitle,
-        Abstract,
-        ArticleId[IdType=\"doi\"],
-        Journal Title,
-        PublicationStatus,
-        PublicationType,
-        PubDate Year,
-        PubDate Month,
-        PubDate Day,
-        Author LastName,
-        Language"
-      ) %>% spread(field, value)
-    })
-
-  return(articleinfo)
+  nodenames <-
+    "ArticleTitle,
+    Abstract,
+    ArticleId[IdType=\"doi\"],
+    Journal Title,
+    PublicationStatus,
+    PublicationType,
+    PubDate Year,
+    PubDate Month,
+    PubDate Day,
+    Author LastName,
+    Language"
+  
+  read_xml(url) %>%
+    xml_find_all(".//PubmedArticle") %>%
+    xml2tib(nodenames)
 }
 
 
@@ -120,8 +109,7 @@ fetch_pm <- function(pagenumber, historyinfo) {
 #' @param searchterm text of the query
 #' @param datefrom from date appeared online (default = 1 year ago today), format YYYY/MM/DD
 #' @param dateto to date appeared online (default = today), format YYYY/MM/DD
-#' @importFrom magrittr %>%
-#' @importFrom dplyr mutate mutate_at select group_by ungroup filter case_when
+#' @importFrom dplyr mutate mutate_at select group_by ungroup filter case_when if_else row_number
 #' @importFrom tibble tibble
 #' @importFrom purrr map_df
 #' @return a tibble of results

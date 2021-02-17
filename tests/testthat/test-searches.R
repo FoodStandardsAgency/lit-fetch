@@ -1,7 +1,6 @@
 context("searches")
 
-# testing a search that should return results
-
+# --- xml2tib ---
 searchtest <- "allergy AND (soy OR \"peanut butter\")"
 
 test_that("xml to tibble", {
@@ -11,16 +10,18 @@ test_that("xml to tibble", {
       "ArticleTitle, Author LastName"
     )
   expect_is(xtib, "tbl")
-  expect_equal(nrow(xtib), 2)
+  expect_equal(nrow(xtib), 1)
   expect_equal(ncol(xtib), 2)
-  expect_equal(names(xtib), c("value", "field"))
-  expect_equal(xtib$field, c("ArticleTitle", "LastName"))
-  authorvec <- as.character(xtib[1, 2])
-  expect_is(authorvec, "character")
+  expect_equal(names(xtib), c("ArticleTitle", "LastName"))
+  # expect_equal(xtib$field, c("ArticleTitle", "LastName"))
+  
+  coltypes <- dplyr::summarise_all(xtib, class)
+  expect_is(as.character(coltypes[1,1]), "character")
+  expect_is(as.character(coltypes[1,2]), "character")
 })
 
-# pubmed
 
+# --- PUBMED ---
 pmurl <-
   gen_url_pm(searchtest,
     datefrom = as.Date("2019-07-01"),
@@ -57,8 +58,8 @@ test_that("get_pubmed returns dataframe with expected rows/cols", {
   expect_equal(ncol(pmget), 10)
 })
 
-# scopus
 
+#  --- SCOPUS ---
 scopusurl <-
   gen_url_scopus(searchtest,
     datefrom = as.Date("2019-07-01"),
@@ -85,8 +86,7 @@ test_that("scopus search returns a dataframe with expected rows/cols", {
 })
 
 
-# pubmed
-
+# --- SPRINGER ---
 springurl <-
   gen_url_springer("botulism",
     datefrom = as.Date("2019-07-01"),
@@ -105,6 +105,7 @@ returns <- get_results_springer(1, springurl) %>% nrow()
 test_that("springer fetches total", {
   expect_equal(hitcount, returns)
 })
+
 
 
 # testing a search that should (safely) return zero results

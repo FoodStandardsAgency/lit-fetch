@@ -6,10 +6,7 @@
 #'
 #' @noRd
 #'
-#' @importFrom shiny NS tagList
-#' @import openxlsx
-#' @import dplyr
-#'
+#' @importFrom shiny NS tagList downloadButton
 mod_download_ui <- function(id) {
   ns <- NS(id)
   tagList(

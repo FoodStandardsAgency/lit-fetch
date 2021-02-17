@@ -7,7 +7,6 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-#' @import stringr
 mod_filter_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -61,6 +60,8 @@ mod_filter_ui <- function(id) {
 #' filter Server Function
 #'
 #' @noRd
+#' @importFrom stringr str_remove_all str_replace_all
+#' @importFrom dplyr filter filter_at vars any_vars all_vars anti_join mutate
 mod_filter_server <- function(input, output, session, data) {
   ns <- session$ns
 

@@ -4,10 +4,10 @@
 \alias{xml2tib}
 \title{Pick out nodes from xml and turn it into a tibble}
 \usage{
-xml2tib(xmlnode, nodenames)
+xml2tib(xmlnodeset, nodenames)
 }
 \arguments{
-\item{xmlnode}{an xml node containing nodes}
+\item{xmlnodeset}{an xml node containing nodes}
 
 \item{nodenames}{the names of the nodes you wish to extract (string with nodes separated by commas)}
 }

@@ -6,10 +6,8 @@
 #' @param dateto search articles published until (default today)
 #' @param datefrom search articles published from (default one year ago)
 #' @param cursor code for cursor (defaults to asterisk for first page)
-#' @import dplyr
-#' @import stringr
+#' @importFrom stringr str_replace_all
 #' @return a string with the URL to hit
-#' 
 gen_url_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date()-365, cursor = "*") {
   
   query <- searchterm %>% 
@@ -30,21 +28,18 @@ gen_url_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.D
     dates <- paste0("date=",yearfrom,"-",yearto)
   }
 
-  url <- paste0("https://api.elsevier.com/content/search/scopus?query=title-abs-key(",query,")&",dates,"&view=COMPLETE&count=25&cursor=",cursor)
-  
-  return(url)
-  
+  paste0("https://api.elsevier.com/content/search/scopus?query=title-abs-key(",query,")&",dates,"&view=COMPLETE&count=25&cursor=",cursor)
 }
 
 #' Scopus get page of results
 #' 
 #' @param url URL to hit
-#' @import httr
-#' @import dplyr
+#' @importFrom httr GET add_headers content
+#' @importFrom dplyr bind_rows filter pull mutate filter lead
 #' @importFrom magrittr extract
-#' @import purrr
+#' @importFrom purrr map map_df flatten_df flatten_chr
+#' @importFrom tibble tibble as_tibble
 #' @return a list with a tibble of results, a URL for the next page, and the total number of pages
-#' 
 get_scopus_result <- function(url) {
   
   hit <- GET(url,
@@ -53,16 +48,24 @@ get_scopus_result <- function(url) {
     content() %>% 
     .$`search-results`
   
-  rcount <- hit %>% .$`opensearch:totalResults` %>% as.numeric()
+  rcount <- hit %>%
+    .$`opensearch:totalResults` %>%
+    as.numeric()
   
-  if(rcount == 0) {
+  if (rcount == 0) {
     
     result <- tibble(doi = character(0))
     nextpage <- NA
     
-  } else if(rcount > 0) {
+  } else if (rcount > 0) {
     
-    nextpage <- hit %>% .$link %>% map(., data.frame) %>% bind_rows() %>% filter(X.ref == "next") %>% pull(X.href) %>% as.character()
+    nextpage <- hit %>%
+      .$link %>%
+      map(., data.frame) %>%
+      bind_rows() %>%
+      filter(X.ref == "next") %>%
+      pull(X.href) %>%
+      as.character()
     
     if(rcount <= 25) {
       nextpage <- NA
@@ -111,10 +114,9 @@ get_scopus_result <- function(url) {
 #' @param dateto search articles published until (default today)
 #' @param datefrom search articles published from (default one year ago)
 #' @param cursor code for cursor (defaults to asterisk for first page)
-#' @import dplyr
-#' @import purrr
+#' @importFrom dplyr bind_rows mutate select filter case_when group_by ungroup row_number
+#' @importFrom tibble tibble
 #' @return a tibble with all results
-#' 
 get_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date()-365, cursor = "*") {
   
   df <- get_scopus_result(gen_url_scopus(searchterm, datefrom = datefrom, dateto = dateto))
@@ -142,7 +144,6 @@ get_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date(
     }
     
     result <- bind_rows(first[[1]], restof)
-    
   }
   
   cleanresult <- result %>%  
@@ -168,7 +169,6 @@ get_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date(
     select(-id)
   
   return(cleanresult)
-  
 }
 
 #' Scopus missing abstracts
@@ -176,10 +176,10 @@ get_scopus <- function(searchterm, dateto = Sys.Date() - 1, datefrom = Sys.Date(
 #' Fetches forbidden scopus abstracts from sciencedirect
 #' 
 #' @param doi string of DOI of article abstract to retrieve
-#' @import dplyr
-#' @import stringr
+#' @importFrom httr GET add_headers content
+#' @importFrom stringr str_squish
+#' @importFrom tibble tibble
 #' @return a tibble with all results
-#'
 getab <- function(doi) {
   
   abstract <- GET(paste0("https://api.elsevier.com/content/article/doi/",doi),
