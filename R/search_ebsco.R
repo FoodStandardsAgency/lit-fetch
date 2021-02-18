@@ -139,10 +139,6 @@ get_ebsco <- function(searchterm,
         lang = contains("Language")
       ) %>%
       add_column(!!!cols[!names(cols) %in% names(.)]) %>%
-        
-      # cols <- c()
-
-
       replace(., . == "NA", "") %>%
       mutate_at(
         "dt",
@@ -190,7 +186,7 @@ get_ebsco <- function(searchterm,
         abstract,
         author,
         `publication date (yyyy-mm-dd)` = pdate,
-        `publication type` = pubtype,
+        `publication type` = type,
         journal,
         lang,
         url
