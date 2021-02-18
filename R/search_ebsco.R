@@ -97,6 +97,7 @@ fetch_ebsco <- function(url, startrec) {
 #' @importFrom dplyr mutate case_when if_else row_number
 #' @importFrom purrr map_df
 #' @importFrom xml2 read_xml xml_text xml_find_first xml_ns
+#' @importFrom tibble add_column
 #' @return a tibble of all results
 get_ebsco <- function(searchterm,
                       datefrom = Sys.Date() - 365,

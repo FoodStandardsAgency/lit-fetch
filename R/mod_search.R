@@ -23,7 +23,7 @@ mod_search_ui <- function(id) {
         "Pubmed (citation's title, collection title, abstract, other abstract, keywords)",
         "Scopus (title, abstract, keywords)",
         "Springer (title)",
-        "Ebsco (title, abastract)"
+        "Ebsco (title, abstract)"
       ),
       choiceValues = c("Pubmed", "Scopus", "Springer", "Ebsco"),
       selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
@@ -97,6 +97,7 @@ mod_search_ui <- function(id) {
 #' @importFrom shiny eventReactive
 #' @importFrom stringr str_count
 #' @importFrom tibble tibble
+#' @importFrom dplyr anti_join bind_rows
 mod_search_server <- function(input, output, session) {
   # ns <- session$ns
 
@@ -150,16 +151,27 @@ mod_search_server <- function(input, output, session) {
         } else {
           spring <- tibble(doi = character(0))
         }
+        
+        if ("Ebsco" %in% input$whichdb) {
+          ebsco <-
+            get_ebsco(input$searchterm, datefrom = input$searchdate)
+        } else {
+          ebsco <- tibble(doi = character(0))
+        }
 
 
         # anti-join by DOI to remove duplicates
-
+        
+        # result <- ebsco
+        
         result <- spring %>%
           anti_join(scopus, by = "doi") %>%
           bind_rows(scopus) %>%
           anti_join(pm, by = "doi") %>%
-          bind_rows(pm)
-
+          bind_rows(pm) %>%
+          anti_join(ebsco, by = "doi") %>%
+          bind_rows(ebsco)
+          
         # get abstracts that will be hidden (not currently implemented)
 
         # if(nrow(scopus) > 0) {
@@ -183,6 +195,7 @@ mod_search_server <- function(input, output, session) {
           list(input$searchterm, result, totalhits, input$searchdate)
       }
     }
+    
     return(searchresult)
   })
 

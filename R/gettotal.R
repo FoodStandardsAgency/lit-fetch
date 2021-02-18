@@ -49,7 +49,13 @@ gettotal <- function(searchterm,
     spring <- 0
   }
   
-  totalhits <- pm + scop + spring
+  if ("Ebsco" %in% across) {
+    ebsco <-
+      gen_url_ebsco(searchterm, dateto = dateto, datefrom = datefrom) %>%
+      get_number_of_hits_ebsco()
+  } else {
+    ebsco <- 0
+  }
   
-  return(totalhits)
+  pm + scop + spring + ebsco
 }

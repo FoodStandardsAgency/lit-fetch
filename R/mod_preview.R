@@ -4,27 +4,50 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd 
+#' @noRd
 #'
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS tagList
 #' @importFrom dplyr if_else
-mod_preview_ui <- function(id){
+mod_preview_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    checkboxGroupInput(ns("dlopts"),
-                       "Fields to include",
-                       choiceNames = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url", "source"),
-                       choiceValues = c("doi", "title", "abstract", "journal", "author", "publication date (yyyy-mm-dd)", "publication type", "url", "source"),
-                       selected = c("doi", "title", "abstract", "url"),
-                       inline = T),
+    checkboxGroupInput(
+      ns("dlopts"),
+      "Fields to include",
+      choiceNames = c(
+        "doi",
+        "title",
+        "abstract",
+        "journal",
+        "author",
+        "publication date",
+        "publication type",
+        "url",
+        "source"
+      ),
+      choiceValues = c(
+        "doi",
+        "title",
+        "abstract",
+        "journal",
+        "author",
+        "publication date (yyyy-mm-dd)",
+        "publication type",
+        "url",
+        "source"
+      ),
+      selected = c("doi", "title", "abstract", "url"),
+      inline = T
+    ),
     DT::dataTableOutput(ns("previewarticles"))
   )
 }
-    
+
+
 #' preview Server Function
 #'
 #' @noRd
-#' @importFrom dplyr if_else
+#' @importFrom dplyr mutate if_else arrange select
 mod_preview_server <- function(input, output, session, data, incorex){
   ns <- session$ns
   
@@ -44,13 +67,10 @@ mod_preview_server <- function(input, output, session, data, incorex){
         select( fields() )
       
     } else {
-      
       data()[[incorex]]
-      
     }
 
   })
-
 }
     
 ## To be copied in the UI
