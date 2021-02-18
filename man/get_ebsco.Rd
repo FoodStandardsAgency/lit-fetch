@@ -7,10 +7,14 @@
 get_ebsco(searchterm, datefrom = Sys.Date() - 365, dateto = Sys.Date() - 1)
 }
 \arguments{
-\item{url}{URL to hit}
+\item{searchterm}{text of the query}
+
+\item{datefrom}{from date appeared online (default = 1 year ago from today), format YYYY/MM/DD}
+
+\item{dateto}{to date appeared online (default = today), format YYYY/MM/DD}
 }
 \value{
-a list with a tibble of results, a URL for the next page, and the total number of pages
+a tibble of all results
 }
 \description{
 ebsco get page of results

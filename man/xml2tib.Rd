@@ -4,12 +4,14 @@
 \alias{xml2tib}
 \title{Pick out nodes from xml and turn it into a tibble}
 \usage{
-xml2tib(xmlnodeset, nodenames)
+xml2tib(xmlnodeset, nodenames, root_node_label)
 }
 \arguments{
 \item{xmlnodeset}{an xml node containing nodes}
 
 \item{nodenames}{the names of the nodes you wish to extract (string with nodes separated by commas)}
+
+\item{root_node_label}{name of the top node that (first element returned by rvest::xml_nodes)}
 }
 \value{
 A tibble with node names as col names and node text as values

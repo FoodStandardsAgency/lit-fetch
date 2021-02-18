@@ -22,10 +22,11 @@ mod_search_ui <- function(id) {
       choiceNames = c(
         "Pubmed (citation's title, collection title, abstract, other abstract, keywords)",
         "Scopus (title, abstract, keywords)",
-        "Springer (title)"
+        "Springer (title)",
+        "Ebsco (title, abastract)"
       ),
-      choiceValues = c("Pubmed", "Scopus", "Springer"),
-      selected = c("Pubmed", "Scopus", "Springer")
+      choiceValues = c("Pubmed", "Scopus", "Springer", "Ebsco"),
+      selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
     ),
     br(),
     # h1(glue::glue("{ns('searchdate')}-label")),

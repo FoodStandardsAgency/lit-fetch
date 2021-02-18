@@ -100,7 +100,7 @@ fetch_pm <- function(pagenumber, historyinfo) {
   
   read_xml(url) %>%
     xml_find_all(".//PubmedArticle") %>%
-    xml2tib(nodenames)
+    xml2tib(nodenames, "Year")
 }
 
 
