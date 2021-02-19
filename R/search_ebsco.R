@@ -147,7 +147,7 @@ get_ebsco <- function(searchterm,
       # handle multiple date formats
       mutate(
         date_format_1 = as.Date(dt, "%m/%d/%Y"),
-        # date_format_2 not working
+        # FIXME date_format_2 not working
         date_format_2 = ifelse(
           grepl(".*[a-zA-Z]{3}[0-9]{4}", dt),
           paste0(substr(dt, 1, 3), "-", substr(dt, nchar(dt) - 3, nchar(dt))),
@@ -162,6 +162,14 @@ get_ebsco <- function(searchterm,
           !is.na(date_format_2) ~ date_format_2,
           !is.na(date_format_3) ~ date_format_3
         )
+      ) %>%
+      mutate_at(
+        "pdate",
+        ~ as.character(.x)
+      ) %>%
+      mutate_at(
+        "pdate",
+        ~ ifelse(is.na(.x), "1990-01-01", .x)
       ) %>%
       mutate(type = "") %>%
       mutate_at(
