@@ -10,8 +10,8 @@
 #' @return a string with the URL to hit
 gen_url_scopus <-
   function(searchterm,
-           dateto = Sys.Date() - 1,
            datefrom = Sys.Date() - 365,
+           dateto = Sys.Date() - 1,
            cursor = "*") {
     query <- searchterm %>%
       str_replace_all(., "“", '"') %>%
@@ -139,6 +139,7 @@ get_scopus_result <- function(url) {
   return(list(result, nextpage, rcount))
 }
 
+
 #' Scopus all steps
 #'
 #' @param searchterm string with search term
@@ -150,11 +151,11 @@ get_scopus_result <- function(url) {
 #' @return a tibble with all results
 get_scopus <-
   function(searchterm,
-           dateto = Sys.Date() - 1,
            datefrom = Sys.Date() - 365,
+           dateto = Sys.Date() - 1,
            cursor = "*") {
-    df <-
-      get_scopus_result(gen_url_scopus(searchterm, datefrom, dateto))
+    df <- gen_url_scopus(searchterm, datefrom, dateto) %>%
+      get_scopus_result()
     first <- df
 
     if (df[[3]] == 0) {
@@ -208,6 +209,7 @@ get_scopus <-
 
     return(cleanresult)
   }
+
 
 #' Scopus missing abstracts
 #'

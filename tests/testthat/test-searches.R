@@ -7,7 +7,8 @@ test_that("xml to tibble", {
   xtib <-
     xml2tib(
       xml2::read_xml("testxml.xml"),
-      "ArticleTitle, Author LastName"
+      "ArticleTitle, Author LastName",
+      "ArticleTitle"
     )
   expect_is(xtib, "tbl")
   expect_equal(nrow(xtib), 1)

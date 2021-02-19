@@ -81,10 +81,12 @@ fetch_pm <- function(pagenumber, historyinfo) {
       "&retmode=xml"
     )
 
+  # NOTE : for doi, avoid catching dois at css path
+  # ReferenceList>Reference>ArticleIdList>ArticleId
   nodenames <-
     "ArticleTitle,
     Abstract,
-    ArticleId[IdType=\"doi\"],
+    PubmedData>ArticleIdList>ArticleId[IdType=\"doi\"],
     Journal Title,
     PublicationStatus,
     PublicationType,

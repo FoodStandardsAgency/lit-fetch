@@ -6,17 +6,17 @@
 \usage{
 gen_url_scopus(
   searchterm,
-  dateto = Sys.Date() - 1,
   datefrom = Sys.Date() - 365,
+  dateto = Sys.Date() - 1,
   cursor = "*"
 )
 }
 \arguments{
 \item{searchterm}{string with search term}
 
-\item{dateto}{search articles published until (default today)}
-
 \item{datefrom}{search articles published from (default one year ago)}
+
+\item{dateto}{search articles published until (default today)}
 
 \item{cursor}{code for cursor (defaults to asterisk for first page)}
 }
