@@ -2,6 +2,8 @@
 # lfshiny
 
 <!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/FoodStandardsAgency/lit-fetch/branch/master/graph/badge.svg)](https://codecov.io/gh/FoodStandardsAgency/lit-fetch?branch=master)
+[![R-CMD-check](https://github.com/FoodStandardsAgency/lit-fetch/workflows/R-CMD-check/badge.svg)](https://github.com/FoodStandardsAgency/lit-fetch/actions)
 <!-- badges: end -->
 
 This is the shiny app for users to access the search, filter and cleaning functionality,

@@ -103,7 +103,7 @@ get_ebsco <- function(searchterm,
                       datefrom = Sys.Date() - 365,
                       dateto = Sys.Date() - 1) {
   url <-
-    gen_url_ebsco(searchterm, datefrom = datefrom, dateto = dateto)
+    gen_url_ebsco(searchterm, datefrom, dateto)
 
   # FIXME optimize maybe always load first 200 results no matter what
   # since it will number of hits with it
@@ -125,7 +125,9 @@ get_ebsco <- function(searchterm,
       lang = NA_character_
     )
     
-    results <- map_df(pages, ~ fetch_ebsco(url, .x)) %>%
+    results <- map_df(pages, ~ fetch_ebsco(url, .x)) #%>%
+    
+    results %>%
       select(
         doi = contains("ui"),
         title = contains("atl"),
