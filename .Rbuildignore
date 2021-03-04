@@ -9,4 +9,5 @@ $run_dev.*
 ^app\.R$
 ^rsconnect$
 ^codecov\.yml$
+^\.travis\.yml$
 ^\.github$
