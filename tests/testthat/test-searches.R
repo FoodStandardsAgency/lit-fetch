@@ -1,8 +1,8 @@
 context("searches")
 
 # --- xml2tib ---
-# searchtest <- "allergy AND (soy OR \"peanut butter\")"
-searchtest <- "chicken AND soup"
+searchtest <- "allergy AND (soy OR \"peanut butter\")"
+# searchtest <- "chicken AND soup"
 
 test_that("xml to tibble", {
   xtib <-
@@ -32,7 +32,7 @@ pmurl <-
 pmsearch <- search_pm(pmurl)
 # pmfetch <- fetch_pm(1, pmsearch)
 pmfetch <- fetch_pm(0, pmsearch)
-Sys.sleep(10)
+Sys.sleep(5) # workaround "Error: Error: HTTP error 429" (on Github Actions, not on devtools::check())
 pmget <-
   get_pm(searchtest,
     datefrom = as.Date("2019-07-01"),
