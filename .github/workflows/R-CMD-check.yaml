@@ -90,10 +90,10 @@ jobs:
       #     sessioninfo::session_info(pkgs, include_base = TRUE)
       #   shell: Rscript {0}
 
-      - name: Pickup env var
-        env:
-          SPRINGER_API: ${{ secrets.SPRINGER_API }}
-        run: echo "Hello $SPRINGER_API"
+      # - name: Check secrets are captured
+      #   env:
+      #     SPRINGER_API: ${{ secrets.SPRINGER_API }}
+      #   run: echo "Hello $SPRINGER_API"
 
       - name: Check
         env:
@@ -105,7 +105,7 @@ jobs:
           EBSCO_PASSWORD: ${{ secrets.EBSCO_PASSWORD }}
         run: |
           options(crayon.enabled = TRUE)
-          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
+          rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
       - name: Show testthat output
