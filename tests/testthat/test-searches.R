@@ -32,6 +32,7 @@ pmurl <-
 pmsearch <- search_pm(pmurl)
 # pmfetch <- fetch_pm(1, pmsearch)
 pmfetch <- fetch_pm(0, pmsearch)
+Sys.sleep(10)
 pmget <-
   get_pm(searchtest,
     datefrom = as.Date("2019-07-01"),
