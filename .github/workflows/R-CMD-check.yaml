@@ -90,10 +90,10 @@ jobs:
       #     sessioninfo::session_info(pkgs, include_base = TRUE)
       #   shell: Rscript {0}
 
-      # - name: Check secrets are captured
-      #   env:
-      #     SPRINGER_API: ${{ secrets.SPRINGER_API }}
-      #   run: echo "Hello $SPRINGER_API"
+      - name: Check secrets are captured
+        env:
+          SPRINGER_API: ${{ secrets.SPRINGER_API }}
+        run: echo "Hello $SPRINGER_API"
 
       - name: Check
         env:
