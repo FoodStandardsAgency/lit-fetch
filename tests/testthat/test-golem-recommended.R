@@ -17,6 +17,8 @@ test_that("app launches", {
   skip_on_cran()
   skip_on_travis()
   skip_on_appveyor()
+  skip_on_ci()
+  skip_if_not(interactive())
   x <- processx::process$new(
     "R",
     c(
@@ -24,7 +26,7 @@ test_that("app launches", {
       "pkgload::load_all(here::here());run_app()"
     )
   )
-  Sys.sleep(5)
+  Sys.sleep(10)
   expect_true(x$is_alive())
   x$kill()
 })

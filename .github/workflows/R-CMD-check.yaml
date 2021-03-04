@@ -39,11 +39,6 @@ jobs:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      SPRINGER_API: ${{ secrets.SPRINGER_API }}
-      ELSEVIER_API_KEY: ${{ secrets.ELSEVIER_API_KEY }}
-      ELSEVIER_INST_TOKEN: ${{ secrets.ELSEVIER_INST_TOKEN }}
-      EBSCO_PROF: ${{ secrets.EBSCO_PROF }}
-      EBSCO_PASSWORD: ${{ secrets.EBSCO_PASSWORD }}
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -102,6 +97,12 @@ jobs:
           options(crayon.enabled = TRUE)
           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
+        env:
+          SPRINGER_API: ${{ secrets.SPRINGER_API }}
+          ELSEVIER_API_KEY: ${{ secrets.ELSEVIER_API_KEY }}
+          ELSEVIER_INST_TOKEN: ${{ secrets.ELSEVIER_INST_TOKEN }}
+          EBSCO_PROF: ${{ secrets.EBSCO_PROF }}
+          EBSCO_PASSWORD: ${{ secrets.EBSCO_PASSWORD }}
 
       # - name: Show testthat output
       #   if: always()
