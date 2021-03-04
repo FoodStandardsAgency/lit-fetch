@@ -147,16 +147,21 @@ get_ebsco <- function(searchterm,
         ~ substr(.x, 1, nchar(.x) - 3)
       ) %>%
       # handle multiple date formats
+      # "2018 Supplementury issue", "Sep2015 Special Issue", "Mar2021", "1/20/2021", "2020"
       mutate(
         date_format_1 = as.Date(dt, "%m/%d/%Y"),
-        # FIXME date_format_2 not working
-        date_format_2 = ifelse(
+        date_format_2 = if_else(
           grepl(".*[a-zA-Z]{3}[0-9]{4}", dt),
-          paste0(substr(dt, 1, 3), "-", substr(dt, nchar(dt) - 3, nchar(dt))),
+          str_extract(dt, "[a-zA-Z]{3}[0-9]{4}"),
           ""
         ),
-        date_format_2 = as.Date(date_format_2, "%b-%Y"),
-        date_format_3 = ifelse(grepl("^[0-9]{4}$", dt), dt, ""),
+        date_format_2 = format_month_abb_year(dt),
+        date_format_2 = as.Date(date_format_2, "%Y-%m-%d"),
+        date_format_3 = if_else(
+          grepl("\\b[0-9]{4}\\b", dt),
+          str_extract(dt, "\\b[0-9]{4}\\b"),
+          ""
+        ),
         date_format_3 = format(as.Date(date_format_3, "%Y"), "%Y-01-01"),
         date_format_3 = as.Date(date_format_3),
         pdate = case_when(
@@ -215,8 +220,6 @@ get_ebsco <- function(searchterm,
       select(-id, -title_id)
 
   } else {
-    results <- tibble(doi = character(0))
+    tibble(doi = character(0))
   }
-
-  return(results)
 }

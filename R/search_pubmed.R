@@ -121,10 +121,10 @@ get_pm <- function(searchterm,
   if (as.numeric(search$count) > 0) {
     pages <- seq(0, search$count, 500)
 
-    results <- map_df(pages, fetch_pm, search) %>%
-
+    results <- map_df(pages, fetch_pm, search)
+    
+    results %>%
       # block to create any missing variables, there is probably a more elegant way
-
       mutate(ArticleTitle = {
         if ("ArticleTitle" %in% names(.)) {
           paste0(ArticleTitle)
@@ -257,9 +257,8 @@ get_pm <- function(searchterm,
       ungroup() %>%
       filter(id == 1 | is.na(doi) | doi == "") %>%
       select(-id)
-  } else {
-    results <- tibble(doi = character(0))
-  }
 
-  return(results)
+  } else {
+    tibble(doi = character(0))
+  }
 }
