@@ -1,7 +1,8 @@
 context("searches")
 
 # --- xml2tib ---
-searchtest <- "allergy AND (soy OR \"peanut butter\")"
+# searchtest <- "allergy AND (soy OR \"peanut butter\")"
+searchtest <- "chicken AND soup"
 
 test_that("xml to tibble", {
   xtib <-
@@ -29,7 +30,8 @@ pmurl <-
     dateto = as.Date("2020-06-30")
   )
 pmsearch <- search_pm(pmurl)
-pmfetch <- fetch_pm(1, pmsearch)
+# pmfetch <- fetch_pm(1, pmsearch)
+pmfetch <- fetch_pm(0, pmsearch)
 pmget <-
   get_pm(searchtest,
     datefrom = as.Date("2019-07-01"),
