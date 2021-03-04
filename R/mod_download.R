@@ -18,6 +18,7 @@ mod_download_ui <- function(id) {
 #' download Server Function
 #'
 #' @noRd
+#' @importFrom openxlsx createWorkbook addWorksheet writeData saveWorkbook
 mod_download_server <- function(input, output, session, data, searchstring, filters) {
   ns <- session$ns
 
