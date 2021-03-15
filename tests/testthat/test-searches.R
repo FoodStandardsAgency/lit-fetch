@@ -4,23 +4,23 @@ context("searches")
 searchtest <- "allergy AND (soy OR \"peanut butter\")"
 # searchtest <- "chicken AND soup"
 
-test_that("xml to tibble", {
-  xtib <-
-    xml2tib(
-      xml2::read_xml("testxml.xml"),
-      "ArticleTitle, Author LastName",
-      "ArticleTitle"
-    )
-  expect_is(xtib, "tbl")
-  expect_equal(nrow(xtib), 1)
-  expect_equal(ncol(xtib), 2)
-  expect_equal(names(xtib), c("ArticleTitle", "LastName"))
-  # expect_equal(xtib$field, c("ArticleTitle", "LastName"))
-  
-  coltypes <- dplyr::summarise_all(xtib, class)
-  expect_is(as.character(coltypes[1,1]), "character")
-  expect_is(as.character(coltypes[1,2]), "character")
-})
+# test_that("xml to tibble", {
+#   xtib <-
+#     xml2tib(
+#       xml2::read_xml("testxml.xml"),
+#       "ArticleTitle, Author LastName",
+#       "ArticleTitle"
+#     )
+#   expect_is(xtib, "tbl")
+#   expect_equal(nrow(xtib), 1)
+#   expect_equal(ncol(xtib), 2)
+#   expect_equal(names(xtib), c("ArticleTitle", "LastName"))
+#   # expect_equal(xtib$field, c("ArticleTitle", "LastName"))
+#   
+#   coltypes <- dplyr::summarise_all(xtib, class)
+#   expect_is(as.character(coltypes[1,1]), "character")
+#   expect_is(as.character(coltypes[1,2]), "character")
+# })
 
 
 # --- PUBMED ---

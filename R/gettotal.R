@@ -10,8 +10,8 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom jsonlite fromJSON
 gettotal <- function(searchterm,
-                     dateto = Sys.Date() - 1,
                      datefrom = Sys.Date() - 365,
+                     dateto = Sys.Date() - 1,
                      across) {
   searchterm <- searchterm %>%
     str_replace_all(., "“", '"') %>%
@@ -19,7 +19,7 @@ gettotal <- function(searchterm,
   
   if ("Pubmed" %in% across) {
     pm <-
-      gen_url_pm(searchterm, dateto = dateto, datefrom = datefrom) %>%
+      gen_url_pm(searchterm, datefrom = datefrom, dateto = dateto) %>%
       search_pm() %>%
       .$count %>%
       as.numeric()
@@ -29,7 +29,7 @@ gettotal <- function(searchterm,
   
   if ("Scopus" %in% across) {
     scop <-
-      gen_url_scopus(searchterm, dateto = dateto, datefrom = datefrom) %>%
+      gen_url_scopus(searchterm, datefrom = datefrom, dateto = dateto) %>%
       get_scopus_result() %>%
       .[[3]]
   } else {
@@ -51,7 +51,7 @@ gettotal <- function(searchterm,
   
   if ("Ebsco" %in% across) {
     ebsco <-
-      gen_url_ebsco(searchterm, dateto = dateto, datefrom = datefrom) %>%
+      gen_url_ebsco(searchterm, datefrom = datefrom, dateto = dateto) %>%
       get_number_of_hits_ebsco()
   } else {
     ebsco <- 0

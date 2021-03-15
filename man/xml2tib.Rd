@@ -4,18 +4,18 @@
 \alias{xml2tib}
 \title{Pick out nodes from xml and turn it into a tibble}
 \usage{
-xml2tib(xmlnodeset, nodenames, root_node_label)
+xml2tib(xmlnodeset, nodenames, api)
 }
 \arguments{
 \item{xmlnodeset}{an xml node containing nodes}
 
 \item{nodenames}{the names of the nodes you wish to extract (string with nodes separated by commas)}
 
-\item{root_node_label}{name of the top node that (first element returned by rvest::xml_nodes)}
+\item{api}{name of api and determines the indexing and the top node to index on (first element returned by rvest::xml_nodes)}
 }
 \value{
 A tibble with node names as col names and node text as values
 }
 \description{
-Pick out nodes from xml and turn it into a tibble
+Extract xml nodes and turn xml to tibble
 }

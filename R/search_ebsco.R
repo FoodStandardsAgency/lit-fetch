@@ -85,7 +85,8 @@ fetch_ebsco <- function(url, startrec) {
   
   read_xml(url) %>%
     xml_find_all(".//controlInfo") %>%
-    xml2tib(nodenames, "jtl")
+    # xml2tib(nodenames, "jtl")
+    xml2tib(nodenames, "ebsco")
 }
 
 
@@ -195,6 +196,8 @@ get_ebsco <- function(searchterm,
       mutate(
         url = paste0("https://dx.doi.org/", doi)
       ) %>%
+      # NOTE display date in author column for test with searchterm <- "gluten AND intolerance"
+      # seems just display
       select(
         doi,
         title,

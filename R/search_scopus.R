@@ -73,6 +73,7 @@ get_scopus_result <- function(url) {
     nextpage <- NA
     
   } else if (rcount > 0) {
+    # only query first page (25 results)
     nextpage <- hit %>%
       .$link %>%
       map(., data.frame) %>%
@@ -92,6 +93,7 @@ get_scopus_result <- function(url) {
       hit %>%
       .$entry %>%
       map_df(., function(x) {
+        # magrittr::extract(   # DEBUG (make sure it is not taken from tidyr when testing)
         extract(
           x,
           c(

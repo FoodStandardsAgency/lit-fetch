@@ -102,8 +102,8 @@ mod_search_server <- function(input, output, session) {
   # ns <- session$ns
 
   returned <- eventReactive(input$searchnow, {
-    # do an initial 'number of hits' search
-
+    
+    # check that number of opening parenthesis match number of closing ones
     bracket_match_check <-
       str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
 
@@ -113,6 +113,7 @@ mod_search_server <- function(input, output, session) {
       searchresult <- list(input$searchterm, result, totalhits)
 
     } else {
+      # do an initial 'number of hits' search
       totalhits <- gettotal(
         searchterm = input$searchterm,
         datefrom = input$searchdate,
@@ -131,7 +132,6 @@ mod_search_server <- function(input, output, session) {
               searchterm = input$searchterm,
               datefrom = input$searchdate
             )
-
         } else {
           pm <- tibble(doi = character(0))
         }
@@ -139,7 +139,6 @@ mod_search_server <- function(input, output, session) {
         # get scopus articles for the given search term
         if ("Scopus" %in% input$whichdb) {
           scopus <- get_scopus(input$searchterm, datefrom = input$searchdate)
-          
         } else {
           scopus <- tibble(doi = character(0))
         }
@@ -161,16 +160,21 @@ mod_search_server <- function(input, output, session) {
 
 
         # anti-join by DOI to remove duplicates
-        
-        # result <- ebsco
-        
         result <- spring %>%
           anti_join(scopus, by = "doi") %>%
           bind_rows(scopus) %>%
           anti_join(pm, by = "doi") %>%
-          bind_rows(pm) %>%
+          bind_rows(pm)
+        
+        # FIX doi is NA for EBSCO
+        ebsco_na <- ebsco %>% filter(is.na(doi))
+        ebsco <- ebsco %>% filter(!is.na(doi))
+        
+        # Add EBSCO doi is NA back to final result
+        result <- result %>%
           anti_join(ebsco, by = "doi") %>%
-          bind_rows(ebsco)
+          bind_rows(ebsco) %>%
+          bind_rows(ebsco_na)
           
         # get abstracts that will be hidden (not currently implemented)
 
