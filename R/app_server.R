@@ -5,7 +5,7 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-  # List the first level callModules here
+  
   returndata <- callModule(mod_search_server, "search_ui_1")
 
   filterdata <-

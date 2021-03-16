@@ -11,11 +11,14 @@
 mod_search_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    # --- SEARCH BAR ---
     fluidRow(column(
       12,
       textInput(ns("searchterm"), label = "Enter search term")
       )
     ),
+
+    # --- DATABASES SELECTION ---
     checkboxGroupInput(
       ns("whichdb"),
       label = "Select databases to search",
@@ -30,6 +33,8 @@ mod_search_ui <- function(id) {
     ),
     br(),
     # h1(glue::glue("{ns('searchdate')}-label")),
+
+    # --- DATE TO SEARCH FROM ---
     fluidRow(
       # tags$head(
       #   tags$style(
@@ -58,6 +63,8 @@ mod_search_ui <- function(id) {
       )
     ),
     br(),
+
+    # --- SLIDER NUMBER OF RESULTS ALLOWED ---
     fluidRow(column(
       12,
       sliderInput(
@@ -71,21 +78,27 @@ mod_search_ui <- function(id) {
       )
     )),
     br(),
+
+    # --- SEARCH ACTION BUTTON ---
     actionButton(
       ns("searchnow"),
       "Search"
     ),
+
+    # --- SPINNER ---
     withSpinner(
       textOutput(ns("nrow")),
       type = 4,
       color = "#006F51",
       size = 0.3
     ),
+
+    # --- INFO - ERROR ---
     textOutput(ns("springerkey")),
     br(),
     p(
       "If the above search returned an error please check that you have closed all your brackets.
-      Some special characters (i.e. &) may also cause errors."
+      Some special characters (e.g. &) may also cause errors."
     )
   )
 }
@@ -107,6 +120,7 @@ mod_search_server <- function(input, output, session) {
     bracket_match_check <-
       str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
 
+    # if bracket do not match, return empty result
     if (bracket_match_check == FALSE) {
       totalhits <- -1
       result <- tibble(doi = character(0))

@@ -58,7 +58,6 @@ mod_preview_server <- function(input, output, session, data, incorex){
     tabledata <- data()[[incorex]]
     
     if(nrow(tabledata) > 0) {
-
       tabledata %>%
         mutate(abstract = if_else(source == "Scopus", "[redacted]", abstract)) %>% 
         #mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
