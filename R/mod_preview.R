@@ -46,6 +46,10 @@ mod_preview_ui <- function(id) {
 
 #' preview Server Function
 #'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#' @param data props data passed to module
+#' @param incorex props index for articles tables (included: 1, excluded: 2)
+#'
 #' @noRd
 #' @importFrom dplyr mutate if_else arrange select
 mod_preview_server <- function(input, output, session, data, incorex){

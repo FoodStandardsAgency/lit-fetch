@@ -217,14 +217,14 @@ mod_search_server <- function(input, output, session) {
     return(searchresult)
   })
 
+  # --- MESSAGE - ERROR ---
   output$nrow <- renderText({
     if (returned()[[3]] > input$maxhits) {
       paste(
-        "Woah your search returned",
+        "Your search returned",
         returned()[[3]],
-        "articles. You can adjust the above slider
-            to allow in more results or try a more specific
-            search term or a smaller time window."
+        "articles. You can adjust the above slider to allow in more results or 
+        try a more specific search term or a smaller time window."
       )
     } else if (returned()[[3]] == 0) {
       paste("Your search did not return any results.")
@@ -234,8 +234,7 @@ mod_search_server <- function(input, output, session) {
       paste(
         "Your search returned",
         returned()[[3]],
-        "articles. Refine your
-            search or continue to additional filters below."
+        "articles. Refine your search or continue to additional filters below."
       )
     }
   })
