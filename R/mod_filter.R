@@ -5,10 +5,11 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd
-#'
-#' @importFrom shiny NS tagList
+#' @import shiny
+# importFrom shiny NS tagList checkboxGroupInput wellPanel fluidRow column br p
 mod_filter_ui <- function(id) {
   ns <- NS(id)
+
   tagList(
     checkboxGroupInput(
       ns("pubchoice"),
@@ -18,20 +19,23 @@ mod_filter_ui <- function(id) {
       selected = c("review", "journal article", "other"),
     ),
     br(),
+
     checkboxGroupInput(
-      ns("otherchoices"),
-      "Additional Pubmed search restrictions",
-      choiceNames = c("English language only"),
+      ns("language"),
+      "Language options",
+      choiceNames = c("English language only (Pubmed)"),
       choiceValues = c("english"),
       inline = T
     ),
     br(),
+
     p(strong("Words to INCLUDE in title or abstract")),
     wellPanel(
       p(
         "Use OR within text fields if required - each field acts as parentheses"
       )
     ),
+
     fluidRow(
       column(3, textInput(ns("mustinclude"), "Must include")),
       column(1, strong("AND")),
@@ -40,145 +44,226 @@ mod_filter_ui <- function(id) {
       column(3, textInput(ns("mustinclude3"), "Must include"))
     ),
     br(),
+
     p(strong("Words to EXCLUDE from title and abstract")),
     p(
       "Use OR within text field if required. You cannot use AND in this filter. 
       If a document has an exclude term and an include term it will be excluded."
     ),
     br(),
+
     fluidRow(column(3, textInput(
       ns("mustexclude"), "Must exclude"
     ))),
+
     actionButton(
       ns("filternow"),
       "Filter"
     ),
-    textOutput(ns("nrow2"))
-  )
+
+    textOutput(ns("nrecords_filtered"))
+    
+    # # --- DEBUG ---
+    # tagList(
+    #   verbatimTextOutput(ns("debug_include"))
+    # ),
+    # tagList(
+    #   verbatimTextOutput(ns("debug_exclude"))
+    # ),
+    # tagList(
+    #   verbatimTextOutput(ns("debug_type"))
+    # ),
+    # tagList(
+    #   verbatimTextOutput(ns("debug_language"))
+    # )
+  ) # end tagList
 }
 
 #' filter Server Function
+#' 
+#' @param r a `reactiveValues()` list containing the search results
+#' @param id Internal parameters for {shiny}.
 #'
 #' @noRd
 #' @importFrom stringr str_remove_all str_replace_all
 #' @importFrom dplyr filter filter_at vars any_vars all_vars anti_join mutate
-mod_filter_server <- function(input, output, session, data) {
-  ns <- session$ns
+mod_filter_server <- function(id, r) {
+  moduleServer(
+    id,
+    function(input, output, session) {
 
-  filters <- reactive({
-    incterm <- paste0(
-      "(",
-      input$mustinclude,
-      ") AND (",
-      input$mustinclude2,
-      ") AND (",
-      input$mustinclude3,
-      ")"
-    ) %>%
-      str_remove_all(., " AND \\(\\)$") %>%
-      str_remove_all(., " AND \\(\\)$") %>%
-      str_remove_all(., "^\\(\\)$")
-
-    
-    exterm <- input$mustexclude
-
-    types <- input$pubchoice %>% paste0(., collapse = " , ")
-
-    if (is.null(input$otherchoices)) {
-      other <- ""
-    } else {
-      other <- input$otherchoices
-    }
-
-    list(incterm, exterm, types, other, data()[[4]])
-  })
-
-
-  filterdata <- eventReactive(input$filternow, {
-    iterm1 <-
-      str_replace_all(input$mustinclude, " OR ", "|") %>% 
-      str_replace_all(., "\"", "\\\\b")
-    
-    iterm2 <-
-      str_replace_all(input$mustinclude2, " OR ", "|") %>%
-      str_replace_all(., "\"", "\\\\b")
-    
-    iterm3 <-
-      str_replace_all(input$mustinclude3, " OR ", "|") %>%
-      str_replace_all(., "\"", "\\\\b")
-
-    excl <-
-      str_replace_all(input$mustexclude, " OR ", "|") %>%
-      str_replace_all(., "\"", "\\\\b")
-
-    types <- paste0(input$pubchoice, collapse = "|")
-
-    searchreturn <- data()[[2]]
-
-    if (nrow(searchreturn) > 0) {
-      include <- searchreturn %>%
-        filter_at(
-          vars(title, abstract),
-          any_vars(grepl(iterm1, ., ignore.case = T))
+      observeEvent(input$filternow, {
+        
+        r$filtered_result$is_filtered <- TRUE
+        
+        r$filtered_result$include_terms <- 
+          paste0(
+            "(",
+            input$mustinclude,
+            ") AND (",
+            input$mustinclude2,
+            ") AND (",
+            input$mustinclude3,
+            ")"
           ) %>%
-        filter_at(
-          vars(title, abstract),
-          any_vars(grepl(iterm2, ., ignore.case = T))
-          ) %>%
-        filter_at(
-          vars(title, abstract),
-          any_vars(grepl(iterm3, ., ignore.case = T))
-          ) %>%
-        filter(grepl(types, `publication type`))
+          str_remove_all(., " AND \\(\\)$") %>%
+          str_remove_all(., " AND \\(\\)$") %>%
+          str_remove_all(., "^\\(\\)$")
+        
+        r$filtered_result$exclude_terms <- input$mustexclude
+        
+        r$filtered_result$include_type <- 
+          input$pubchoice %>%
+            paste0(., collapse = " , ")
+        
+        r$filtered_result$language <-
+          if_else(
+            is.null(input$language), "", input$language
+          )
 
-      if ("english" %in% input$otherchoices) {
-        include <- include %>% filter(lang == "eng" | is.na(lang))
-      } else {
-        include <- include
-      }
+        
+        # # --- DEBUG ---
+        # library(stringr)
+        # input <- list()
+        # input$mustinclude <- "gluten"
+        # input$mustinclude2 <- ""
+        # input$mustinclude3 <- ""
+        # input$mustexclude <- ""
+        # input$pubchoice <- c("review", "journal article", "other")
+        # input$language <- "english"
+        
+        iterm1 <-
+          str_replace_all(input$mustinclude, " OR ", "|") %>%
+          str_replace_all(., "\"", "\\\\b")
+        
+        iterm2 <-
+          str_replace_all(input$mustinclude2, " OR ", "|") %>%
+          str_replace_all(., "\"", "\\\\b")
+        
+        iterm3 <-
+          str_replace_all(input$mustinclude3, " OR ", "|") %>%
+          str_replace_all(., "\"", "\\\\b")
 
-      if (excl == "") {
-        include <- include
-      } else {
-        include <- include %>%
-          filter_at(
-            vars(title, abstract),
-            all_vars(!grepl(excl, ., ignore.case = T))
-            )
-      }
+        excl <-
+          str_replace_all(input$mustexclude, " OR ", "|") %>%
+          str_replace_all(., "\"", "\\\\b")
+        
+        types <- paste0(input$pubchoice, collapse = "|")
+        
+        
+        # # --- DEBUG ---
+        # library(dplyr)
+        # library(tibble)
+        # # r$search_result$result <- read.csv("C:/Users/XGilbert/Downloads/search_results.csv") %>%
+        # #   as_tibble() %>%
+        # #   select(
+        # #     doi = "ï..doi",
+        # #     "title", "abstract", "author",
+        # #     "publication date (yyyy-mm-dd)" = "publication.date..yyyy.mm.dd.",
+        # #     "publication type" = "publication.type",
+        # #     "journal", "scopuslink", "source", "lang", "url"
+        # #     )
+        # # saveRDS(r, "C:/Users/XGilbert/Downloads/r_object_filtered.rds")
+        # r <- readRDS("C:/Users/XGilbert/Downloads/r_object_filtered.rds")
+
+        
+        searchreturn <- r$search_result$result
+
+        if (nrow(searchreturn) > 0) {
+          # filter on title and abstract for include terms
+          include <- searchreturn %>%
+            filter_at(
+              vars(title, abstract),
+              any_vars(grepl(iterm1, ., ignore.case = T))
+            ) %>%
+            filter_at(
+              vars(title, abstract),
+              any_vars(grepl(iterm2, ., ignore.case = T))
+            ) %>%
+            filter_at(
+              vars(title, abstract),
+              any_vars(grepl(iterm3, ., ignore.case = T))
+            ) %>%
+            # filter publication type
+            filter(grepl(types, `publication type`))
+
+          # language filters (only works for Pubmed, others are currently NA)
+          if ("english" %in% input$language) {
+            include <- include %>%
+              filter(lang == "eng" | is.na(lang))
+          }
+
+          # filter out exclusions
+          if (excl != "") {
+            include <- include %>%
+              filter_at(
+                vars(title, abstract),
+                all_vars(!grepl(excl, ., ignore.case = T))
+              )
+          }
+
+        } else {
+          include <- searchreturn
+        }
+        
+        r$filtered_result$result$include <- include
+        
+        r$filtered_result$result$exclude <-
+          searchreturn %>%
+          anti_join(include) %>%
+          mutate(exclude = 1)
+        
+      }) # end filters
       
-    } else {
-      include <- searchreturn
+      
+      output$nrecords_filtered <- renderText({
+        # case : initial state -> no message
+        validate(need(
+          !is.null(r$filtered_result$result$include),
+          message = FALSE
+        ))
+        
+        validate(need(
+          nrow(r$filtered_result$result$include) != 0,
+          "Your filters have excluded all of the articles"
+        ))
+        
+        paste(
+          "There are",
+          nrow(r$filtered_result$result$include),
+          "articles in your filtered data."
+        )
+      })
+      
+      # # --- DEBUG ---
+      # output$debug_include <- renderText({
+      #   paste0(
+      #     "r filtered_results include_terms: ",
+      #     r$filtered_result$include_terms
+      #   )
+      # })
+      # 
+      # output$debug_exclude <- renderText({
+      #   paste0(
+      #     "r filtered_results exclude_terms: ",
+      #     r$filtered_result$exclude_terms
+      #   )
+      # })
+      # 
+      # output$debug_type <- renderText({
+      #   paste0(
+      #     "r filtered_results debug_type: ",
+      #     r$filtered_result$include_type
+      #   )
+      # })
+      # 
+      # output$debug_language <- renderText({
+      #   paste0(
+      #     "r filtered_results language: ",
+      #     r$filtered_result$language
+      #   )
+      # })
+
     }
-
-    exclude <-
-      searchreturn %>%
-      anti_join(include) %>%
-      mutate(exclude = 1)
-
-    fdata <- list(include, exclude)
-
-    return(fdata)
-  })
-
-  
-  output$nrow2 <- renderText({
-    validate(need(
-      nrow(filterdata()[[1]]) != 0,
-      "Your filters have excluded all of the articles"
-    ))
-    paste(
-      "There are",
-      nrow(filterdata()[[1]]),
-      "articles in your filtered data."
-    )
-  })
-
-  return(list(filters, filterdata))
+  )
 }
-
-## To be copied in the UI
-# mod_filter_ui("filter_ui_1")
-
-## To be copied in the server
-# callModule(mod_filter_server, "filter_ui_1")

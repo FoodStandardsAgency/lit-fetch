@@ -6,14 +6,16 @@
 #'
 #' @noRd
 #'
-#' @importFrom shiny NS tagList
+#' @importFrom shiny NS tagList checkboxGroupInput
+#' @importFrom DT DTOutput
 #' @importFrom dplyr if_else
 mod_preview_ui <- function(id) {
   ns <- NS(id)
+
   tagList(
     checkboxGroupInput(
       ns("dlopts"),
-      "Fields to include",
+      label = "Fields to include",
       choiceNames = c(
         "doi",
         "title",
@@ -36,49 +38,76 @@ mod_preview_ui <- function(id) {
         "url",
         "source"
       ),
-      selected = c("doi", "title", "abstract", "url"),
+      selected = c("doi", "title"),
       inline = T
-    ),
-    DT::dataTableOutput(ns("previewarticles"))
-  )
+    ), # end checkboxGroupInput
+    
+    DTOutput(ns("previewarticles"))
+  ) # end tagList
+  
+  # # --- DEBUG ---
+  # tagList(
+  #   verbatimTextOutput(ns("previewarticles"))
+  # )
+  #
+  # tagList(
+  #   DT::dataTableOutput(ns("previewarticles"))
+  # )
+  
 }
 
 
 #' preview Server Function
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
-#' @param data props data passed to module
-#' @param incorex props index for articles tables (included: 1, excluded: 2)
+#' @param incorex (include or exclude) props index for articles tables (included: 1, excluded: 2)
+#' @param r a `reactiveValues()` list containing the search results
 #'
 #' @noRd
+#' @importFrom shiny moduleServer reactive
 #' @importFrom dplyr mutate if_else arrange select
-mod_preview_server <- function(input, output, session, data, incorex){
-  ns <- session$ns
-  
-  fields <- reactive({ input$dlopts })
-  
-  output$previewarticles <- DT::renderDataTable({
-    
-    tabledata <- data()[[incorex]]
-    
-    if(nrow(tabledata) > 0) {
-      tabledata %>%
-        mutate(abstract = if_else(source == "Scopus", "[redacted]", abstract)) %>% 
-        #mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
-        #rename("publication date" = "publication date")
-        arrange(source) %>% 
-        select( fields() )
+#' @importFrom DT renderDT
+# mod_preview_server <- function(id, data, incorex, r) {
+mod_preview_server <- function(id, incorex, r) {
+  moduleServer(
+    id,
+    function(input, output, session) {
+      fields <- reactive({ input$dlopts })
       
-    } else {
-      data()[[incorex]]
-    }
+      output$previewarticles <- renderDT({
+        
+        if (incorex == "include") {
+          # if results filtered (action button) -> display filtered ...
+          if (r$filtered_result$is_filtered) {
+            tabledata <- r$filtered_result$result$include
+          # ... else display search results
+          } else {
+            tabledata <- r$search_result$result
+          }
 
-  })
+        } else if (incorex == "exclude") {
+          tabledata <- r$filtered_result$result$exclude
+        }
+        
+        # redact scopus, sort, filter columns for fields
+        if(nrow(tabledata) > 0) {
+          tabledata %>%
+            mutate(
+              abstract = if_else(source == "Scopus", "[redacted]", abstract)
+            ) %>%
+            arrange(source) %>%
+            select( fields() )
+
+        } else {
+          tabledata
+        }
+
+      })
+      
+      # --- DEBUG ---
+      # output$previewarticles <- renderPrint({
+      #   r$search_result$search_query
+      # })
+    }
+  )
 }
-    
-## To be copied in the UI
-# mod_preview_ui("preview_ui_1")
-    
-## To be copied in the server
-# callModule(mod_preview_server, "preview_ui_1")
- 

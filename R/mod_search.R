@@ -6,15 +6,17 @@
 #'
 #' @noRd
 #'
-#' @importFrom shiny NS tagList
-#' @importFrom shinycssloaders withSpinner
+#' @import shiny
 mod_search_ui <- function(id) {
   ns <- NS(id)
   tagList(
     # --- SEARCH BAR ---
-    fluidRow(column(
-      12,
-      textInput(ns("searchterm"), label = "Enter search term")
+    fluidRow(
+      column(
+        12,
+        textInput(
+          ns("searchterm"),
+          label = "Enter search term")
       )
     ),
 
@@ -29,7 +31,8 @@ mod_search_ui <- function(id) {
         "Ebsco (title, abstract)"
       ),
       choiceValues = c("Pubmed", "Scopus", "Springer", "Ebsco"),
-      selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
+      # selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
+      selected = c("Ebsco")
     ),
     br(),
     # h1(glue::glue("{ns('searchdate')}-label")),
@@ -65,185 +68,197 @@ mod_search_ui <- function(id) {
     br(),
 
     # --- SLIDER NUMBER OF RESULTS ALLOWED ---
-    fluidRow(column(
-      12,
-      sliderInput(
-        ns("maxhits"),
-        "Only return results if there are less than (default = 1000)",
-        min = 100,
-        max = 5000,
-        value = 1000,
-        step = 50,
-        round = TRUE
+    fluidRow(
+      column(
+        12,
+        sliderInput(
+          ns("maxhits"),
+          "Only return results if there are less than (default = 1000)",
+          min = 100,
+          max = 5000,
+          value = 1000,
+          step = 50,
+          round = TRUE
+        )
       )
-    )),
+    ),
     br(),
 
     # --- SEARCH ACTION BUTTON ---
     actionButton(
-      ns("searchnow"),
-      "Search"
+      inputId = ns("searchnow"),
+      label = "Search"
     ),
-
-    # --- SPINNER ---
-    withSpinner(
-      textOutput(ns("nrow")),
-      type = 4,
-      color = "#006F51",
-      size = 0.3
-    ),
-
+    
     # --- INFO - ERROR ---
-    textOutput(ns("springerkey")),
+    textOutput(ns("nrecords")),
     br(),
     p(
       "If the above search returned an error please check that you have closed all your brackets.
       Some special characters (e.g. &) may also cause errors."
     )
-  )
+  ) # end tagList
 }
 
 #' search Server Function
+#' 
+#' @param r a `reactiveValues()` list containing the search results
 #'
 #' @noRd
 #' 
-#' @importFrom shiny eventReactive
+#' @importFrom shiny moduleServer reactive observeEvent validate need renderText
 #' @importFrom stringr str_count
 #' @importFrom tibble tibble
 #' @importFrom dplyr anti_join bind_rows
-mod_search_server <- function(input, output, session) {
-  # ns <- session$ns
+mod_search_server <- function(id, r) {
+  moduleServer(
+    id,
+    function(input, output, session) {
 
-  returned <- eventReactive(input$searchnow, {
-    
-    # check that number of opening parenthesis match number of closing ones
-    bracket_match_check <-
-      str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
+      # execute on click search button
+      observeEvent(input$searchnow, {
 
-    # if bracket do not match, return empty result
-    if (bracket_match_check == FALSE) {
-      totalhits <- -1
-      result <- tibble(doi = character(0))
-      searchresult <- list(input$searchterm, result, totalhits)
+        validate(
+          need(
+            input$searchterm != "",
+            message = FALSE
+          )
+        )
 
-    } else {
-      # do an initial 'number of hits' search
-      totalhits <- gettotal(
-        searchterm = input$searchterm,
-        datefrom = input$searchdate,
-        across = input$whichdb
-      )
-
-      if (totalhits > input$maxhits) {
-        result <- tibble(doi = character(0))
-        searchresult <- list(input$searchterm, result, totalhits)
+        # check that number of opening parenthesis match number of closing ones
+        bracket_match_check <-
+          str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
         
-      } else {
-        # get pubmed articles for the given search term
-        if ("Pubmed" %in% input$whichdb) {
-          pm <-
-            get_pm(
-              searchterm = input$searchterm,
-              datefrom = input$searchdate
-            )
-        } else {
-          pm <- tibble(doi = character(0))
-        }
-
-        # get scopus articles for the given search term
-        if ("Scopus" %in% input$whichdb) {
-          scopus <- get_scopus(input$searchterm, datefrom = input$searchdate)
-        } else {
-          scopus <- tibble(doi = character(0))
-        }
-
-        # get springer articles for the given search term
-        if ("Springer" %in% input$whichdb) {
-          spring <-
-            get_springer(input$searchterm, datefrom = input$searchdate)
-        } else {
-          spring <- tibble(doi = character(0))
-        }
         
-        if ("Ebsco" %in% input$whichdb) {
-          ebsco <-
-            get_ebsco(input$searchterm, datefrom = input$searchdate)
+        # if brackets do not match, return empty result
+        if (bracket_match_check == FALSE) {
+          r$search_result <- list(
+            search_query = input$searchterm,
+            date_from = input$searchdate,
+            # date_to = Sys.Date() - 1,
+            result = tibble(doi = character(0)),
+            totalhits = -1
+          )
+
         } else {
-          ebsco <- tibble(doi = character(0))
-        }
-
-
-        # anti-join by DOI to remove duplicates
-        result <- spring %>%
-          anti_join(scopus, by = "doi") %>%
-          bind_rows(scopus) %>%
-          anti_join(pm, by = "doi") %>%
-          bind_rows(pm)
-        
-        # FIX doi is NA for EBSCO
-        ebsco_na <- ebsco %>% filter(is.na(doi))
-        ebsco <- ebsco %>% filter(!is.na(doi))
-        
-        # Add EBSCO doi is NA back to final result
-        result <- result %>%
-          anti_join(ebsco, by = "doi") %>%
-          bind_rows(ebsco) %>%
-          bind_rows(ebsco_na)
+          # do an initial 'number of hits' search
+          totalhits <- gettotal(
+            searchterm = input$searchterm,
+            datefrom = input$searchdate,
+            across = input$whichdb
+          )
           
-        # get abstracts that will be hidden (not currently implemented)
+          # case : more hits than allowed by user
+          if (totalhits > input$maxhits) {
+            r$search_result <- list(
+              search_query = input$searchterm,
+              date_from = input$searchdate,
+              # date_to = Sys.Date() - 1,
+              result = tibble(doi = character(0)),
+              totalhits = totalhits
+            )
 
-        # if(nrow(scopus) > 0) {
-        #
-        #   dois <- result %>% filter(source == "Scopus") %>% pull(doi)
-        #
-        #   extraab <- map_df(dois, slowly(getab, rate = rate_delay(pause = .15)))
-        #
-        # } else {
-        #
-        #   extraab <- tibble(doi = character(0), altab = character(0))
-        #
-        # }
-        #
-        # result <- result %>%
-        #   left_join(extraab, by = "doi")
+          # case : less hits than allowed by user
+          } else {
+            # --- PUBMED ---
+            if ("Pubmed" %in% input$whichdb) {
+              pm <- get_pm(
+                searchterm = input$searchterm,
+                datefrom = input$searchdate
+              )
+            } else {
+              pm <- tibble(doi = character(0))
+            }
+            
+            # --- SCOPUS ---
+            if ("Scopus" %in% input$whichdb) {
+              scopus <- get_scopus(
+                input$searchterm,
+                datefrom = input$searchdate
+              )
+            } else {
+              scopus <- tibble(doi = character(0))
+            }
+            
+            # --- SPRINGER ---
+            if ("Springer" %in% input$whichdb) {
+              spring <- get_springer(
+                input$searchterm,
+                datefrom = input$searchdate
+              )
+            } else {
+              spring <- tibble(doi = character(0))
+            }
+            
+            # --- EBSCO ---
+            if ("Ebsco" %in% input$whichdb) {
+              ebsco <- get_ebsco(
+                input$searchterm,
+                datefrom = input$searchdate
+              )
+            } else {
+              ebsco <- tibble(doi = character(0))
+            }
 
-        totalhits <- nrow(result)
+            # anti-join by DOI to remove duplicates between databases
+            result <- spring %>%
+              anti_join(scopus, by = "doi") %>%
+              bind_rows(scopus) %>%
+              anti_join(pm, by = "doi") %>%
+              bind_rows(pm)
 
-        searchresult <-
-          list(input$searchterm, result, totalhits, input$searchdate)
-      }
-    }
-    
-    return(searchresult)
-  })
+            # FIX doi is NA for EBSCO
+            ebsco_na <- ebsco %>% filter(is.na(doi))
+            ebsco <- ebsco %>% filter(!is.na(doi))
+            
+            # Add EBSCO doi is NA back to final result
+            result <- result %>%
+              anti_join(ebsco, by = "doi") %>%
+              bind_rows(ebsco) %>%
+              bind_rows(ebsco_na)
+            
+            r$search_result <- list(
+              search_query = input$searchterm,
+              date_from = input$searchdate,
+              # date_to = Sys.Date() - 1,
+              result = result,
+              totalhits = nrow(result)
+            )
 
-  # --- MESSAGE - ERROR ---
-  output$nrow <- renderText({
-    if (returned()[[3]] > input$maxhits) {
-      paste(
-        "Your search returned",
-        returned()[[3]],
-        "articles. You can adjust the above slider to allow in more results or 
-        try a more specific search term or a smaller time window."
-      )
-    } else if (returned()[[3]] == 0) {
-      paste("Your search did not return any results.")
-    } else if (returned()[[3]] == -1) {
-      paste("Check your brackets, it looks like you haven't an equal number of '(' and ')'.")
-    } else {
-      paste(
-        "Your search returned",
-        returned()[[3]],
-        "articles. Refine your search or continue to additional filters below."
-      )
-    }
-  })
+          } # end less hits than allowed by user
+        } # end if bracket check
+      }) # observeEvent
+      
+      
+      # --- MESSAGE - ERROR ---
+      output$nrecords <- renderText({
+        if (r$search_result$totalhits > input$maxhits) {
+          paste(
+            "Your search returned",
+            r$search_result$totalhits,
+            "articles. You can adjust the above slider to allow in more results or 
+            try a more specific search term or a smaller time window."
+          )
 
-  return(returned)
-}
+        } else if (r$search_result$totalhits == 0) {
+          paste("Your search did not return any results.")
 
-## To be copied in the UI
-# mod_search_ui("search_ui_1")
+        } else if (r$search_result$totalhits == -1) {
+          paste("Check your brackets, it looks like you haven't an equal number of '(' and ')'.")
+        
+        # case: initial state of r
+        } else if (r$search_result$totalhits == -2) {
+          paste("")
 
-## To be copied in the server
-# callModule(mod_search_server, "search_ui_1")
+        } else {
+          paste(
+            "Your search returned",
+            r$search_result$totalhits,
+            "articles. Refine your search or continue to additional filters below."
+          )
+        }
+      }) # end renderText output$nrecords
+
+    } # end function
+  ) # end moduleServer
+} # end mod_search_server

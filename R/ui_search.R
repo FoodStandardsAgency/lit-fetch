@@ -3,10 +3,13 @@
 #' @import shiny
 #' @import shinydashboard
 #' @importFrom shinyBS bsCollapsePanel
+#' @importFrom shinybusy add_busy_spinner
 #' @noRd
 ui_search <- function() {
   tabItem(
     tabName = "search",
+    
+    add_busy_spinner(spin = "fading-circle"),
     
     wellPanel(
       h3("Search"),
