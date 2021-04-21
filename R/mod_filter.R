@@ -5,8 +5,8 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd
+#' 
 #' @import shiny
-# importFrom shiny NS tagList checkboxGroupInput wellPanel fluidRow column br p
 mod_filter_ui <- function(id) {
   ns <- NS(id)
 
@@ -65,16 +65,16 @@ mod_filter_ui <- function(id) {
     
     # # --- DEBUG ---
     # tagList(
-    #   verbatimTextOutput(ns("debug_include"))
+    #   shiny::verbatimTextOutput(ns("debug_include"))
     # ),
     # tagList(
-    #   verbatimTextOutput(ns("debug_exclude"))
+    #   shiny::verbatimTextOutput(ns("debug_exclude"))
     # ),
     # tagList(
-    #   verbatimTextOutput(ns("debug_type"))
+    #   shiny::verbatimTextOutput(ns("debug_type"))
     # ),
     # tagList(
-    #   verbatimTextOutput(ns("debug_language"))
+    #   shiny::verbatimTextOutput(ns("debug_language"))
     # )
   ) # end tagList
 }
@@ -85,6 +85,7 @@ mod_filter_ui <- function(id) {
 #' @param id Internal parameters for {shiny}.
 #'
 #' @noRd
+#' 
 #' @importFrom stringr str_remove_all str_replace_all
 #' @importFrom dplyr filter filter_at vars any_vars all_vars anti_join mutate
 mod_filter_server <- function(id, r) {

@@ -30,6 +30,7 @@ app_server <- function(input, output, session) {
     )
   )
 
+  # --- MAIN ---
   mod_search_server("search_ui_1", r = r)
   
   mod_filter_server("filter_ui_1", r = r)

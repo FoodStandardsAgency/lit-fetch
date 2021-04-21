@@ -31,8 +31,7 @@ mod_search_ui <- function(id) {
         "Ebsco (title, abstract)"
       ),
       choiceValues = c("Pubmed", "Scopus", "Springer", "Ebsco"),
-      # selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
-      selected = c("Ebsco")
+      selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
     ),
     br(),
     # h1(glue::glue("{ns('searchdate')}-label")),

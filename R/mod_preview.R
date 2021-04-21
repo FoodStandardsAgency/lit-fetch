@@ -47,11 +47,11 @@ mod_preview_ui <- function(id) {
   
   # # --- DEBUG ---
   # tagList(
-  #   verbatimTextOutput(ns("previewarticles"))
+  #   shiny::verbatimTextOutput(ns("previewarticles"))
   # )
   #
   # tagList(
-  #   DT::dataTableOutput(ns("previewarticles"))
+  #   DTOutput(ns("previewarticles"))
   # )
   
 }
@@ -64,10 +64,10 @@ mod_preview_ui <- function(id) {
 #' @param r a `reactiveValues()` list containing the search results
 #'
 #' @noRd
+#' 
 #' @importFrom shiny moduleServer reactive
 #' @importFrom dplyr mutate if_else arrange select
 #' @importFrom DT renderDT
-# mod_preview_server <- function(id, data, incorex, r) {
 mod_preview_server <- function(id, incorex, r) {
   moduleServer(
     id,
@@ -105,7 +105,7 @@ mod_preview_server <- function(id, incorex, r) {
       })
       
       # --- DEBUG ---
-      # output$previewarticles <- renderPrint({
+      # output$previewarticles <- shiny::renderPrint({
       #   r$search_result$search_query
       # })
     }
