@@ -13,7 +13,7 @@ app_server <- function(input, output, session) {
     search_result = list(
       search_query = "search query initial state",
       date_from = NULL,
-      date_to = Sys.Date() - 1,
+      date_to = NULL,
       result = tibble(doi = character(0)),
       totalhits = -2
     ),

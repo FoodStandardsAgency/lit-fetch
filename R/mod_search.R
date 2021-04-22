@@ -19,6 +19,17 @@ mod_search_ui <- function(id) {
           label = "Enter search term")
       )
     ),
+    
+    tags$head(
+      tags$style(HTML("
+      .shiny-output-error-validation {
+        color: red;
+        font-weight: bold;
+      }
+      "))
+    ),
+    verbatimTextOutput(ns("error_brackets")),
+    
 
     # --- DATABASES SELECTION ---
     checkboxGroupInput(
@@ -56,11 +67,25 @@ mod_search_ui <- function(id) {
       column(
       12,
       dateInput(
-        ns("searchdate"),
-        label = "Find articles online since (To note: Scopus will only filter as far as year)",
+        ns("searchdate_from"),
+        label = "Find articles online since (To note: Scopus will only filter as far as year) ...",
         value = Sys.Date() - 365,
         min = as.Date("1900-01-01"),
         max = Sys.Date()
+        )
+      )
+    ),
+    
+    # --- DATE TO SEARCH TO ---
+    fluidRow(
+      column(
+        12,
+        dateInput(
+          ns("searchdate_to"),
+          label = "... up to",
+          value = Sys.Date() - 1,
+          min = as.Date("1900-01-01"),
+          max = Sys.Date()
         )
       )
     ),
@@ -93,8 +118,7 @@ mod_search_ui <- function(id) {
     textOutput(ns("nrecords")),
     br(),
     p(
-      "If the above search returned an error please check that you have closed all your brackets.
-      Some special characters (e.g. &) may also cause errors."
+      helpText("Some special characters (e.g. &) may cause errors.")
     )
   ) # end tagList
 }
@@ -113,10 +137,28 @@ mod_search_server <- function(id, r) {
   moduleServer(
     id,
     function(input, output, session) {
-
+      
       # execute on click search button
       observeEvent(input$searchnow, {
 
+        # # --- DEBUG ---
+        # source("./R/gettotal.R")
+        # source("./R/search_ebsco.R")
+        # source("./R/search_pubmed.R")
+        # source("./R/search_scopus.R")
+        # source("./R/search_springer.R")
+        # source("./R/xml2tib.R")
+        # source("./R/dates.R")
+        # r <- list()
+        # r$search_result$search_query <- "soy AND allergy"
+        # input = list()
+        # input$searchterm <- "soy AND allergy"
+        # input$searchdate_from <- Sys.Date() - 365 * 2 # "2020-04-21"
+        # input$searchdate_to <- Sys.Date() - 1 # "2020-04-21"
+        # input$whichdb <- c("Ebsco", "Pubmed")
+        # # input$whichdb <- c("Ebsco")
+        
+        
         validate(
           need(
             input$searchterm != "",
@@ -124,17 +166,39 @@ mod_search_server <- function(id, r) {
           )
         )
 
+        # Reset value on each new search so preview updates on new search
+        # that follows a filter
+        r$filtered_result = list(
+          is_filtered = FALSE,
+          include_terms = "",
+          exclude_terms = "",
+          include_type = "",
+          language = "",
+          result = list(
+            include = tibble(doi = character(0)),
+            exclude = tibble(doi = character(0))
+          )
+        )
+
         # check that number of opening parenthesis match number of closing ones
         bracket_match_check <-
           str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
         
+        output$error_brackets <- renderText({
+          validate(
+            need(
+              bracket_match_check,
+              message = "Check your brackets, it looks like you haven't an equal number of '(' and ')'."
+            )
+          )
+        })
         
         # if brackets do not match, return empty result
         if (bracket_match_check == FALSE) {
           r$search_result <- list(
             search_query = input$searchterm,
-            date_from = input$searchdate,
-            # date_to = Sys.Date() - 1,
+            date_from = input$searchdate_from,
+            date_to = input$searchdate_to,
             result = tibble(doi = character(0)),
             totalhits = -1
           )
@@ -143,7 +207,8 @@ mod_search_server <- function(id, r) {
           # do an initial 'number of hits' search
           totalhits <- gettotal(
             searchterm = input$searchterm,
-            datefrom = input$searchdate,
+            datefrom = input$searchdate_from,
+            dateto = input$searchdate_to,
             across = input$whichdb
           )
           
@@ -151,8 +216,8 @@ mod_search_server <- function(id, r) {
           if (totalhits > input$maxhits) {
             r$search_result <- list(
               search_query = input$searchterm,
-              date_from = input$searchdate,
-              # date_to = Sys.Date() - 1,
+              date_from = input$searchdate_from,
+              date_to = input$searchdate_to,
               result = tibble(doi = character(0)),
               totalhits = totalhits
             )
@@ -163,7 +228,8 @@ mod_search_server <- function(id, r) {
             if ("Pubmed" %in% input$whichdb) {
               pm <- get_pm(
                 searchterm = input$searchterm,
-                datefrom = input$searchdate
+                datefrom = input$searchdate_from,
+                dateto = input$searchdate_to
               )
             } else {
               pm <- tibble(doi = character(0))
@@ -173,7 +239,8 @@ mod_search_server <- function(id, r) {
             if ("Scopus" %in% input$whichdb) {
               scopus <- get_scopus(
                 input$searchterm,
-                datefrom = input$searchdate
+                datefrom = input$searchdate_from,
+                dateto = input$searchdate_to
               )
             } else {
               scopus <- tibble(doi = character(0))
@@ -183,7 +250,8 @@ mod_search_server <- function(id, r) {
             if ("Springer" %in% input$whichdb) {
               spring <- get_springer(
                 input$searchterm,
-                datefrom = input$searchdate
+                datefrom = input$searchdate_from,
+                dateto = input$searchdate_to
               )
             } else {
               spring <- tibble(doi = character(0))
@@ -193,7 +261,8 @@ mod_search_server <- function(id, r) {
             if ("Ebsco" %in% input$whichdb) {
               ebsco <- get_ebsco(
                 input$searchterm,
-                datefrom = input$searchdate
+                datefrom = input$searchdate_from,
+                dateto = input$searchdate_to
               )
             } else {
               ebsco <- tibble(doi = character(0))
@@ -218,8 +287,8 @@ mod_search_server <- function(id, r) {
             
             r$search_result <- list(
               search_query = input$searchterm,
-              date_from = input$searchdate,
-              # date_to = Sys.Date() - 1,
+              date_from = input$searchdate_from,
+              date_to = input$searchdate_to,
               result = result,
               totalhits = nrow(result)
             )
@@ -242,14 +311,17 @@ mod_search_server <- function(id, r) {
         } else if (r$search_result$totalhits == 0) {
           paste("Your search did not return any results.")
 
-        } else if (r$search_result$totalhits == -1) {
-          paste("Check your brackets, it looks like you haven't an equal number of '(' and ')'.")
+        # } else if (r$search_result$totalhits == -1) {
+        #   paste("Check your brackets, it looks like you haven't an equal number of '(' and ')'.")
         
         # case: initial state of r
         } else if (r$search_result$totalhits == -2) {
           paste("")
 
-        } else {
+        } else if (
+            r$search_result$totalhits > 0
+            & r$search_result$totalhits <= input$maxhits
+          ) {
           paste(
             "Your search returned",
             r$search_result$totalhits,
@@ -257,6 +329,8 @@ mod_search_server <- function(id, r) {
           )
         }
       }) # end renderText output$nrecords
+      
+      
 
     } # end function
   ) # end moduleServer

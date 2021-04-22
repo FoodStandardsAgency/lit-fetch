@@ -1,0 +1,13 @@
+.git
+.github
+.cache
+.Rproj.user
+
+dev
+renv
+renv.lock
+rsconnect
+
+lfshiny.proj
+README.md
+codecov.yml

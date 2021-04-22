@@ -192,7 +192,7 @@ get_ebsco <- function(searchterm,
         "type",
         ~ if_else(
           grepl("Academic Journal", pubtype),
-          "journal article",
+          "journal article or review",
           .x
         )
       ) %>%
@@ -205,7 +205,7 @@ get_ebsco <- function(searchterm,
         url = paste0("https://dx.doi.org/", doi)
       ) %>%
       # NOTE display date in author column for test with searchterm <- "gluten AND intolerance"
-      # seems just display
+      # ... seems just display error in R studio
       select(
         doi,
         title,
