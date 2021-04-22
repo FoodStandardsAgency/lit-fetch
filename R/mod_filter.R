@@ -23,7 +23,7 @@ mod_filter_ui <- function(id) {
     checkboxGroupInput(
       ns("language"),
       "Language options",
-      choiceNames = c("English language only (Pubmed)"),
+      choiceNames = c("English language only (Ebsco and Pubmed)"),
       choiceValues = c("english"),
       inline = T
     ),

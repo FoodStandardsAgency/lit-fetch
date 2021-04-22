@@ -28,7 +28,7 @@ mod_search_ui <- function(id) {
       }
       "))
     ),
-    verbatimTextOutput(ns("error_brackets")),
+    verbatimTextOutput(ns("error")),
     
 
     # --- DATABASES SELECTION ---
@@ -39,7 +39,7 @@ mod_search_ui <- function(id) {
         "Pubmed (citation's title, collection title, abstract, other abstract, keywords)",
         "Scopus (title, abstract, keywords)",
         "Springer (title)",
-        "Ebsco (title, abstract)"
+        "Ebsco - Food Science Resource (title, abstract)"
       ),
       choiceValues = c("Pubmed", "Scopus", "Springer", "Ebsco"),
       selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
@@ -114,12 +114,10 @@ mod_search_ui <- function(id) {
       label = "Search"
     ),
     
-    # --- INFO - ERROR ---
-    textOutput(ns("nrecords")),
-    br(),
-    p(
-      helpText("Some special characters (e.g. &) may cause errors.")
-    )
+    # --- INFO ---
+    # textOutput(ns("nrecords")),
+    htmlOutput(ns("nrecords")),
+    br()
   ) # end tagList
 }
 
@@ -130,7 +128,7 @@ mod_search_ui <- function(id) {
 #' @noRd
 #' 
 #' @importFrom shiny moduleServer reactive observeEvent validate need renderText
-#' @importFrom stringr str_count
+#' @importFrom stringr str_count str_detect
 #' @importFrom tibble tibble
 #' @importFrom dplyr anti_join bind_rows
 mod_search_server <- function(id, r) {
@@ -184,17 +182,48 @@ mod_search_server <- function(id, r) {
         bracket_match_check <-
           str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
         
-        output$error_brackets <- renderText({
+        # check that number of quotation marks is even
+        single_quotation_match_check <-
+          str_count(input$searchterm, "\'") %% 2 == 0
+        
+        double_quotation_match_check <-
+          str_count(input$searchterm, "\"") %% 2 == 0
+        
+        # check special characters
+        contains_special_char <- str_detect(input$searchterm, "[&$%\\!\\^]")
+        
+        # render error messages
+        output$error <- renderText({
           validate(
             need(
               bracket_match_check,
               message = "Check your brackets, it looks like you haven't an equal number of '(' and ')'."
             )
           )
+          
+          validate(
+            need(
+              single_quotation_match_check & double_quotation_match_check,
+              message = "Check your quotations marks, it looks like you do not have an even number of single or double quotation marks."
+            )
+          )
+          
+          validate(
+            need(
+              !contains_special_char,
+              message = "Your search contains special characters (&, $, !, ^) which may cause errors."
+            )
+          )
         })
         
+        
         # if brackets do not match, return empty result
-        if (bracket_match_check == FALSE) {
+        if (
+          bracket_match_check == FALSE
+          | single_quotation_match_check == FALSE
+          | double_quotation_match_check == FALSE
+          | contains_special_char
+        ) {
           r$search_result <- list(
             search_query = input$searchterm,
             date_from = input$searchdate_from,
@@ -301,11 +330,15 @@ mod_search_server <- function(id, r) {
       # --- MESSAGE - ERROR ---
       output$nrecords <- renderText({
         if (r$search_result$totalhits > input$maxhits) {
+          # { paste("hello input is","<font color=\"#FF0000\"><b>", input$n, "</b></font>") }
           paste(
+            "<font color=\"#FF0000\"><b>",
             "Your search returned",
             r$search_result$totalhits,
-            "articles. You can adjust the above slider to allow in more results or 
-            try a more specific search term or a smaller time window."
+            "articles which is over the above slider threshold. You can adjust 
+            the above slider to allow in more results or try a more specific 
+            search term or a smaller time window.",
+            "</b></font>"
           )
 
         } else if (r$search_result$totalhits == 0) {

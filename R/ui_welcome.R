@@ -19,7 +19,7 @@ ui_welcome <- function() {
         tags$li("Springer")
       ),
       p(
-        "... and provides information about the returned publications (including a 
+        "Lit fetch provides information about the returned publications (including a 
         list of dois, titles and abstracts). It is designed to be used at the 
         start of a literature review to create an initial list of useful 
         publications. These can then be manually checked for suitability."
@@ -38,7 +38,7 @@ ui_welcome <- function() {
         a(href = "https://link.springer.com/searchhelp", "[Springer]"),
         ".
         Publications will be filtered up to but not including the date
-        that the search is being run. 
+        that the search is being run
         ."
       ),
       p(
@@ -123,10 +123,35 @@ ui_welcome <- function() {
         )
       ),
       
+      h4("Preview"),
+      p(
+        "You can preview the results of your search. The 'included' tab shows
+        anything returned by the search that has not been excluded by any
+        further filtering. Anything that has been excluded at the filter stage
+        will be in the ‘excluded’ tab."
+      ),
+      p(
+        helpText(
+          strong("NOTE:"), "where month and day of publication are not provided
+          by the service, 01 is used as a default. Similarly, where year of 
+          publication is not provided 1990 is used as a default. This means that
+          all publications that only provide the year of publication are given
+          the publication date", tags$code("01/01/year"), "in our output, and
+          those that have no details are given the date",
+          tags$code("01/01/1990"), "."
+        )
+      ),
+      
       h3("Filter"),
       p("
         The filter section lets you choose terms that you want to include or 
-        exclude in returned collection of articles."
+        exclude from your returned collection of articles."
+      ),
+      p(
+        helpText(
+          strong("NOTE:"), "To use the filter section, please click on the 
+          header to expand it."  
+        )
       ),
       p(
         "The initial search may return articles that do not contain the search
@@ -145,17 +170,9 @@ ui_welcome <- function() {
         journal review, or other)."
       ),
       p(
-        "The English language filter only applies to articles returned from
-        Pubmed, so foreign language items may still appear in the Ebsco, Scopus
-        and Springer results."
-      ),
-
-      h3("Preview"),
-      p(
-        "You can preview the results of your search. The 'included' tab shows
-        anything returned by the search that has not been excluded by any
-        further filtering. Anything that has been excluded at the filter stage
-        will be in the ‘excluded’ tab."
+        "The English language filter only applies to articles returned from 
+        Ebsco and Pubmed, so foreign language items may still appear in the 
+        Scopus and Springer results."
       ),
       
       h3("Download"),
@@ -163,17 +180,6 @@ ui_welcome <- function() {
         "You can download an excel spreadsheet with your search term, filters,
         included and excluded articles (with all fields). You can refer back to
         this spreadsheet in the future as a document of what filters were used."
-      ),
-      p(
-        helpText(
-          strong("NOTE:"), "where month and day of publication are not provided
-          by the service, 01 is used as a default. Similarly, where year of 
-          publication is not provided 1990 is used as a default. This means that
-          all publications that only provide the year of publication are given
-          the publication date", tags$code("01/01/year"), "in our output, and
-          those that have no details are given the date",
-          tags$code("01/01/1990"), "."
-        )
       ),
 
       h3("Help and feedback"),
