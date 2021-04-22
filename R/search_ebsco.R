@@ -158,26 +158,44 @@ get_ebsco <- function(searchterm,
       # handle multiple date formats
       # "2018 Supplementury issue", "Sep2015 Special Issue", "Mar2021", "1/20/2021", "2020"
       mutate(
-        date_format_1 = as.Date(dt, "%m/%d/%Y"),
+        date_format_1 = as.Date(dt, "%m/%d/%Y")
+      ) %>%
+      mutate(
         date_format_2 = if_else(
-          grepl(".*[a-zA-Z]{3}[0-9]{4}", dt),
-          str_extract(dt, "[a-zA-Z]{3}[0-9]{4}"),
+          grepl(".*[a-zA-Z]{3}[0-9]{4}|.*[a-zA-Z]{3}[0-9]{2}", dt),
+          str_extract(dt, "[a-zA-Z]{3}[0-9]{4}|[a-zA-Z]{3}[0-9]{2}"),
           ""
-        ),
-        date_format_2 = format_month_abb_year(dt),
-        date_format_2 = as.Date(date_format_2, "%Y-%m-%d"),
+        )
+      ) %>%
+      mutate_at(
+        "date_format_2",
+        ~ format_month_abb_year_v(.x)
+      ) %>%
+      mutate_at(
+        "date_format_2",
+        ~ as.Date(.x, "%Y-%m-%d")
+      ) %>%
+      mutate(
         date_format_3 = if_else(
           grepl("\\b[0-9]{4}\\b", dt),
           str_extract(dt, "\\b[0-9]{4}\\b"),
           ""
-        ),
-        date_format_3 = format(as.Date(date_format_3, "%Y"), "%Y-01-01"),
-        date_format_3 = as.Date(date_format_3),
+        )
+      ) %>%
+      mutate_at(
+        "date_format_3",
+        ~ format(as.Date(.x, "%Y"), "%Y-01-01")
+      ) %>%
+      mutate_at(
+        "date_format_3",
+        ~ as.Date(date_format_3)
+      ) %>%
+      mutate(
         pdate = case_when(
           !is.na(date_format_1) ~ date_format_1,
           !is.na(date_format_2) ~ date_format_2,
           !is.na(date_format_3) ~ date_format_3
-        )
+        )    
       ) %>%
       mutate_at(
         "pdate",
