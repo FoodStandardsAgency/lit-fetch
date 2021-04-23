@@ -2,32 +2,53 @@
 #'
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
+#'
 #' @import shiny
+#' @importFrom tibble tibble
+#' 
 #' @noRd
 app_server <- function(input, output, session) {
   
-  returndata <- callModule(mod_search_server, "search_ui_1")
-
-  filterdata <-
-    callModule(mod_filter_server, "filter_ui_1", data = returndata)
-
-  callModule(mod_preview_server,
-    "preview_ui_1",
-    data = filterdata[[2]],
-    incorex = 1
+  # --- INSTANTIATE AND DEFINE APP STATE ---
+  r <- reactiveValues(
+    search_result = list(
+      search_query = "search query initial state",
+      date_from = NULL,
+      date_to = NULL,
+      result = tibble(doi = character(0)),
+      totalhits = -2
+    ),
+    filtered_result = list(
+      is_filtered = FALSE,
+      include_terms = "",
+      exclude_terms = "",
+      include_type = "",
+      language = "",
+      result = list(
+        include = tibble(doi = character(0)),
+        exclude = tibble(doi = character(0))
+      )
+    )
   )
 
-  callModule(mod_preview_server,
-    "preview_ui_2",
-    data = filterdata[[2]],
-    incorex = 2
-  )
-
-  callModule(
-    mod_download_server,
-    "download_ui_1",
-    data = filterdata[[2]],
-    searchstring = returndata,
-    filters = filterdata[[1]]
-  )
+  # --- MAIN ---
+  mod_search_server("search_ui_1", r = r)
+  
+  mod_filter_server("filter_ui_1", r = r)
+  
+  mod_preview_server("preview_ui_1", incorex = "include", r = r)
+  
+  mod_preview_server("preview_ui_2", incorex = "exclude", r = r)
+  
+  mod_download_server("download_ui_1", r = r)
+  
+  # cat(file=stderr(), "value of r$search_results", r$search_result$search_query, "\n")
+  
+  # # --- DEBUG ---
+  # # library(tibble)
+  # # r <- list()
+  # # r$search_result <- search_result
+  # # r$filtered_result <- filtered_result
+  # # saveRDS(r, "C:/Users/XGilbert/Downloads/r_initial_state.rds")
+  # r <- readRDS("C:/Users/XGilbert/Downloads/r_initial_state.rds")
 }
