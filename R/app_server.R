@@ -2,9 +2,10 @@
 #'
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
+#'
 #' @import shiny
-#' @importFrom data.table copy
 #' @importFrom tibble tibble
+#' 
 #' @noRd
 app_server <- function(input, output, session) {
   
@@ -13,7 +14,7 @@ app_server <- function(input, output, session) {
     search_result = list(
       search_query = "search query initial state",
       date_from = NULL,
-      date_to = Sys.Date() - 1,
+      date_to = NULL,
       result = tibble(doi = character(0)),
       totalhits = -2
     ),
@@ -30,6 +31,7 @@ app_server <- function(input, output, session) {
     )
   )
 
+  # --- MAIN ---
   mod_search_server("search_ui_1", r = r)
   
   mod_filter_server("filter_ui_1", r = r)

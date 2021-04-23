@@ -9,3 +9,5 @@ dev/*
 !dev/02_dev.R
 !dev/03_deploy.R
 !dev/run_dev.R
+
+secrets/*

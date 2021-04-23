@@ -5,8 +5,8 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd
+#' 
 #' @import shiny
-# importFrom shiny NS tagList checkboxGroupInput wellPanel fluidRow column br p
 mod_filter_ui <- function(id) {
   ns <- NS(id)
 
@@ -23,7 +23,7 @@ mod_filter_ui <- function(id) {
     checkboxGroupInput(
       ns("language"),
       "Language options",
-      choiceNames = c("English language only (Pubmed)"),
+      choiceNames = c("English language only (Ebsco and Pubmed)"),
       choiceValues = c("english"),
       inline = T
     ),
@@ -65,16 +65,16 @@ mod_filter_ui <- function(id) {
     
     # # --- DEBUG ---
     # tagList(
-    #   verbatimTextOutput(ns("debug_include"))
+    #   shiny::verbatimTextOutput(ns("debug_include"))
     # ),
     # tagList(
-    #   verbatimTextOutput(ns("debug_exclude"))
+    #   shiny::verbatimTextOutput(ns("debug_exclude"))
     # ),
     # tagList(
-    #   verbatimTextOutput(ns("debug_type"))
+    #   shiny::verbatimTextOutput(ns("debug_type"))
     # ),
     # tagList(
-    #   verbatimTextOutput(ns("debug_language"))
+    #   shiny::verbatimTextOutput(ns("debug_language"))
     # )
   ) # end tagList
 }
@@ -85,6 +85,7 @@ mod_filter_ui <- function(id) {
 #' @param id Internal parameters for {shiny}.
 #'
 #' @noRd
+#' 
 #' @importFrom stringr str_remove_all str_replace_all
 #' @importFrom dplyr filter filter_at vars any_vars all_vars anti_join mutate
 mod_filter_server <- function(id, r) {
@@ -112,10 +113,12 @@ mod_filter_server <- function(id, r) {
         
         r$filtered_result$exclude_terms <- input$mustexclude
         
+        # publication type
         r$filtered_result$include_type <- 
           input$pubchoice %>%
             paste0(., collapse = " , ")
         
+        # language
         r$filtered_result$language <-
           if_else(
             is.null(input$language), "", input$language
@@ -148,7 +151,17 @@ mod_filter_server <- function(id, r) {
           str_replace_all(input$mustexclude, " OR ", "|") %>%
           str_replace_all(., "\"", "\\\\b")
         
-        types <- paste0(input$pubchoice, collapse = "|")
+        
+        if (
+          "review" %in% input$pubchoice
+          | "journal article" %in% input$pubchoice
+        ) {
+          types <- c(input$pubchoice, "journal article or review")
+        } else {
+          types <- input$pubchoice
+        }
+        
+        types <- paste0(types, collapse = "|")
         
         
         # # --- DEBUG ---
@@ -172,25 +185,32 @@ mod_filter_server <- function(id, r) {
         if (nrow(searchreturn) > 0) {
           # filter on title and abstract for include terms
           include <- searchreturn %>%
+            
+            # first term
             filter_at(
               vars(title, abstract),
               any_vars(grepl(iterm1, ., ignore.case = T))
             ) %>%
+            
+            # second term
             filter_at(
               vars(title, abstract),
               any_vars(grepl(iterm2, ., ignore.case = T))
             ) %>%
+            
+            # third term
             filter_at(
               vars(title, abstract),
               any_vars(grepl(iterm3, ., ignore.case = T))
             ) %>%
+            
             # filter publication type
             filter(grepl(types, `publication type`))
 
           # language filters (only works for Pubmed, others are currently NA)
           if ("english" %in% input$language) {
             include <- include %>%
-              filter(lang == "eng" | is.na(lang))
+              filter(lang == "eng" | lang == "English" | is.na(lang))
           }
 
           # filter out exclusions
@@ -217,15 +237,28 @@ mod_filter_server <- function(id, r) {
       
       
       output$nrecords_filtered <- renderText({
+        
+        # validate(need(
+        #   !is.null(r$filtered_result$result$include),
+        #   message = FALSE
+        # ))
+        
         # case : initial state -> no message
         validate(need(
-          !is.null(r$filtered_result$result$include),
+          r$search_result$search_query != "search query initial state",
           message = FALSE
         ))
         
+        # case : no result from search
         validate(need(
-          nrow(r$filtered_result$result$include) != 0,
-          "Your filters have excluded all of the articles"
+          nrow(r$search_result$result) != 0,
+          "Your query did not return any result to filter on."
+        ))
+        
+        # case : all results filtered out
+        validate(need(
+          !(nrow(r$filtered_result$result$include) == 0 & nrow(r$filtered_result$result$exclude) >= 1),
+          "Your filters have excluded all results."
         ))
         
         paste(

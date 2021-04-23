@@ -18,17 +18,19 @@ mod_download_ui <- function(id) {
 #' download Server Function
 #'
 #' @noRd
+#' 
 #' @importFrom openxlsx createWorkbook addWorksheet writeData saveWorkbook
 mod_download_server <- function(id, r) {
   moduleServer(
     id,
     function(input, output, session) {
-      # ns <- session$ns
 
       output$filedownload <- downloadHandler(
-        filename = "search_results.xlsx",
+        filename <- "search_results.xlsx",
         
         content = function(file) {
+          
+          # --- INSTANTIATE WORKBOOK ---
           wb <- createWorkbook()
           addWorksheet(wb, "Search parameters")
           addWorksheet(wb, "Included articles")
