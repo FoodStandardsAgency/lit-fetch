@@ -8,4 +8,6 @@ dev_history.R
 $run_dev.*
 ^app\.R$
 ^rsconnect$
-^working$
+^codecov\.yml$
+^\.travis\.yml$
+^\.github$

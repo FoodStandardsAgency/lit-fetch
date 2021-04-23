@@ -4,56 +4,110 @@
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
-#' @noRd 
+#' @noRd
 #'
-#' @importFrom shiny NS tagList 
-mod_preview_ui <- function(id){
+#' @importFrom shiny NS tagList checkboxGroupInput
+#' @importFrom DT DTOutput
+#' @importFrom dplyr if_else
+mod_preview_ui <- function(id) {
   ns <- NS(id)
+
   tagList(
-    checkboxGroupInput(ns("dlopts"),
-                       "Fields to include",
-                       choiceNames = c("doi", "title", "abstract", "journal", "author", "publication date", "publication type", "url", "source"),
-                       choiceValues = c("doi", "title", "abstract", "journal", "author", "publication date (yyyy-mm-dd)", "publication type", "url", "source"),
-                       selected = c("doi", "title", "abstract", "url"),
-                       inline = T),
-    DT::dataTableOutput(ns("previewarticles"))
-  )
-}
+    checkboxGroupInput(
+      ns("dlopts"),
+      label = "Fields to include",
+      choiceNames = c(
+        "doi",
+        "title",
+        "abstract",
+        "journal",
+        "author",
+        "publication date",
+        "publication type",
+        "url",
+        "source"
+      ),
+      choiceValues = c(
+        "doi",
+        "title",
+        "abstract",
+        "journal",
+        "author",
+        "publication date (yyyy-mm-dd)",
+        "publication type",
+        "url",
+        "source"
+      ),
+      selected = c("doi", "title"),
+      inline = T
+    ), # end checkboxGroupInput
     
+    DTOutput(ns("previewarticles"))
+  ) # end tagList
+  
+  # # --- DEBUG ---
+  # tagList(
+  #   shiny::verbatimTextOutput(ns("previewarticles"))
+  # )
+  #
+  # tagList(
+  #   DTOutput(ns("previewarticles"))
+  # )
+  
+}
+
+
 #' preview Server Function
 #'
-#' @noRd 
-mod_preview_server <- function(input, output, session, data, incorex){
-  ns <- session$ns
-  
-  fields <- reactive({ input$dlopts })
-  
-  output$previewarticles <- DT::renderDataTable({
-    
-    tabledata <- data()[[incorex]]
-    
-    if(nrow(tabledata) > 0) {
+#' @param id,input,output,session Internal parameters for {shiny}.
+#' @param incorex (include or exclude) props index for articles tables (included: 1, excluded: 2)
+#' @param r a `reactiveValues()` list containing the search results
+#'
+#' @noRd
+#' 
+#' @importFrom shiny moduleServer reactive
+#' @importFrom dplyr mutate if_else arrange select
+#' @importFrom DT renderDT
+mod_preview_server <- function(id, incorex, r) {
+  moduleServer(
+    id,
+    function(input, output, session) {
+      fields <- reactive({ input$dlopts })
+      
+      output$previewarticles <- renderDT({
+        
+        if (incorex == "include") {
+          # if results filtered (action button) -> display filtered ...
+          if (r$filtered_result$is_filtered) {
+            tabledata <- r$filtered_result$result$include
+          # ... else display search results
+          } else {
+            tabledata <- r$search_result$result
+          }
 
-      tabledata %>%
-        mutate(abstract = if_else(source == "Scopus", "[redacted]", abstract)) %>% 
-        #mutate(abstract = if_else(source == "Scopus", altab, abstract)) %>% 
-        #rename("publication date" = "publication date")
-        arrange(source) %>% 
-        select( fields() )
+        } else if (incorex == "exclude") {
+          tabledata <- r$filtered_result$result$exclude
+        }
+        
+        # redact scopus, sort, filter columns for fields
+        if(nrow(tabledata) > 0) {
+          tabledata %>%
+            mutate(
+              abstract = if_else(source == "Scopus", "[redacted]", abstract)
+            ) %>%
+            arrange(source) %>%
+            select( fields() )
+
+        } else {
+          tabledata
+        }
+
+      })
       
-    } else {
-      
-      data()[[incorex]]
-      
+      # --- DEBUG ---
+      # output$previewarticles <- shiny::renderPrint({
+      #   r$search_result$search_query
+      # })
     }
-
-  })
-
+  )
 }
-    
-## To be copied in the UI
-# mod_preview_ui("preview_ui_1")
-    
-## To be copied in the server
-# callModule(mod_preview_server, "preview_ui_1")
- 

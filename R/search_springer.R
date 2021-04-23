@@ -6,8 +6,8 @@
 #' @param datefrom earliest date added
 #' @param dateto latest date added
 #' @param apikey Springer API key
-#' @import stringr
-#' 
+#' @importFrom stringr str_replace_all str_remove_all str_split str_c str_squish
+#' @importFrom purrr map_chr
 gen_url_springer <- function(searchterm,
                              datefrom = as.character(Sys.Date() - 365),
                              dateto = as.character(Sys.Date() - 1),
@@ -40,15 +40,15 @@ gen_url_springer <- function(searchterm,
   return(searchurl)
 }
 
+
 #' Springer fetch 1 page (up to 100 per page)
 #' 
 #' @param searchurl URL with the search query
 #' @param page page to fetch
-#' @import dplyr
+#' @importFrom dplyr select mutate_at
 #' @importFrom jsonlite fromJSON
-#' @import purrr
-#' @import httr
-#' 
+#' @importFrom httr GET content
+#' @importFrom tibble as_tibble
 get_results_springer <- function(page, searchurl) {
   
   pagurl <- paste0(searchurl,"&p=100&s=",page)
@@ -72,8 +72,13 @@ get_results_springer <- function(page, searchurl) {
 #' @param datefrom earliest date added
 #' @param dateto latest date added
 #' @param apikey Springer API key
-#' @return a tibble with 11 columns    
-
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @importFrom purrr map_df
+#' @importFrom dplyr group_by ungroup filter select mutate left_join if_else row_number
+#' @importFrom tidyr unnest
+#' @importFrom tibble tibble
+#' @return a tibble with 11 columns
 get_springer <- function(searchterm,
                          datefrom = as.character(Sys.Date() - 365),
                          dateto = as.character(Sys.Date() - 1),

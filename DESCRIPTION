@@ -1,34 +1,46 @@
 Package: lfshiny
 Title: Lit fetch app
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: person('Helen', 'Graham', email = 'datascience@food.gov.uk', role = c('cre', 'aut'))
 Description: App to search, filter and download literature.
 License: MIT
+Depends:
+    R (>= 3.6)
 Imports: 
-    config,
-    golem,
-    shiny,
-    processx,
     attempt,
+    config,
     DT,
-    glue,
-    htmltools,
-    shinydashboard,
-    pkgload,
     dplyr,
-    stringr,
+    glue,
+    golem,
+    processx,
+    pkgload,
     purrr,
     httr,
     rvest,
     xml2,
-    tidyr,
-    shinycssloaders,
     openxlsx,
     jsonlite,
+    magrittr,
     rlang,
-    magrittr
+    shiny,
+    shinyBS,
+    shinybusy,
+    shinydashboard,
+    shinycssloaders,
+    stringr,
+    tidyr,
+    tibble
+Suggests:
+    covr,
+    htmltools,
+    htmlwidgets,
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder:
+    knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
-Suggests: 
-    testthat
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
