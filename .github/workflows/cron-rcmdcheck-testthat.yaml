@@ -1,11 +1,11 @@
 on:
   schedule:
-    - cron: "20 9 * * FRI"
+    - cron: "55 15 * * FRI"
 
-name: cron-rcmdcheck-testthat
+name: "Run testthat on schedule"
 
 jobs:
-  R-CMD-check:
+  R-CMD-check-CRON:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})

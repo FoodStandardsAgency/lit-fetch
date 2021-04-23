@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [main, master, add-ebsco, hotfix-namespace]
+    branches: [main, master]
   
   pull_request:
     branches: [main]

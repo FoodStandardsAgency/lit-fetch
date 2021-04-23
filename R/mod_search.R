@@ -183,8 +183,8 @@ mod_search_server <- function(id, r) {
           str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
         
         # check that number of quotation marks is even
-        single_quotation_match_check <-
-          str_count(input$searchterm, "\'") %% 2 == 0
+        # single_quotation_match_check <-
+        #   str_count(input$searchterm, "\'") %% 2 == 0
         
         double_quotation_match_check <-
           str_count(input$searchterm, "\"") %% 2 == 0
@@ -203,8 +203,9 @@ mod_search_server <- function(id, r) {
           
           validate(
             need(
-              single_quotation_match_check & double_quotation_match_check,
-              message = "Check your quotations marks, it looks like you do not have an even number of single or double quotation marks."
+              # single_quotation_match_check & double_quotation_match_check,
+              double_quotation_match_check,
+              message = "Check your quotations marks, it looks like you do not have an even number of double quotation marks."
             )
           )
           

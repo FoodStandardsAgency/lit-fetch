@@ -26,7 +26,7 @@ mod_download_server <- function(id, r) {
     function(input, output, session) {
 
       output$filedownload <- downloadHandler(
-        filename = "search_results.xlsx",
+        filename <- "search_results.xlsx",
         
         content = function(file) {
           
