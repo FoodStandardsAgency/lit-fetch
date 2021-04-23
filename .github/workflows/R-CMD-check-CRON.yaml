@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "15 16 * * FRI"
+    - cron: "30 8 * * SAT"
 
 name: R-CMD-check-CRON
 
