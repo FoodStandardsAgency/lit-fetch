@@ -221,7 +221,7 @@ mod_search_server <- function(id, r) {
         # if brackets do not match, return empty result
         if (
           bracket_match_check == FALSE
-          | single_quotation_match_check == FALSE
+          # | single_quotation_match_check == FALSE
           | double_quotation_match_check == FALSE
           | contains_special_char
         ) {
