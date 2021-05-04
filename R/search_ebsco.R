@@ -79,7 +79,8 @@ fetch_ebsco <- function(url, startrec) {
   url <- paste0(url, "&startrec=", startrec, "&numrec=200")
 
   nodenames <- 
-    "atl,
+    "plink,
+    atl,
     ab,
     ui[type=\"doi\"],
     jtl,
@@ -90,8 +91,8 @@ fetch_ebsco <- function(url, startrec) {
     language"
   
   read_xml(url) %>%
-    xml_find_all(".//controlInfo") %>%
-    # xml2tib(nodenames, "jtl")
+    xml_find_all(".//rec") %>%
+    
     xml2tib(nodenames, "ebsco")
 }
 
@@ -131,10 +132,11 @@ get_ebsco <- function(searchterm,
       dt = NA_character_,
       pubtype = NA_character_,
       journal = NA_character_,
-      lang = NA_character_
+      lang = NA_character_,
+      url = NA_character_
     )
     
-    results <- map_df(pages, ~ fetch_ebsco(url, .x)) #%>%
+    results <- map_df(pages, ~ fetch_ebsco(url, .x))
     
     results %>%
       select(
@@ -147,7 +149,8 @@ get_ebsco <- function(searchterm,
         dt = contains("dt"),
         pubtype = contains("pubtype"),
         journal = contains("jtl"),
-        lang = contains("Language")
+        lang = contains("Language"),
+        url = contains("plink")
       ) %>%
       add_column(!!!cols[!names(cols) %in% names(.)]) %>%
       replace(., . == "NA", "") %>%
@@ -218,9 +221,11 @@ get_ebsco <- function(searchterm,
         "type",
         ~ if_else(type == "", "other", .x)
       ) %>%
-      # need ebsco link
       mutate(
-        url = paste0("https://dx.doi.org/", doi)
+        url = case_when(
+          is.na(doi) ~ url,
+          TRUE ~ paste0("https://dx.doi.org/", doi)
+        )
       ) %>%
       # NOTE display date in author column for test with searchterm <- "gluten AND intolerance"
       # ... seems just display error in R studio

@@ -44,16 +44,6 @@ mod_preview_ui <- function(id) {
     
     DTOutput(ns("previewarticles"))
   ) # end tagList
-  
-  # # --- DEBUG ---
-  # tagList(
-  #   shiny::verbatimTextOutput(ns("previewarticles"))
-  # )
-  #
-  # tagList(
-  #   DTOutput(ns("previewarticles"))
-  # )
-  
 }
 
 
@@ -103,11 +93,6 @@ mod_preview_server <- function(id, incorex, r) {
         }
 
       })
-      
-      # --- DEBUG ---
-      # output$previewarticles <- shiny::renderPrint({
-      #   r$search_result$search_query
-      # })
     }
   )
 }

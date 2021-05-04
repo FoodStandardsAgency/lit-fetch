@@ -79,7 +79,12 @@ ui_welcome <- function() {
                                 
         tags$li(
           "Using quotation marks: ", tags$code("\"Clostridium botulinum\""),
-          "will return articles containing that exact term."),
+          "will return articles containing that exact term.",
+          helpText(
+            strong("NOTE:"), "To ensure compatibility and reproductibility,
+            use double quotations marks."
+          )
+        ),
         tags$li(
           "Using wildcards: ", tags$code("botul*"), "will return anything 
           containing ", em("botulism"), ",", em("botulinium"), "etc.",

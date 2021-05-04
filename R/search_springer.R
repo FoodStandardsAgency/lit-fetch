@@ -92,17 +92,11 @@ get_springer <- function(searchterm,
     .$result %>% .$total 
   
   if(as.numeric(total) > 0) {
-    
-    # paginate
-    
     pages <- seq(1, total, 100)
-    
-    # map across pages
     
     result <- map_df(pages, get_results_springer, searchurl = searchurl)
     
     # clean
-    
     urls <- result %>% 
       group_by(doi) %>% 
       unnest(cols = "url") %>% 
@@ -119,21 +113,30 @@ get_springer <- function(searchterm,
       unique() %>%
       select(doi, author = createlist)
     
-    types <- result %>% 
+    types <- result %>%
       group_by(doi) %>%
       select(doi, publicationType, genre) %>%
       unnest(cols = "genre") %>%
       mutate(genre = paste0(genre, collapse = " ; ")) %>%
       unique() %>%
       mutate(type = "") %>%
+      mutate(
+        type = if_else(
+          publicationType == "Journal" & grepl(
+            "original( )?paper|^article$|original( )?article|research( )?article|^research$|research( )?paper|original( )?contribution", 
+            genre, ignore.case = T
+            ),
+          "journal article",
+          type
+          )
+      ) %>%
       mutate(type = if_else(publicationType == "Journal" &
-                              grepl("original( )?paper|^article$|original( )?article|research( )?article|^research$|research( )?paper|original( )?contribution",
-                                    genre, ignore.case = T),
-                            "journal article", type)) %>%
-      mutate(type = if_else(publicationType == "Journal" &
-                              grepl("review( )?paper|review( )?article|invited( )review|^review$",
-                                    genre, ignore.case = T),
-                            "review", type)) %>%
+        grepl("review( )?paper|review( )?article|invited( )review|^review$",
+          genre,
+          ignore.case = T
+        ),
+      "review", type
+      )) %>%
       mutate(type = if_else(type == "", "other", type)) %>%
       select(-genre) %>%
       unique() %>%
@@ -143,29 +146,30 @@ get_springer <- function(searchterm,
       left_join(urls, by = "doi") %>%
       left_join(authors, by = "doi") %>%
       left_join(types, by = "doi") %>%
-      select(doi,
-             title,
-             abstract,
-             author,
-             `publication date (yyyy-mm-dd)` = publicationDate,
-             `publication type` = type,
-             journal = publicationName,
-             url = url.y) %>% 
-      mutate(source = "Springer",
-             lang = NA) %>% 
-      group_by(doi) %>% 
-      mutate(id = row_number()) %>% 
-      ungroup() %>% 
-      filter(id == 1 | is.na(doi)) %>% 
+      select(
+        doi,
+        title,
+        abstract,
+        author,
+        `publication date (yyyy-mm-dd)` = publicationDate,
+        `publication type` = type,
+        journal = publicationName,
+        url = url.y
+      ) %>%
+      mutate(
+        source = "Springer",
+        lang = NA
+      ) %>%
+      group_by(doi) %>%
+      mutate(id = row_number()) %>%
+      ungroup() %>%
+      filter(id == 1 | is.na(doi)) %>%
       select(-id)
     
     
   } else {
-    
     result <- tibble(doi = character(0))
-    
   }
   
   return(result)
-  
 }

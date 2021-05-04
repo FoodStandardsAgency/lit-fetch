@@ -31,7 +31,7 @@ xml2tib <- function(xmlnodeset, nodenames, api) {
     # give group number (node number) to elements in same node
     bind_cols(values, fields) %>%
       mutate(idx = pmap_int(., function(field, ...) {
-        if (field == "jtl") {
+        if (field == "plink") {
           index <<- index + 1L
         }
         index

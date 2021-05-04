@@ -29,7 +29,6 @@ app_ui <- function(request) {
         # to include google analytics, save the tracking script in
         # the working directory as google-analytics.html, and
         # uncomment the code below
-
         # tags$head(includeHTML(("google-analytics.html"))),
 
         tabItems(

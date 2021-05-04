@@ -93,8 +93,7 @@ get_scopus_result <- function(url) {
       hit %>%
       .$entry %>%
       map_df(., function(x) {
-        magrittr::extract(   # DEBUG (make sure it is not taken from tidyr when testing)
-        # extract(
+        magrittr::extract(   # (make sure it is not taken from tidyr when testing)
           x,
           c(
             "dc:title",
@@ -158,20 +157,22 @@ get_scopus <-
            cursor = "*") {
     df <- gen_url_scopus(searchterm, datefrom, dateto) %>%
       get_scopus_result()
-    first <- df
 
     if (df[[3]] == 0) {
-      result <- tibble(doi = character(0))
-      return(result)
+      return(
+        tibble(doi = character(0))
+      )
       
     } else if (df[[3]] > 0 & df[[3]] <= 25) {
       result <- df[[1]]
       
     } else {
-      pages <- ceiling(df[[3]] / 25) - 1
-      restof <- vector("list", pages)
+      n_pages <- ceiling(df[[3]] / 25) - 1
+      restof <- vector("list", n_pages)
+      first <- df
 
-      for (i in 1:pages) {
+      # df[[2]] points to next page (cursor)
+      for (i in 1:n_pages) {
         df <- get_scopus_result(df[[2]])
         restof[[i]] <- df[[1]]
       }
@@ -179,8 +180,10 @@ get_scopus <-
       result <- bind_rows(first[[1]], restof)
     }
 
-    cleanresult <- result %>%
-      mutate(pubtype = paste(`prism:aggregationType`, `subtypeDescription`)) %>%
+    result %>%
+      mutate(
+        pubtype = paste(`prism:aggregationType`, `subtypeDescription`)
+      ) %>%
       mutate(
         pubtype = case_when(
           pubtype == "Journal Article" ~ "journal article",
@@ -203,13 +206,17 @@ get_scopus <-
         lang = NA,
         url = paste0("https://dx.doi.org/", doi)
       ) %>%
-      group_by(doi) %>%
+      mutate(
+        url = case_when(
+          is.na(doi) ~ scopuslink,
+          TRUE ~ url
+        )
+      ) %>%
+      group_by(url) %>%
       mutate(id = row_number()) %>%
       ungroup() %>%
-      filter(id == 1 | is.na(doi)) %>%
+      filter(id == 1) %>%
       select(-id)
-
-    return(cleanresult)
   }
 
 

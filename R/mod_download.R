@@ -36,7 +36,7 @@ mod_download_server <- function(id, r) {
           addWorksheet(wb, "Included articles")
           addWorksheet(wb, "Excluded articles")
           
-          # --- SEARCH PARAMETERS ---
+          # --- SHEET - SEARCH PARAMETERS ---
           writeData(
             wb,
             "Search parameters",
@@ -55,7 +55,7 @@ mod_download_server <- function(id, r) {
             )
           )
           
-          # --- ARTICLES ---
+          # --- SHEET - ARTICLES ---
           if (r$filtered_result$is_filtered) {
             writeData(
               wb,

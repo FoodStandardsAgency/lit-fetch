@@ -62,22 +62,10 @@ mod_filter_ui <- function(id) {
     ),
 
     textOutput(ns("nrecords_filtered"))
-    
-    # # --- DEBUG ---
-    # tagList(
-    #   shiny::verbatimTextOutput(ns("debug_include"))
-    # ),
-    # tagList(
-    #   shiny::verbatimTextOutput(ns("debug_exclude"))
-    # ),
-    # tagList(
-    #   shiny::verbatimTextOutput(ns("debug_type"))
-    # ),
-    # tagList(
-    #   shiny::verbatimTextOutput(ns("debug_language"))
-    # )
+
   ) # end tagList
 }
+
 
 #' filter Server Function
 #' 
@@ -124,17 +112,6 @@ mod_filter_server <- function(id, r) {
             is.null(input$language), "", input$language
           )
 
-        
-        # # --- DEBUG ---
-        # library(stringr)
-        # input <- list()
-        # input$mustinclude <- "gluten"
-        # input$mustinclude2 <- ""
-        # input$mustinclude3 <- ""
-        # input$mustexclude <- ""
-        # input$pubchoice <- c("review", "journal article", "other")
-        # input$language <- "english"
-        
         iterm1 <-
           str_replace_all(input$mustinclude, " OR ", "|") %>%
           str_replace_all(., "\"", "\\\\b")
@@ -162,23 +139,6 @@ mod_filter_server <- function(id, r) {
         }
         
         types <- paste0(types, collapse = "|")
-        
-        
-        # # --- DEBUG ---
-        # library(dplyr)
-        # library(tibble)
-        # # r$search_result$result <- read.csv("C:/Users/XGilbert/Downloads/search_results.csv") %>%
-        # #   as_tibble() %>%
-        # #   select(
-        # #     doi = "ï..doi",
-        # #     "title", "abstract", "author",
-        # #     "publication date (yyyy-mm-dd)" = "publication.date..yyyy.mm.dd.",
-        # #     "publication type" = "publication.type",
-        # #     "journal", "scopuslink", "source", "lang", "url"
-        # #     )
-        # # saveRDS(r, "C:/Users/XGilbert/Downloads/r_object_filtered.rds")
-        # r <- readRDS("C:/Users/XGilbert/Downloads/r_object_filtered.rds")
-
         
         searchreturn <- r$search_result$result
 
@@ -237,12 +197,7 @@ mod_filter_server <- function(id, r) {
       
       
       output$nrecords_filtered <- renderText({
-        
-        # validate(need(
-        #   !is.null(r$filtered_result$result$include),
-        #   message = FALSE
-        # ))
-        
+
         # case : initial state -> no message
         validate(need(
           r$search_result$search_query != "search query initial state",
@@ -257,7 +212,8 @@ mod_filter_server <- function(id, r) {
         
         # case : all results filtered out
         validate(need(
-          !(nrow(r$filtered_result$result$include) == 0 & nrow(r$filtered_result$result$exclude) >= 1),
+          !(nrow(r$filtered_result$result$include) == 0
+            & nrow(r$filtered_result$result$exclude) >= 1),
           "Your filters have excluded all results."
         ))
         
@@ -267,36 +223,6 @@ mod_filter_server <- function(id, r) {
           "articles in your filtered data."
         )
       })
-      
-      # # --- DEBUG ---
-      # output$debug_include <- renderText({
-      #   paste0(
-      #     "r filtered_results include_terms: ",
-      #     r$filtered_result$include_terms
-      #   )
-      # })
-      # 
-      # output$debug_exclude <- renderText({
-      #   paste0(
-      #     "r filtered_results exclude_terms: ",
-      #     r$filtered_result$exclude_terms
-      #   )
-      # })
-      # 
-      # output$debug_type <- renderText({
-      #   paste0(
-      #     "r filtered_results debug_type: ",
-      #     r$filtered_result$include_type
-      #   )
-      # })
-      # 
-      # output$debug_language <- renderText({
-      #   paste0(
-      #     "r filtered_results language: ",
-      #     r$filtered_result$language
-      #   )
-      # })
-
     }
   )
 }

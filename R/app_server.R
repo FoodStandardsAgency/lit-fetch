@@ -41,14 +41,4 @@ app_server <- function(input, output, session) {
   mod_preview_server("preview_ui_2", incorex = "exclude", r = r)
   
   mod_download_server("download_ui_1", r = r)
-  
-  # cat(file=stderr(), "value of r$search_results", r$search_result$search_query, "\n")
-  
-  # # --- DEBUG ---
-  # # library(tibble)
-  # # r <- list()
-  # # r$search_result <- search_result
-  # # r$filtered_result <- filtered_result
-  # # saveRDS(r, "C:/Users/XGilbert/Downloads/r_initial_state.rds")
-  # r <- readRDS("C:/Users/XGilbert/Downloads/r_initial_state.rds")
 }

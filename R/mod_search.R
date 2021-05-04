@@ -30,7 +30,6 @@ mod_search_ui <- function(id) {
     ),
     verbatimTextOutput(ns("error")),
     
-
     # --- DATABASES SELECTION ---
     checkboxGroupInput(
       ns("whichdb"),
@@ -45,25 +44,9 @@ mod_search_ui <- function(id) {
       selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
     ),
     br(),
-    # h1(glue::glue("{ns('searchdate')}-label")),
 
     # --- DATE TO SEARCH FROM ---
     fluidRow(
-      # tags$head(
-      #   tags$style(
-      #     "#search_ui_1-searchdate-label { font-size:80%; font-family:Times New Roman; margin-bottom: 20px; }"
-      #     )
-      #   ),
-      # tags$head(
-      #   tags$style(
-      #     "#search_ui_1-searchdate-label { class = 'col-sm-8' }"
-      #     )
-      #   ),
-      # tags$label(
-      #   HTML(
-      #     "<label for='search_ui_1-searchdate-label'>Find articles online since (To note: Scopus will only filter as far as year)</label>"
-      #   )
-      # ),
       column(
       12,
       dateInput(
@@ -115,11 +98,11 @@ mod_search_ui <- function(id) {
     ),
     
     # --- INFO ---
-    # textOutput(ns("nrecords")),
     htmlOutput(ns("nrecords")),
     br()
   ) # end tagList
 }
+
 
 #' search Server Function
 #' 
@@ -138,24 +121,6 @@ mod_search_server <- function(id, r) {
       
       # execute on click search button
       observeEvent(input$searchnow, {
-
-        # # --- DEBUG ---
-        # source("./R/gettotal.R")
-        # source("./R/search_ebsco.R")
-        # source("./R/search_pubmed.R")
-        # source("./R/search_scopus.R")
-        # source("./R/search_springer.R")
-        # source("./R/xml2tib.R")
-        # source("./R/dates.R")
-        # r <- list()
-        # r$search_result$search_query <- "soy AND allergy"
-        # input = list()
-        # input$searchterm <- "soy AND allergy"
-        # input$searchdate_from <- Sys.Date() - 365 * 2 # "2020-04-21"
-        # input$searchdate_to <- Sys.Date() - 1 # "2020-04-21"
-        # input$whichdb <- c("Ebsco", "Pubmed")
-        # # input$whichdb <- c("Ebsco")
-        
         
         validate(
           need(
@@ -182,10 +147,6 @@ mod_search_server <- function(id, r) {
         bracket_match_check <-
           str_count(input$searchterm, "\\(") == str_count(input$searchterm, "\\)")
         
-        # check that number of quotation marks is even
-        # single_quotation_match_check <-
-        #   str_count(input$searchterm, "\'") %% 2 == 0
-        
         double_quotation_match_check <-
           str_count(input$searchterm, "\"") %% 2 == 0
         
@@ -203,7 +164,6 @@ mod_search_server <- function(id, r) {
           
           validate(
             need(
-              # single_quotation_match_check & double_quotation_match_check,
               double_quotation_match_check,
               message = "Check your quotations marks, it looks like you do not have an even number of double quotation marks."
             )
@@ -221,7 +181,6 @@ mod_search_server <- function(id, r) {
         # if brackets do not match, return empty result
         if (
           bracket_match_check == FALSE
-          # | single_quotation_match_check == FALSE
           | double_quotation_match_check == FALSE
           | contains_special_char
         ) {
@@ -235,7 +194,7 @@ mod_search_server <- function(id, r) {
 
         } else {
           # do an initial 'number of hits' search
-          totalhits <- gettotal(
+          totalhits <- get_total_hits(
             searchterm = input$searchterm,
             datefrom = input$searchdate_from,
             dateto = input$searchdate_to,
@@ -331,23 +290,19 @@ mod_search_server <- function(id, r) {
       # --- MESSAGE - ERROR ---
       output$nrecords <- renderText({
         if (r$search_result$totalhits > input$maxhits) {
-          # { paste("hello input is","<font color=\"#FF0000\"><b>", input$n, "</b></font>") }
           paste(
             "<font color=\"#FF0000\"><b>",
             "Your search returned",
             r$search_result$totalhits,
-            "articles which is over the above slider threshold. You can adjust 
-            the above slider to allow in more results or try a more specific 
-            search term or a smaller time window.",
+            "articles (including duplicates) which is over the above slider 
+            threshold. You can adjust the above slider to allow in more results 
+            or try a more specific search term or a smaller time window.",
             "</b></font>"
           )
 
         } else if (r$search_result$totalhits == 0) {
           paste("Your search did not return any results.")
 
-        # } else if (r$search_result$totalhits == -1) {
-        #   paste("Check your brackets, it looks like you haven't an equal number of '(' and ')'.")
-        
         # case: initial state of r
         } else if (r$search_result$totalhits == -2) {
           paste("")
@@ -359,13 +314,12 @@ mod_search_server <- function(id, r) {
           paste(
             "Your search returned",
             r$search_result$totalhits,
-            "articles. Refine your search or continue to additional filters below."
+            "unique articles. Refine your search or continue to additional 
+            filters below."
           )
         }
       }) # end renderText output$nrecords
       
-      
-
     } # end function
   ) # end moduleServer
 } # end mod_search_server

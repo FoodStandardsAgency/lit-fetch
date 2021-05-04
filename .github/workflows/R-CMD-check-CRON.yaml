@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "30 8 * * SAT"
+    - cron: "30 7 * * TUE"
 
 name: R-CMD-check-CRON
 
@@ -14,6 +14,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-20.04, r: '3.6', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     env:
@@ -25,13 +27,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # - uses: r-lib/actions/setup-r@v1
       - uses: r-lib/actions/setup-r@master
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
 
-      # - uses: r-lib/actions/setup-pandoc@v1
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Query dependencies
@@ -63,18 +63,6 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
-
-      # - name: Session info
-      #   run: |
-      #     options(width = 100)
-      #     pkgs <- installed.packages()[, "Package"]
-      #     sessioninfo::session_info(pkgs, include_base = TRUE)
-      #   shell: Rscript {0}
-
-      - name: Check secrets are captured
-        env:
-          SPRINGER_API: ${{ secrets.SPRINGER_API }}
-        run: echo "Hello $SPRINGER_API"
 
       - name: Check
         env:

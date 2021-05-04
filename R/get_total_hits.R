@@ -9,7 +9,7 @@
 #' @importFrom httr GET content
 #' @importFrom stringr str_replace_all
 #' @importFrom jsonlite fromJSON
-gettotal <- function(searchterm,
+get_total_hits <- function(searchterm,
                      datefrom = Sys.Date() - 365,
                      dateto = Sys.Date() - 1,
                      across) {
