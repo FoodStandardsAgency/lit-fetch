@@ -46,5 +46,11 @@ jobs:
         shell: Rscript {0}
 
       - name: Test coverage
+        env: 
+          SPRINGER_API: ${{ secrets.SPRINGER_API }}
+          ELSEVIER_API_KEY: ${{ secrets.ELSEVIER_API_KEY }}
+          ELSEVIER_INST_TOKEN: ${{ secrets.ELSEVIER_INST_TOKEN }}
+          EBSCO_PROF: ${{ secrets.EBSCO_PROF }}
+          EBSCO_PASSWORD: ${{ secrets.EBSCO_PASSWORD }}
         run: covr::codecov()
         shell: Rscript {0}
