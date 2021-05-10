@@ -14,5 +14,5 @@ coverage:
         informational: true
 
 ignore:
-  - "app_config.R"
-  - "run_app.R"
+  - "R/app_config.R"
+  - "R/run_app.R"
