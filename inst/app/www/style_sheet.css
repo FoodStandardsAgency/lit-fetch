@@ -1,0 +1,455 @@
+/* Get font from Google Fonts and apply to all elements */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans');
+
+* {
+  font-family: "Fira Sans";
+  }
+
+/* setting the style for the headings and general font
+    across the dashboard - add inherit to ensure applied to box elements
+    Use !important to overwrite skin default*/
+
+h1, h2, h3, h4, body, p {
+  font-family: inherit;
+}
+
+h1 {
+  font-size: 32px;
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0px;
+  padding-bottom: 2px;
+  font-weight:bold !important;
+}
+
+h2 {
+  font-size: 20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-weight:bold !important;
+}
+
+h3 {
+  font-size: 18px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-weight:bold !important;
+}
+
+h4 {
+  font-size: 16px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  font-weight:bold !important;
+}
+
+body {
+  font-size: 14px;
+  margin-top: 0px;
+  font-family: inherit;
+  background-color: transparent !important;
+}
+
+p {
+  font-size: 14px;
+  margin-top: 0px;
+  font-family: inherit;
+}
+
+.content {
+  /* apply to content background and text */
+  background-color: #f0f3f5 !important;
+  color: #000000 !important;
+}
+
+/* links across the dashboard */
+a,
+a:link {
+  /* link and unvisited link */
+  color: #0e5c7c;
+}
+
+a:hover {
+  /* hovered link */
+  color: #007d75 !important;
+}
+
+a:active, a:visited {
+  /* combined active and visited rules */
+  color: #0e5c7c;
+  text-decoration: underline;
+}
+
+a:focus {
+  /* for sidebar and tab 'button' links
+  important required to overwrite defaults in skin*/
+  border-color: #007d75 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+  outline: none !important;
+}
+
+#shiny-tab-chart:focus,
+#shiny-tab-table:focus{
+  /* for main content */
+  border-color: #007d75 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+  outline: none!important;
+}
+
+/* setting style for all buttons across the dashboard */
+.btn {
+  background: #007d75;
+  color: #fff !important;
+  opacity: 1 !important;
+  text-align: center !important;
+}
+
+.btn:hover {
+  background: #2a0046 !important;
+}
+
+.btn:focus,
+.btn:active {
+  border-color: #007d75;
+  border-style: dotted;
+  border-width: medium;
+  background: #2a0046 !important;
+}
+
+.btn.disabled {
+  background-color: grey;
+}
+
+/*  header including toggle and dropdown */
+.navbar-menu-custom,
+.main-header .navbar,
+.main-header .navbar:hover {
+  /* purple default and on hover */
+  background-color: #2a0046  !important;
+  color:#fff !important;
+}
+
+.main-header .navbar .nav>li>a:hover,
+.main-header .navbar .sidebar-toggle:hover {
+  /* toggle and dropdown in hover state */
+  background-color: #007d75  !important;
+  color:#fff !important;
+}
+
+.main-header .navbar .nav>li>a:focus,
+.main-header .navbar .sidebar-toggle:focus {
+  /* toggle and dropdown in focus state */
+  background-color: #007d75 !important;
+  color:#fff !important;
+  border-color: #2a0046 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+}
+
+.main-header .navbar .nav>li>a:active,
+.main-header .navbar .sidebar-toggle:active {
+  /* toggle and dropdown in active state*/
+  background-color: #007d75  !important;
+  color:#fff !important;
+}
+
+.main-header .logo,
+.main-header .logo:hover {
+  /* logo bar - overwrite default and on hover */
+  background-color: #fff  !important;
+  color: #2a0046 !important;
+  font-family: inherit !important;
+  font-weight: bold;
+}
+
+/* sidebar menu*/
+.left-side,
+.main-sidebar,
+.wrapper {
+  /* white background */
+  background-color: #fff !important;
+}
+
+.sidebar-menu>li,
+.sidebar-menu>li>a {
+  /* sidebar links white by default */
+  color: #2a0046 !important;
+  border-left-color: #007d75 !important;
+  background-color: #fff !important;
+  font-weight:bold;
+}
+.sidebar-menu>li:hover>a,
+.sidebar-menu>li.active>a{
+  /* purple on hover / select */
+  color: #fff !important;
+  background-color: #2a0046 !important;
+  font-weight:bold;
+}
+
+.sidebar-menu>li:focus>a {
+  /* border when focus */
+  color: #fff !important;
+  border-color: #007d75 !important;
+  background-color: #2a0046 !important;
+}
+
+/* tab pills for tabbed content*/
+.nav-pills {
+  /* tab pills set as white */
+  text-align:center;
+  background-color: #fff;
+  font-family: inherit;
+  color: #2a0046 !important;
+}
+
+.nav>li>a:active,
+.nav>li>a:focus,
+.nav>li>a:hover,
+.nav-pills>li.active>a,
+.nav-pills>li.active>a:focus,
+.nav-pills>li.active>a:hover {
+  /* tab pills when hover, focus and clicked  */
+  border-top-color: #007d75 !important;
+  background-color: #2a0046 !important;
+  color: #fff!important;
+}
+
+/* boxes */
+.box-header .box-title,
+.box-header>.fa,
+.box-header>.glyphicon,
+.box-header>.ion  {
+   /* for box headers */
+   color: #0000 !important;
+}
+
+.col-sm-6>.box>.box-body {
+  /* for boxes width 6 to force consistent size */
+  height: 700px !important;
+  width:auto !important;
+  padding-bottom:5px;
+}
+
+.small-box {
+  /* for highlights boxes */
+  background-color: #007d75 !important;
+}
+
+/* Filter inputs */
+.selectize-input.focus{
+  /* seclectize inputs focus */
+  border-color: #007d75 !important;
+  border-width: medium;
+  border-style: dotted;
+  box-shadow:none;
+}
+
+.option,
+.item {
+  /* items within select filters */
+  background: #007d75 !important;
+  color: #fff !important;
+}
+
+.option.focus,
+.item.focus
+.option.active,
+.item.active{
+  /* items within select filters - focus / active */
+  border-color: #2a0046 !important;
+  border-width: medium !important;
+  border-style: dotted !important;
+  box-shadow:none !important;
+}
+
+.checkbox-inline,
+.radio-inline  {
+  /* for radio inputs */
+  accent-color: #007d75 !important;
+}
+
+.form-control.active,
+.form-control.focus {
+  /* date selection */
+  border-color: #007d75 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+}
+
+div.shiny-options-group:focus,
+div.shiny-options-group:active{
+  border-color: #007d75 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+}
+
+.dropdown-menu {
+  /* date selection background */
+    background-color: #007d75!important;
+    color:#fff !important;
+}
+
+.datepicker table tr td.old,
+.datepicker table tr td.new {
+  /* date selection - colour of fonts
+     for previous and next month */
+  color:#000000 !important;
+}
+
+.datepicker table tr td.active:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active.highlighted:active,
+.datepicker table tr td.active.highlighted.active{
+  /* date selection - highlight colours for active date */
+  background-color: #2a0046 !important;
+  border-color: #2a0046 !important;
+}
+
+.datepicker table tr td.day:hover,
+.datepicker table tr td.focused {
+  /* date selection - highligh colours
+  for hovered / focused date */
+  background-color: #2a0046 !important;
+  border-color: #fff !important;
+  border-style: dotted !important;
+  color:#fff !important
+}
+
+.input-group-sm>.form-control:focus,
+.input-group-sm>.input-group-addon:focus,
+.input-group-sm>.input-group-btn>.btn:focus {
+  border-color: #007d75 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+  outline: none !important;
+}
+
+/* slider */
+.irs--shiny .irs-min,
+.irs--shiny .irs-max
+.irs-min,
+.irs-max {
+  /* slider min max numbers */
+  background-color: #2a0046 !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  color: #fff !important;
+}
+
+.irs-handle,
+.irs-single {
+  /* slider handle and bar */
+  background-color: #007d75 !important;
+  font-size: 16px !important;
+  color: #fff !important;
+  border:none !important;
+}
+
+/* Datatable */
+table.dataTable tr.selected td,
+table.dataTable td.selected{
+  /* selected row */
+  background-color: #2a0046 !important;
+  color: #fff !important;
+}
+
+table.dataTable tr.selected td>a,
+table.dataTable td.selected>a {
+  /* selected row - hyperlink */
+  background-color: #2a0046 !important;
+  color: #fff !important;
+  text-decoration: underline;
+}
+
+/* Datatables pagination */
+.dataTables_wrapper .dataTables_paginate .paginate_button,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+  /* pagination for datatable all non-current buttons  */
+  background: #007d75 !important;
+  color: #fff !important;
+  border-color: #2a0046 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  /* pagination for datatable current button  */
+  background: #fff !important ;
+  color: #007d75 !important;
+  border-color: #007d75 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  /* hover for datatable all non-current buttons*/
+  color: #fff !important;
+  background: #2a0046 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:focus,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:focus{
+  /* focus for datatable all non-current buttons  */
+  background: #007d75 !important ;
+  color: #fff !important;
+  border-color: #2a0046!important;
+  border-style: dotted !important;
+  border-width: medium !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:active,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{
+  /* active and hover for datatable current button
+  and for active disabled button*/
+  background: #2a0046 !important;
+  color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:active,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:focus {
+  /* active, and focus for datatable current button  */
+  background: #fff !important;
+  color: #2a0046 !important;
+  border-color: #007d75!important;
+  border-style: dotted !important;
+  border-width: medium !important;
+}
+
+/* table headers */
+table.dataTable thead th,
+table.dataTable tfoot th {
+  /* aligned text for datatable headers  */
+  text-align: center !important;
+  background-color: #007d75 !important;
+  color: #fff !important;
+}
+
+th:focus,
+th:active {
+  /* highlight  */
+  border-color: #2a0046 !important;
+  border-style: dotted !important;
+  border-width: medium !important;
+  outline:none !important;
+}
+
+select:focus,
+select:active,
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_filter input:active{
+  /* dropdown in datatable */
+  border-color: #2a0046 !important;
+  outline-width: medium !important;
+  outline-style: dotted !important;
+}
+
+table {
+  /* include border for when there are
+  too few rows to fill static table size  */
+  border-bottom: 1px solid #ddd !important;
+}
+
+td {
+  /* text for any table */
+  text-align: center !important;
+}

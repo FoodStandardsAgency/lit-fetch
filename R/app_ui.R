@@ -12,11 +12,22 @@ app_ui <- function(request) {
     
     dashboardPage(
       skin = "green",
-      dashboardHeader(title = "Lit fetch"),
+      dashboardHeader(title = "Lit Fetch",
+                      tags$li(class="dropdown",
+                              tags$a("Accessibility Statement",
+                                     href="www/accessibility-statement.html",
+                                     target="_blank"),
+                              style = "cursor: pointer;")),
       
       # --- LEFT RAIL MENU ---
       dashboardSidebar(
+        
         sidebarMenu(
+          tags$li(class='img-logo',
+                  tags$img(src = 'www/fsa-logo-english.png',
+                           alt="Food Standards Agency logo",
+                           height=110),
+                  style='text-align:center'),
           # available icons at https://fontawesome.com/icons?d=gallery
           menuItem("Welcome", tabName = "welcome", icon = icon("home")),
           menuItem("Search and download", tabName = "search", icon = icon("search")),
