@@ -12,12 +12,12 @@ ui_search <- function() {
     add_busy_spinner(spin = "fading-circle"),
     
     wellPanel(
-      h3("Search"),
+      h1("Search"),
       mod_search_ui("search_ui_1"),
       
       # --- FILTER ---
       bsCollapsePanel(
-        h3("Filter"),
+        h2("Filter"),
         wellPanel(
           mod_filter_ui("filter_ui_1")
         )
@@ -25,7 +25,7 @@ ui_search <- function() {
       
       # --- PREVIEW ---
       wellPanel(
-        h3("Preview"),
+        h2("Preview"),
         # p(
         #   "To preview unfiltered search results, leave filter fields blank 
         # and hit 'Filter'"
@@ -59,7 +59,7 @@ ui_search <- function() {
     # ),
     
     bsCollapsePanel(
-      h3("Download"),
+      h2("Download"),
       wellPanel(
         mod_download_ui("download_ui_1")
       )  

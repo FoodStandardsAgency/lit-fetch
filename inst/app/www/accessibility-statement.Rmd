@@ -10,8 +10,8 @@ tags$a(class="skip-link", href='#h1', text='Skip to main content')
 tags$html(lang="en-gb", dir='ltr')
 ```
 
-# Accessibility statement for lit-fetch Dashboard
-This accessibility statement applies to the FSA Dashboard ‘lit-fetch'
+# Accessibility statement for Lit Fetch Dashboard
+This accessibility statement applies to the FSA Dashboard 'Lit Fetch'
 
 This dashboard is run by FSA. We want as many people as possible to be able to use this dashboard. For example, that means you should be able to:
 
@@ -27,7 +27,19 @@ We’ve also made the dashboard text as simple as possible to understand.
 
 ## How accessible this dashboard is
 
-We know some parts of this dashboard are not fully accessible.
+This dashboard is partially compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard, due to the non-compliances listed below.
+
+
+
+## Non-compliance with the accessibility regulations
+The content that is not accessible is outlined below with details of planned dates for when issues will be fixed.
+
+* An empty table header in the Preview table.
+
+* Low contrasts for NOTE text in Welcome page.
+
+We are planning to address these issues in the next 6 months.
+ 
 
 ## Feedback and contact information
 
@@ -49,11 +61,7 @@ The Food Standards Agency is committed to making its dashboard accessible, in ac
 
 ## Compliance status
 
-This dashboard is partially compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard, due to the non-compliances listed below.
-
-## Non-compliance with the accessibility regulations
-
-Content that is not accessible is outlined below with details of planned dates for when issues will be fixed.
+This dashboard is compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard.
 
 ## Disproportionate burden
 
@@ -64,8 +72,8 @@ We have not made any disproportionate burden claims.
 <!-- We plan to fix issues according to the timescales shown for each area above.  -->
 
 ## Preparation of this accessibility statement
-This statement was prepared on 6th March 2023.
-This dashboard was last tested on 6th March 2023. The test was carried out by FSA. We tested the complete dashboard.
+This statement was prepared on 24th May 2024.
+This dashboard was last tested on 24th May 2024. The test was carried out by FSA. We tested the complete dashboard.
 </main>
 
 

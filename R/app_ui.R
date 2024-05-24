@@ -9,6 +9,8 @@ app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+    tags$link(rel="stylesheet", type="text/css", href="www/style_sheet.css" ),
+    tags$html(lang='en', dir='ltr'),
     
     dashboardPage(
       skin = "green",

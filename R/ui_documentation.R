@@ -7,9 +7,9 @@ ui_documentation <- function() {
   tabItem(
     tabName = "doc",
     
-    h3("Documentation"),
+    h1("Documentation"),
     wellPanel(
-      h3("Sources"),
+      h2("Sources"),
       p(
         "The Ebsco search is implemented using the ",
         a(href = "https://connect.ebsco.com/s/article/EBSCOhost-API?language=en_US", "Ebsco API"),
@@ -31,7 +31,7 @@ ui_documentation <- function() {
         "."
       ),
       
-      h3("Fields in the returned data"),
+      h2("Fields in the returned data"),
       p(
         strong("DOI"), ": Article identifier. No article without a DOI is 
         included and it is used as the basis for removing duplicates."

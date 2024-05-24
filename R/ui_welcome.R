@@ -6,7 +6,7 @@
 ui_welcome <- function() {
   tabItem(
     tabName = "welcome",
-    h3("Welcome"),
+    h1("Welcome"),
     wellPanel(
       p(
         "The lit fetch app is a tool that performs key word searches on the 
@@ -25,7 +25,7 @@ ui_welcome <- function() {
         publications. These can then be manually checked for suitability."
       ),
       
-      h3("Search"),
+      h2("Search"),
       p(
         "Search as you would normally do on classic search tools, by building your
         search queries with AND, OR, NOT, brackets, quote marks and wildcards (*)."
@@ -62,7 +62,7 @@ ui_welcome <- function() {
         )
       ),
       
-      h4("Search tips:"),
+      h3("Search tips:"),
       tags$ul(
         tags$li(
           "To search for multiple terms: ",
@@ -102,7 +102,7 @@ ui_welcome <- function() {
         )
       ),
       
-      h4("Volume of publications"),
+      h3("Volume of publications"),
       p(
         "The volume of publications returned may differ to the volume returned
         by the equivalent website search for one of the following reasons:"
@@ -128,7 +128,7 @@ ui_welcome <- function() {
         )
       ),
       
-      h4("Preview"),
+      h3("Preview"),
       p(
         "You can preview the results of your search. The 'included' tab shows
         anything returned by the search that has not been excluded by any
@@ -147,7 +147,7 @@ ui_welcome <- function() {
         )
       ),
       
-      h3("Filter"),
+      h2("Filter"),
       p("
         The filter section lets you choose terms that you want to include or 
         exclude from your returned collection of articles."
@@ -180,17 +180,17 @@ ui_welcome <- function() {
         Scopus and Springer results."
       ),
       
-      h3("Download"),
+      h2("Download"),
       p(
         "You can download an excel spreadsheet with your search term, filters,
         included and excluded articles (with all fields). You can refer back to
         this spreadsheet in the future as a document of what filters were used."
       ),
 
-      h3("Help and feedback"),
+      h2("Help and feedback"),
       p(
         "If there are any issues with the tool or you have feedback please
-        contact a member of the data science team."
+        contact a Strategic.Surveillance@food.gov.uk."
       )
     )
   )
