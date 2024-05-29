@@ -14,6 +14,11 @@ jobs:
   test-coverage:
     runs-on: macOS-latest
     
+    strategy:
+      matrix:
+        r:
+          - '3.6.2'
+    
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     
