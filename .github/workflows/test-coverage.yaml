@@ -15,9 +15,11 @@ jobs:
     runs-on: macOS-latest
     
     strategy:
+      fail-fast: false
       matrix:
-        r:
-          - '3.6.2'
+        config:
+          - {os: windows-latest, r: '3.6'}
+          - {os: ubuntu-20.04, r: '3.6', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
     
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
