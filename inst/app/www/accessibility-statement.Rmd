@@ -1,0 +1,77 @@
+---
+output:
+  html_document:
+    css: style_sheet.css
+---
+<main>
+```{r html_tag, warning=FALSE, echo=FALSE}
+library('shiny')
+tags$a(class="skip-link", href='#h1', text='Skip to main content')
+tags$html(lang="en-gb", dir='ltr')
+```
+
+# Accessibility statement for Lit Fetch Dashboard
+This accessibility statement applies to the FSA Dashboard 'Lit Fetch'
+
+This dashboard is run by FSA. We want as many people as possible to be able to use this dashboard. For example, that means you should be able to:
+
+* change colours, contrast levels, and fonts
+* zoom in up to 300% without the text spilling off the screen
+* navigate most of the dashboard using just a keyboard
+* navigate most of the dashboard using speech recognition software
+* listen to most of the dashboard using a screen reader (including narrator)
+
+We’ve also made the dashboard text as simple as possible to understand.
+
+[AbilityNet](https://mcmw.abilitynet.org.uk/) has advice on making your device easier to use if you have a disability.
+
+## How accessible this dashboard is
+
+This dashboard is partially compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard, due to the non-compliance listed below.
+
+
+
+## Non-compliance with the accessibility regulations
+The content that is not accessible is outlined below with details of planned dates for when issues will be fixed.
+
+* An empty table header in the Preview table.
+
+We are planning to address these issues in the next 6 months.
+ 
+
+## Feedback and contact information
+
+If you need information on this dashboard in a different format please email: Strategic.Surveillance@food.gov.uk
+
+## Reporting accessibility problems with this dashboard
+
+We’re always looking to improve the accessibility of this dashboard. If you find any problems not listed on this page or think we’re not meeting accessibility requirements, contact: Strategic.Surveillance@food.gov.uk
+
+## Enforcement procedure
+
+The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (dashboards and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, [contact the Equality Advisory and Support Service (EASS)](https://www.equalityadvisoryservice.com/).
+
+If you are in Northern Ireland and are not happy with how we respond to your complaint you can contact the [Equalities Commission for Northern Ireland](https://www.equalityni.org/Home) who are responsible for enforcing the Public Sector Bodies (dashboards and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the ‘accessibility regulations’) in Northern Ireland. 
+
+## Technical information about this dashboard’s accessibility
+
+The Food Standards Agency is committed to making its dashboard accessible, in accordance with the Public Sector Bodies (dashboards and Mobile Applications) (No. 2) Accessibility Regulations 2018.
+
+## Compliance status
+
+This dashboard is compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard.
+
+## Disproportionate burden
+
+We have not made any disproportionate burden claims.
+
+<!-- ## What we’re doing to improve accessibility -->
+
+<!-- We plan to fix issues according to the timescales shown for each area above.  -->
+
+## Preparation of this accessibility statement
+This statement was prepared on 5th June 2024.
+This dashboard was last tested on 5th June 2024. The test was carried out by FSA. We tested the complete dashboard.
+</main>
+
+

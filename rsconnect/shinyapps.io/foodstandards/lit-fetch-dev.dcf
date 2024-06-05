@@ -1,0 +1,12 @@
+name: lit-fetch-dev
+title: lit-fetch-dev
+username: foodstandards
+account: foodstandards
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12090967
+bundleId: 8704246
+url: https://foodstandards.shinyapps.io/lit-fetch-dev/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
