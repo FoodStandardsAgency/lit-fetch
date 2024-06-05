@@ -4,7 +4,7 @@ output:
     css: style_sheet.css
 ---
 <main>
-```{r html_tag, echo=FALSE}
+```{r html_tag, warning=FALSE, echo=FALSE}
 library('shiny')
 tags$a(class="skip-link", href='#h1', text='Skip to main content')
 tags$html(lang="en-gb", dir='ltr')
