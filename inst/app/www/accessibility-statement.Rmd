@@ -27,7 +27,7 @@ We’ve also made the dashboard text as simple as possible to understand.
 
 ## How accessible this dashboard is
 
-This dashboard is partially compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard, due to the non-compliances listed below.
+This dashboard is partially compliant with the [Web Content Accessibility Guidelines version 2.1](https://www.w3.org/TR/WCAG21/) AA standard, due to the non-compliance listed below.
 
 
 
@@ -35,8 +35,6 @@ This dashboard is partially compliant with the [Web Content Accessibility Guidel
 The content that is not accessible is outlined below with details of planned dates for when issues will be fixed.
 
 * An empty table header in the Preview table.
-
-* Low contrasts for NOTE text in Welcome page.
 
 We are planning to address these issues in the next 6 months.
  
@@ -72,8 +70,8 @@ We have not made any disproportionate burden claims.
 <!-- We plan to fix issues according to the timescales shown for each area above.  -->
 
 ## Preparation of this accessibility statement
-This statement was prepared on 24th May 2024.
-This dashboard was last tested on 24th May 2024. The test was carried out by FSA. We tested the complete dashboard.
+This statement was prepared on 5th June 2024.
+This dashboard was last tested on 5th June 2024. The test was carried out by FSA. We tested the complete dashboard.
 </main>
 
 

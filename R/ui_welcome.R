@@ -79,21 +79,19 @@ ui_welcome <- function() {
                                 
         tags$li(
           "Using quotation marks: ", tags$code("\"Clostridium botulinum\""),
-          "will return articles containing that exact term.",
-          helpText(
+          "will return articles containing that exact term."),
+          p(
             strong("NOTE:"), "To ensure compatibility and reproductibility,
             use double quotations marks."
-          )
         ),
         tags$li(
           "Using wildcards: ", tags$code("botul*"), "will return anything 
-          containing ", em("botulism"), ",", em("botulinium"), "etc.",
-          helpText(
+          containing ", em("botulism"), ",", em("botulinium"), "etc."),
+      p(
             strong("NOTE:"), "For Pubmed, the wildcard character will expand to 
             match any set of characters up to a limit of 600 unique expansions.
             This means that poorly determined terms, for example",
             tags$code("cat*"), "will yield incomplete results."
-          )
         ),
         tags$li(
           "Note that for Scopus searches, any search term with", 
@@ -136,7 +134,6 @@ ui_welcome <- function() {
         will be in the ‘excluded’ tab."
       ),
       p(
-        helpText(
           strong("NOTE:"), "where month and day of publication are not provided
           by the service, 01 is used as a default. Similarly, where year of 
           publication is not provided 1990 is used as a default. This means that
@@ -144,7 +141,6 @@ ui_welcome <- function() {
           the publication date", tags$code("01/01/year"), "in our output, and
           those that have no details are given the date",
           tags$code("01/01/1990"), "."
-        )
       ),
       
       h2("Filter"),
@@ -153,10 +149,8 @@ ui_welcome <- function() {
         exclude from your returned collection of articles."
       ),
       p(
-        helpText(
           strong("NOTE:"), "To use the filter section, please click on the 
           header to expand it."  
-        )
       ),
       p(
         "The initial search may return articles that do not contain the search
@@ -165,10 +159,8 @@ ui_welcome <- function() {
         filter these out at this stage."
       ),
       p(
-        helpText(
           strong("NOTE:"), "All filter terms are treated as wildcards unless
           they are enclosed in quotes."  
-        )
       ),
       p(
         "You can also filter by publication type (currently: journal article,
@@ -190,7 +182,7 @@ ui_welcome <- function() {
       h2("Help and feedback"),
       p(
         "If there are any issues with the tool or you have feedback please
-        contact a Strategic.Surveillance@food.gov.uk."
+        contact Strategic.Surveillance@food.gov.uk."
       )
     )
   )
