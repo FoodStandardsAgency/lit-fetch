@@ -18,9 +18,10 @@ gen_url_scopus <-
       str_replace_all(., "”", '"') %>%
       str_replace_all(., "( ){2,}", " ") %>%
       str_replace_all(., "NOT", "AND NOT") %>%
+      str_replace_all(., "AND AND", "AND") %>% 
       str_replace_all(., "\"", "%22") %>%
       str_replace_all(., " ", "+")
-
+    
     # dates need to be replaced with years as this is as granular as it goes!
     yearfrom <- substr(as.character(datefrom), 1, 4)
     yearto <- substr(as.character(dateto), 1, 4)
