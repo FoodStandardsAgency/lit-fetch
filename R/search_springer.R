@@ -59,7 +59,7 @@ get_results_springer <- function(page, searchurl) {
     .$records %>% 
     as_tibble() %>% 
     select(url, title, creators, publicationName, doi, publicationDate, publicationType,
-           genre, abstract) %>% 
+           genre, abstract,openaccess) %>% 
     mutate_at(vars(url, creators, genre), ~as.list(.))
   
   return(fullspring)
