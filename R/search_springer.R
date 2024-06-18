@@ -154,7 +154,8 @@ get_springer <- function(searchterm,
         `publication date (yyyy-mm-dd)` = publicationDate,
         `publication type` = type,
         journal = publicationName,
-        url = url.y
+        url = url.y,
+        openaccess
       ) %>%
       mutate(
         source = "Springer",
@@ -164,6 +165,9 @@ get_springer <- function(searchterm,
       mutate(id = row_number()) %>%
       ungroup() %>%
       filter(id == 1 | is.na(doi)) %>%
+      mutate(
+        openaccess=tolower(openaccess)=='true'
+      ) %>% 
       select(-id)
     
     
