@@ -35,6 +35,7 @@ mod_filter_ui <- function(id) {
       "Open access filter",
       choiceNames = c("Open access articles only (Springer and Scopus)"),
       choiceValues = c("true"),
+      selected=NULL,
       inline = T
     ),
     br(),
@@ -122,12 +123,6 @@ mod_filter_server <- function(id, r) {
             is.null(input$language), "", "english"
           )
         
-        # open access
-        #r$filtered_result$openaccess <-
-         # if_else(
-          #  is.null(input$openaccess), "", input$openaccess
-          #)
-
         iterm1 <-
           str_replace_all(input$mustinclude, " OR ", "|") %>%
           str_replace_all(., "\"", "\\\\b")
@@ -191,7 +186,7 @@ mod_filter_server <- function(id, r) {
           
           if ("true" %in% input$openaccess){
             include <- include %>% 
-              filter(openaccess==TRUE| openaccess=="true")
+              filter(openaccess=="true"|openaccess=="NA")
           }
 
           # filter out exclusions
