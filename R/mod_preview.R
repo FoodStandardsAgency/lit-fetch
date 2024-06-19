@@ -25,8 +25,7 @@ mod_preview_ui <- function(id) {
         "publication date",
         "publication type",
         "url",
-        "source",
-        "open access"
+        "source"
       ),
       choiceValues = c(
         "doi",
@@ -37,8 +36,7 @@ mod_preview_ui <- function(id) {
         "publication date (yyyy-mm-dd)",
         "publication type",
         "url",
-        "source",
-        "openaccess"
+        "source"
       ),
       selected = c("doi", "title"),
       inline = T
@@ -94,7 +92,7 @@ mod_preview_server <- function(id, incorex, r) {
           tabledata
         }
 
-      })
+      }, options=list(scrollX=TRUE))
     }
   )
 }
