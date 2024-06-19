@@ -241,7 +241,7 @@ get_ebsco <- function(searchterm,
         url
       ) %>%
       mutate(source = "Ebsco") %>%
-      mutate(openaccess = FALSE) %>% 
+      mutate(openaccess = "false") %>% 
       group_by(doi) %>%
       mutate(id = row_number()) %>%
       group_by(title, abstract) %>%

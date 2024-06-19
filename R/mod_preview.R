@@ -25,7 +25,8 @@ mod_preview_ui <- function(id) {
         "publication date",
         "publication type",
         "url",
-        "source"
+        "source",
+        "open access"
       ),
       choiceValues = c(
         "doi",
@@ -36,7 +37,8 @@ mod_preview_ui <- function(id) {
         "publication date (yyyy-mm-dd)",
         "publication type",
         "url",
-        "source"
+        "source",
+        "openaccess"
       ),
       selected = c("doi", "title"),
       inline = T

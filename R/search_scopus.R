@@ -229,7 +229,7 @@ get_scopus <-
       mutate(id = row_number()) %>%
       ungroup() %>%
       filter(id == 1) %>%
-      mutate(openaccess=tolower(openaccess)=='TRUE'
+      mutate(openaccess=tolower(openaccess)
              ) %>% 
       select(-id)
   }

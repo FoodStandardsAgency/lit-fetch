@@ -166,7 +166,7 @@ get_springer <- function(searchterm,
       ungroup() %>%
       filter(id == 1 | is.na(doi)) %>%
       mutate(
-        openaccess=tolower(openaccess)=='true'
+        openaccess=tolower(openaccess)
       ) %>% 
       select(-id)
     
