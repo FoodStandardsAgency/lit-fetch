@@ -25,6 +25,7 @@ mod_filter_ui <- function(id) {
       "Language options",
       choiceNames = c("English language only (Ebsco and Pubmed)"),
       choiceValues = c("english"),
+      selected=NULL,
       inline = T
     ),
     br(),
@@ -118,7 +119,7 @@ mod_filter_server <- function(id, r) {
         # language
         r$filtered_result$language <-
           if_else(
-            is.null(input$language), "", input$language
+            is.null(input$language), "", "english"
           )
         
         # open access
@@ -188,9 +189,7 @@ mod_filter_server <- function(id, r) {
               filter(lang == "eng" | lang == "English" | is.na(lang))
           }
           
-        
-          
-          if (input$openaccess == "true"){
+          if ("true" %in% input$openaccess){
             include <- include %>% 
               filter(openaccess==TRUE| openaccess=="true")
           }
