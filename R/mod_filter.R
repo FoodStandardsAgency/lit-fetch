@@ -28,6 +28,15 @@ mod_filter_ui <- function(id) {
       inline = T
     ),
     br(),
+    
+    checkboxGroupInput(
+      ns("openaccess"),
+      "Open access filter",
+      choiceNames = c("Open access articles only (Springer and Scopus)"),
+      choiceValues = c("true"),
+      inline = T
+    ),
+    br(),
 
     p(strong("Words to INCLUDE in title or abstract")),
     wellPanel(
@@ -111,6 +120,12 @@ mod_filter_server <- function(id, r) {
           if_else(
             is.null(input$language), "", input$language
           )
+        
+        # open access
+        #r$filtered_result$openaccess <-
+         # if_else(
+          #  is.null(input$openaccess), "", input$openaccess
+          #)
 
         iterm1 <-
           str_replace_all(input$mustinclude, " OR ", "|") %>%
@@ -171,6 +186,13 @@ mod_filter_server <- function(id, r) {
           if ("english" %in% input$language) {
             include <- include %>%
               filter(lang == "eng" | lang == "English" | is.na(lang))
+          }
+          
+        
+          
+          if (input$openaccess == "true"){
+            include <- include %>% 
+              filter(openaccess==TRUE| openaccess=="true")
           }
 
           # filter out exclusions
