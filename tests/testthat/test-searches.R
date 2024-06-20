@@ -59,7 +59,7 @@ test_that("pubmed fetch returns data frame with expected number of articles", {
 test_that("get_pubmed returns dataframe with expected rows/cols", {
   expect_is(pmget, "data.frame")
   expect_gte(nrow(pmget), 25)
-  expect_equal(ncol(pmget), 10)
+  expect_equal(ncol(pmget), 11)
 })
 
 
@@ -86,7 +86,7 @@ test_that("scopus fetches expected number of rows (25)", {
 test_that("scopus search returns a dataframe with expected rows/cols", {
   expect_is(scopussearch, "data.frame")
   expect_gte(nrow(scopussearch), 50)
-  expect_equal(ncol(scopussearch), 11)
+  expect_equal(ncol(scopussearch), 12)
 })
 
 

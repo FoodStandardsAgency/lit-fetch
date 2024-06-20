@@ -252,6 +252,7 @@ get_pm <- function(searchterm,
       ) %>%
       mutate(source = "Pubmed") %>%
       # filter(!is.na(doi) & doi != "") %>%
+      mutate(openaccess = "NA") %>% 
       group_by(doi) %>%
       mutate(id = row_number()) %>%
       ungroup() %>%

@@ -59,7 +59,7 @@ get_results_springer <- function(page, searchurl) {
     .$records %>% 
     as_tibble() %>% 
     select(url, title, creators, publicationName, doi, publicationDate, publicationType,
-           genre, abstract) %>% 
+           genre, abstract,openaccess) %>% 
     mutate_at(vars(url, creators, genre), ~as.list(.))
   
   return(fullspring)
@@ -154,7 +154,8 @@ get_springer <- function(searchterm,
         `publication date (yyyy-mm-dd)` = publicationDate,
         `publication type` = type,
         journal = publicationName,
-        url = url.y
+        url = url.y,
+        openaccess
       ) %>%
       mutate(
         source = "Springer",
@@ -164,6 +165,9 @@ get_springer <- function(searchterm,
       mutate(id = row_number()) %>%
       ungroup() %>%
       filter(id == 1 | is.na(doi)) %>%
+      mutate(
+        openaccess=tolower(openaccess)
+      ) %>% 
       select(-id)
     
     

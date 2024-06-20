@@ -92,7 +92,7 @@ mod_preview_server <- function(id, incorex, r) {
           tabledata
         }
 
-      })
+      }, options=list(scrollX=TRUE))
     }
   )
 }

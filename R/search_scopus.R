@@ -130,11 +130,22 @@ get_scopus_result <- function(url) {
           pull(lead)
       }) %>%
       flatten_chr()
+    
+    openaccess <- hit %>%
+      .$entry %>%
+      map("openaccessFlag") %>%
+      map(., function(x) {
+        unlist(x) %>%
+          as_tibble() %>%
+          pull(value)
+      }) %>%
+      flatten_chr()
 
     result <- meta %>%
       mutate(
         author = authors,
-        scopuslink = link
+        scopuslink = link,
+        openaccess = openaccess
       )
   }
 
@@ -200,7 +211,8 @@ get_scopus <-
         `publication date (yyyy-mm-dd)` = `prism:coverDate`,
         `publication type` = pubtype,
         journal = `prism:publicationName`,
-        scopuslink
+        scopuslink,
+        openaccess
       ) %>%
       mutate(
         source = "Scopus",
@@ -217,6 +229,8 @@ get_scopus <-
       mutate(id = row_number()) %>%
       ungroup() %>%
       filter(id == 1) %>%
+      mutate(openaccess=tolower(openaccess)
+             ) %>% 
       select(-id)
   }
 

@@ -25,6 +25,17 @@ mod_filter_ui <- function(id) {
       "Language options",
       choiceNames = c("English language only (Ebsco and Pubmed)"),
       choiceValues = c("english"),
+      selected=NULL,
+      inline = T
+    ),
+    br(),
+    
+    checkboxGroupInput(
+      ns("openaccess"),
+      "Open access filter",
+      choiceNames = c("Open access articles only (Springer and Scopus)"),
+      choiceValues = c("true"),
+      selected=NULL,
       inline = T
     ),
     br(),
@@ -109,9 +120,9 @@ mod_filter_server <- function(id, r) {
         # language
         r$filtered_result$language <-
           if_else(
-            is.null(input$language), "", input$language
+            is.null(input$language), "", "english"
           )
-
+        
         iterm1 <-
           str_replace_all(input$mustinclude, " OR ", "|") %>%
           str_replace_all(., "\"", "\\\\b")
@@ -171,6 +182,11 @@ mod_filter_server <- function(id, r) {
           if ("english" %in% input$language) {
             include <- include %>%
               filter(lang == "eng" | lang == "English" | is.na(lang))
+          }
+          
+          if ("true" %in% input$openaccess){
+            include <- include %>% 
+              filter(openaccess=="true"|openaccess=="NA")
           }
 
           # filter out exclusions

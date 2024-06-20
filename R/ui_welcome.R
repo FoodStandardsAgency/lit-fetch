@@ -171,6 +171,11 @@ ui_welcome <- function() {
         Ebsco and Pubmed, so foreign language items may still appear in the 
         Scopus and Springer results."
       ),
+      p(
+        "The Open Access filter only applies to articles returned from Scopus
+        and Springer, and articles from Ebsco and Pubmed, which some may be not
+        open access, will still appear in the results."
+      ),
       
       h2("Download"),
       p(
