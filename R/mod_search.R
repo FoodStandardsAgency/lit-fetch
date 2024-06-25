@@ -51,7 +51,7 @@ mod_search_ui <- function(id) {
       12,
       dateInput(
         ns("searchdate_from"),
-        label = "Find articles online since (To note: Scopus will only filter as far as year) ...",
+        label = "Find articles online since:",
         value = Sys.Date() - 365,
         min = as.Date("1900-01-01"),
         max = Sys.Date()
