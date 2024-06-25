@@ -137,6 +137,7 @@ mod_search_server <- function(id, r) {
           exclude_terms = "",
           include_type = "",
           language = "",
+          openaccess = "",
           result = list(
             include = tibble(doi = character(0)),
             exclude = tibble(doi = character(0))

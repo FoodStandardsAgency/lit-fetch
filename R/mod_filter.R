@@ -117,6 +117,12 @@ mod_filter_server <- function(id, r) {
           input$pubchoice %>%
             paste0(., collapse = " , ")
         
+        # open access
+        r$filtered_result$openaccess <-
+          if_else(
+            is.null(input$openaccess), "", "true"
+          )
+        
         # language
         r$filtered_result$language <-
           if_else(

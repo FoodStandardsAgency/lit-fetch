@@ -24,6 +24,7 @@ app_server <- function(input, output, session) {
       exclude_terms = "",
       include_type = "",
       language = "",
+      openaccess = "",
       result = list(
         include = tibble(doi = character(0)),
         exclude = tibble(doi = character(0))
