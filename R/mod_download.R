@@ -51,6 +51,7 @@ mod_download_server <- function(id, r) {
               exclude = as.character(r$filtered_result$exclude_terms),
               types = as.character(r$filtered_result$include_type),
               language = as.character(r$filtered_result$language),
+              openaccess = as.character(r$filtered_result$openaccess),
               `searchdate (yyyy-mm-dd)` = Sys.Date() %>% as.character()
             )
           )

@@ -22,7 +22,7 @@ ui_documentation <- function() {
       ),
       p(
         "The Scopus search is implemented using the Elsevier ",
-        a(href = "https://dev.elsevier.com/documentation/ScopusSearchAPI.wadl", "Scopus Search API"),
+        a(href = "https://dev.elsevier.com/documentation/ScopusSearchAPI.wadl#d1e33", "Scopus Search API"),
         "."
       ),
       p(
@@ -60,7 +60,11 @@ ui_documentation <- function() {
       ),
       p(
         strong("Lang"), ": Language of the item (only available for items from 
-        Pubmed)."
+        Pubmed and Ebsco)."
+      ),
+      p(
+        strong("Open access"), ": Whether the publication is open access
+        (only available for items from Springer and Scopus)."
       ),
       p(
         strong("URL"), ": Link that will take you to the article page on the 
