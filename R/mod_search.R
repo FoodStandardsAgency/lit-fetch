@@ -37,11 +37,15 @@ mod_search_ui <- function(id) {
       choiceNames = c(
         "Pubmed (citation's title, collection title, abstract, other abstract, keywords)",
         "Scopus (title, abstract, keywords)",
-        "Springer (title)",
+        #"Springer (title)",
         "Ebsco - Food Science Resource (title, abstract)"
       ),
-      choiceValues = c("Pubmed", "Scopus", "Springer", "Ebsco"),
-      selected = c("Pubmed", "Scopus", "Springer", "Ebsco")
+      choiceValues = c("Pubmed", "Scopus", 
+                       #"Springer",
+                       "Ebsco"),
+      selected = c("Pubmed", "Scopus", 
+                   #"Springer",
+                   "Ebsco")
     ),
     br(),
 

@@ -24,6 +24,10 @@ ui_welcome <- function() {
         start of a literature review to create an initial list of useful 
         publications. These can then be manually checked for suitability."
       ),
+      p(
+        strong("NOTE: Currently the Springer API is not available, this will be updated 
+        once resolved.")
+      ),
       
       h2("Search"),
       p(
